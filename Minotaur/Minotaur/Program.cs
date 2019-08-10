@@ -1,12 +1,10 @@
-﻿using System;
+namespace Minotaur {
+	using System;
 
-namespace Minotaur
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello World!");
-        }
-    }
+	public sealed class Program {
+
+		public static void Main(string[] args) {
+			Console.WriteLine("Hello World!");
+		}
+	}
 }
