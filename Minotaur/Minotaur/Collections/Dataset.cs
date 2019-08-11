@@ -13,7 +13,7 @@ namespace Minotaur.Collections {
 		public readonly Matrix<bool> InstanceLabels;
 
 		// This is stored just for convenience
-		public readonly ReadOnlyArray<bool> DefaultClassificationLabels;
+		public readonly Array<bool> DefaultClassificationLabels;
 
 		private readonly FeatureType[] _featureTypes;
 		private readonly Matrix<float> _data;

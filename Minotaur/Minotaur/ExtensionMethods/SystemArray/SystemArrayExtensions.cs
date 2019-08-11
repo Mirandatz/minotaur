@@ -8,7 +8,7 @@ namespace Minotaur.ExtensionMethods.SystemArray {
 			return ((IEnumerable<T>) array).GetEnumerator();
 		}
 
-		public static ReadOnlyArray<T> AsReadOnly<T>(this T[] array) => ReadOnlyArray<T>.Wrap(array);
+		public static Array<T> AsReadOnly<T>(this T[] array) => Array<T>.Wrap(array);
 
 		public static bool ContainsNulls<T>(this T[] array) where T : class {
 			for (int i = 0; i < array.Length; i++)

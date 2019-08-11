@@ -7,27 +7,27 @@ namespace Minotaur.Collections {
 	using System.Text;
 
 	[JsonObject(MemberSerialization.OptIn)]
-	public sealed class ReadOnlyArray<T>: IEnumerable<T> {
+	public sealed class Array<T>: IEnumerable<T> {
 
 		[JsonProperty] public readonly int Length;
 		[JsonProperty] private readonly T[] _items;
 
-		private ReadOnlyArray(T[] items) {
+		private Array(T[] items) {
 			_items = items;
 			Length = _items.Length;
 		}
 
 		[JsonConstructor]
-		private ReadOnlyArray(int length, T[] items) {
+		private Array(int length, T[] items) {
 			Length = length;
 			_items = items;
 		}
 
-		public static ReadOnlyArray<T> Wrap(T[] array) {
+		public static Array<T> Wrap(T[] array) {
 			if (array == null)
 				throw new ArgumentNullException(nameof(array));
 
-			return new ReadOnlyArray<T>(array);
+			return new Array<T>(array);
 		}
 
 		public bool IsEmpty => Length == 0;
@@ -67,14 +67,14 @@ namespace Minotaur.Collections {
 
 		IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
 
-		public static implicit operator ReadOnlyArray<T>(T[] mutableArray) => Wrap(mutableArray);
+		public static implicit operator Array<T>(T[] mutableArray) => Wrap(mutableArray);
 
-		public static implicit operator ReadOnlySpan<T>(ReadOnlyArray<T> readOnlyArray) => readOnlyArray.Span;
+		public static implicit operator ReadOnlySpan<T>(Array<T> readOnlyArray) => readOnlyArray.Span;
 	}
 
 	public static class ReadOnlyArrayExtensions {
 
-		public static bool ContainsNulls<T>(this ReadOnlyArray<T> readOnlyArray) where T : class {
+		public static bool ContainsNulls<T>(this Array<T> readOnlyArray) where T : class {
 			for (int i = 0; i < readOnlyArray.Length; i++)
 				if (readOnlyArray[i] == null)
 					return true;
@@ -82,7 +82,7 @@ namespace Minotaur.Collections {
 			return false;
 		}
 
-		public static bool ContainsNaNs(this ReadOnlyArray<float> readOnlyArray) {
+		public static bool ContainsNaNs(this Array<float> readOnlyArray) {
 			for (int i = 0; i < readOnlyArray.Length; i++)
 				if (float.IsNaN(readOnlyArray[i]))
 					return true;
@@ -90,7 +90,7 @@ namespace Minotaur.Collections {
 			return false;
 		}
 
-		public static bool SequenceEquals<T>(this ReadOnlyArray<T> self, ReadOnlyArray<T> other) where T : IEquatable<T> {
+		public static bool SequenceEquals<T>(this Array<T> self, Array<T> other) where T : IEquatable<T> {
 			// We check ReferenceEquals before checking for nulls because we don't expect to
 			// compare to nulls (ever)
 			if (ReferenceEquals(self, other))
@@ -117,7 +117,7 @@ namespace Minotaur.Collections {
 			return true;
 		}
 
-		public static ReadOnlyArray<T> Append<T>(this ReadOnlyArray<T> self, T item) {
+		public static Array<T> Append<T>(this Array<T> self, T item) {
 			var newArray = new T[self.Length + 1];
 
 			for (int i = 0; i < self.Length; i++)
@@ -128,7 +128,7 @@ namespace Minotaur.Collections {
 			return newArray;
 		}
 
-		public static ReadOnlyArray<T> Swap<T>(this ReadOnlyArray<T> self, T item, int index) {
+		public static Array<T> Swap<T>(this Array<T> self, T item, int index) {
 			if (index < 0 || index >= self.Length)
 				throw new ArgumentOutOfRangeException(nameof(index) + $" must be in range [0, {self.Length}[");
 
@@ -140,9 +140,9 @@ namespace Minotaur.Collections {
 			return newArray;
 		}
 
-		public static ReadOnlyArray<T> Remove<T>(this ReadOnlyArray<T> self, int index) {
+		public static Array<T> Remove<T>(this Array<T> self, int index) {
 			if (self.Length == 0)
-				throw new InvalidOperationException($"Can't remove items from an empty {nameof(ReadOnlyArray<T>)}");
+				throw new InvalidOperationException($"Can't remove items from an empty {nameof(Array<T>)}");
 			if (index < 0 || index >= self.Length)
 				throw new ArgumentOutOfRangeException(nameof(index) + $" must be in range [0, {self.Length}[");
 
@@ -167,7 +167,7 @@ namespace Minotaur.Collections {
 			return newArray;
 		}
 
-		public static string ToReadableString(this ReadOnlyArray<float> readOnlyArray) {
+		public static string ToReadableString(this Array<float> readOnlyArray) {
 			var builder = new StringBuilder();
 
 			for (int i = 0; i < readOnlyArray.Length; i++) {
