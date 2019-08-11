@@ -1,4 +1,4 @@
-namespace Minotaur.Collections {
+namespace Minotaur.Collections.Dataset {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
