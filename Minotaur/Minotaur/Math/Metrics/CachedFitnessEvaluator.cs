@@ -26,27 +26,10 @@ namespace Minotaur.Math.Metrics {
 
 			if (metricsAsArray.Length == 0)
 				throw new ArgumentException(nameof(metrics) + " can't be empty.");
-
 			if (metricsAsArray.ContainsNulls())
 				throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
 
 			Metrics = metricsAsArray.AsReadOnly();
-			_cache = new LruCache<Individual, Fitness>(cacheSize);
-		}
-
-		public CachedFitnessEvaluator(int cacheSize, params IMetric[] metrics) {
-			if (metrics == null)
-				throw new ArgumentNullException(nameof(metrics));
-			if (cacheSize < 1)
-				throw new ArgumentOutOfRangeException(nameof(cacheSize) + " must be >= 1.");
-
-			if (metrics.Length == 0)
-				throw new ArgumentException(nameof(metrics) + " can't be empty.");
-
-			if (metrics.ContainsNulls())
-				throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
-
-			Metrics = metrics.AsReadOnly();
 			_cache = new LruCache<Individual, Fitness>(cacheSize);
 		}
 
@@ -56,22 +39,20 @@ namespace Minotaur.Math.Metrics {
 			if (population.Span.ContainsNulls())
 				throw new ArgumentException(population + " can't contain nulls.");
 
-
 			var fitnesses = new Fitness[population.Length];
 
 			Parallel.For(0, fitnesses.Length, i => {
 				var individual = population.Span[i];
 				var fitnessIsCached = _cache.TryGet(key: individual, out var fitness);
 
-				if (fitnessIsCached) {
-					fitnesses[i] = fitness;
-					return;
+				if (!fitnessIsCached) {
+					fitness = Evaluate(individual);
+					lock (_cache) {
+						_cache.Add(key: individual, val: fitness);
+					}
 				}
 
-				fitness = Evaluate(individual);
-				lock (_cache) {
-					_cache.Add(key: individual, val: fitness);
-				}
+				fitnesses[i] = fitness;
 			});
 
 			return fitnesses;
@@ -101,15 +82,14 @@ namespace Minotaur.Math.Metrics {
 				var individual = population.Span[i];
 				var fitnessIsCached = _cache.TryGet(key: individual, out var fitness);
 
-				if (fitnessIsCached) {
-					fitnesses[i] = fitness;
-					return;
+				if (!fitnessIsCached) {
+					fitness = EvaluateAsMaximizationTask(individual);
+					lock (_cache) {
+						_cache.Add(key: individual, val: fitness);
+					}
 				}
 
-				fitness = EvaluateAsMaximizationTask(individual);
-				lock (_cache) {
-					_cache.Add(key: individual, val: fitness);
-				}
+				fitnesses[i] = fitness;
 			});
 
 			return fitnesses;
