@@ -1,4 +1,4 @@
-namespace Minotaur.Population {
+namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 
 	public interface IFeatureTest: IEquatable<IFeatureTest> {

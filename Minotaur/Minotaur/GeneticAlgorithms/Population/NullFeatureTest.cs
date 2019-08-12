@@ -1,4 +1,4 @@
-namespace Minotaur.Population {
+namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 
 	public sealed class NullFeatureTest: IFeatureTest, IEquatable<NullFeatureTest> {

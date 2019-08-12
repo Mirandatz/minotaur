@@ -1,4 +1,4 @@
-namespace Minotaur.Population {
+namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
