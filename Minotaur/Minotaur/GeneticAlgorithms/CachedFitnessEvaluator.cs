@@ -1,4 +1,4 @@
-namespace Minotaur.Math.Metrics {
+namespace Minotaur.GeneticAlgorithms {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -6,8 +6,8 @@ namespace Minotaur.Math.Metrics {
 	using Minotaur.Collections;
 	using Minotaur.ExtensionMethods.Span;
 	using Minotaur.ExtensionMethods.SystemArray;
-	using Minotaur.GeneticAlgorithms;
 	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.Math.Metrics;
 
 	public sealed class CachedFitnessEvaluator {
 		public readonly Array<IMetric> Metrics;
