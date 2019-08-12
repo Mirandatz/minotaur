@@ -2,6 +2,9 @@ namespace Minotaur.Collections {
 	using System;
 	using System.Collections.Generic;
 
+	/// <remarks>
+	/// This class is based on the following inplementation https://stackoverflow.com/a/3719378/1642116
+	/// </remarks>
 	public sealed partial class LruCache<K, V> {
 
 		private readonly int _capacity;
