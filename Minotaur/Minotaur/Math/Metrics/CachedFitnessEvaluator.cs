@@ -51,10 +51,11 @@ namespace Minotaur.Math.Metrics {
 		}
 
 		public Fitness[] Evaluate(ReadOnlyMemory<Individual> population) {
-			if (population.Span.ContainsNulls())
-				throw new ArgumentException(population + " can't contain nulls.");
 			if (population.IsEmpty)
 				throw new ArgumentException(nameof(population) + " can't be empty.");
+			if (population.Span.ContainsNulls())
+				throw new ArgumentException(population + " can't contain nulls.");
+
 
 			var fitnesses = new Fitness[population.Length];
 
@@ -71,8 +72,6 @@ namespace Minotaur.Math.Metrics {
 				lock (_cache) {
 					_cache.Add(key: individual, val: fitness);
 				}
-
-				return;
 			});
 
 			return fitnesses;
@@ -91,10 +90,10 @@ namespace Minotaur.Math.Metrics {
 		}
 
 		public Fitness[] EvaluateAsMaximizationTask(ReadOnlyMemory<Individual> population) {
-			if (population.Span.ContainsNulls())
-				throw new ArgumentException(population + " can't contain nulls.");
 			if (population.IsEmpty)
 				throw new ArgumentException(nameof(population) + " can't be empty.");
+			if (population.Span.ContainsNulls())
+				throw new ArgumentException(population + " can't contain nulls.");
 
 			var fitnesses = new Fitness[population.Length];
 
@@ -111,8 +110,6 @@ namespace Minotaur.Math.Metrics {
 				lock (_cache) {
 					_cache.Add(key: individual, val: fitness);
 				}
-
-				return;
 			});
 
 			return fitnesses;

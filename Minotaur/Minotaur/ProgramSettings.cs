@@ -93,7 +93,7 @@ namespace Minotaur {
 
 		public int ChildrenPerGeneration {
 			get {
-				return (int) Math.Ceiling(PopulationSize * BreedingProbability);
+				return (int) System.Math.Ceiling(PopulationSize * BreedingProbability);
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace Minotaur {
 
 		public int MutantsPerGeneration {
 			get {
-				return (int) Math.Ceiling(PopulationSize * MutationProbability);
+				return (int) System.Math.Ceiling(PopulationSize * MutationProbability);
 			}
 		}
 
