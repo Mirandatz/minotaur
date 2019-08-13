@@ -1,7 +1,8 @@
-namespace Minotaur.Math.Dimensions {
+namespace Minotaur.Theseus {
 	using System;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.Math.Dimensions;
 
 	public sealed class DimensionIntervalCreator {
 		private readonly Dataset _dataset;
