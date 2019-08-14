@@ -142,6 +142,10 @@ namespace Minotaur.Collections.Dataset {
 			}
 		}
 
+		public bool IsFeatureIndexValid(int featureIndex) {
+			return featureIndex >= 0 && featureIndex < FeatureCount;
+		}
+
 		public FeatureType GetFeatureType(int featureIndex) {
 			if (featureIndex < 0 || featureIndex >= FeatureCount)
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
