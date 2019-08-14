@@ -60,10 +60,10 @@ namespace Minotaur.Theseus {
 			case FeatureType.Continuous:
 			var min = featureValues[0];
 			var max = featureValues[featureValues.Length - 1];
-			return new ContinuousDimensionRightInclusiveInterval(
+			return new ContinuousDimensionInterval(
 				dimensionIndex: featureIndex,
-				inclusiveStart: min,
-				inclusiveStop: max);
+				start: new DimensionBound(value: min, isInclusive: true),
+				end: new DimensionBound(value: max, isInclusive: true));
 
 			default:
 			throw new InvalidOperationException($"Unknown {nameof(FeatureType)} type.");
@@ -71,10 +71,10 @@ namespace Minotaur.Theseus {
 		}
 
 		private IDimensionInterval FromContinuousFeatureTest(ContinuousFeatureTest continuous) {
-			return new ContinuousDimensionRightExclusiveInterval(
+			return new ContinuousDimensionInterval(
 				dimensionIndex: continuous.FeatureIndex,
-				inclusiveStart: continuous.LowerBound,
-				exclusiveStop: continuous.UpperBound);
+				start: new DimensionBound(value: continuous.LowerBound, isInclusive: true),
+				end: new DimensionBound(value: continuous.UpperBound, isInclusive: false));
 		}
 
 		private IDimensionInterval FromCategoricalFeatureTest(CategoricalFeatureTest categorical) {
