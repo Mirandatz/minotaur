@@ -1,6 +1,5 @@
 namespace Minotaur.Theseus {
 	using System;
-	using System.Threading.Tasks;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
@@ -11,7 +10,7 @@ namespace Minotaur.Theseus {
 
 		public FeatureSpaceRegionCreator(Dataset dataset, DimensionIntervalCreator dimensionIntervalCreator) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
-			_dimensionIntervalCreator = dimensionIntervalCreator ?? throw new ArgumentNullException(nameof(dimensionIntervalCreator));
+			_dimensionIntervalCreator = dimensionIntervalCreator;
 		}
 
 		public FeatureSpaceRegion FromRule(Rule rule) {
@@ -22,10 +21,10 @@ namespace Minotaur.Theseus {
 			var dimensions = new IDimensionInterval[tests.Length];
 			var dimensionTypes = new FeatureType[dimensions.Length];
 
-			Parallel.For(0, dimensions.Length, i => {
+			for (int i = 0; i < dimensions.Length; i++) {
 				dimensions[i] = _dimensionIntervalCreator.FromFeatureTest(tests[i]);
 				dimensionTypes[i] = _dataset.GetFeatureType(i);
-			});
+			};
 
 			return new FeatureSpaceRegion(
 				dimensions: dimensions,
