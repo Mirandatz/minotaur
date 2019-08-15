@@ -20,17 +20,23 @@ namespace Minotaur.Theseus {
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
 
-		public FeatureSpaceRegion FromRule(Rule rule) {
+		public FeatureSpaceRegion CreateFromRule(Rule rule) {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 
-			throw new NotImplementedException();
+			var isCached = _cache.TryGet(key: rule, out var featureSpace);
+			if (!isCached) {
+				featureSpace = ComputeFeatureSpaceRegion(rule);
+
+				lock (_cache) {
+					_cache.Add(key: rule, value: featureSpace);
+				}
+			}
+
+			return featureSpace;
 		}
 
-		private FeatureSpaceRegion CreateFeatureSpaceFromRule(Rule rule) {
-			if (rule is null)
-				throw new ArgumentNullException(nameof(rule));
-
+		private FeatureSpaceRegion ComputeFeatureSpaceRegion(Rule rule) {
 			var tests = rule.Tests;
 			var dimensions = new IDimensionInterval[tests.Length];
 			var dimensionTypes = new FeatureType[dimensions.Length];
