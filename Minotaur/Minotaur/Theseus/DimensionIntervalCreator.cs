@@ -32,19 +32,8 @@ namespace Minotaur.Theseus {
 
 		private IDimensionInterval FromNullFeatureTest(NullFeatureTest nullFeatureTest) {
 			var featureIndex = nullFeatureTest.FeatureIndex;
-
-			if (featureIndex < 0)
-				throw new InvalidOperationException(nameof(nullFeatureTest) +
-					" should never have been created with a negative "
-					+ nameof(nullFeatureTest.FeatureIndex) +
-					".");
-
-			if (featureIndex >= _dataset.FeatureCount)
-				throw new InvalidOperationException(nameof(nullFeatureTest) +
-					" should never have been created with a " + nameof(nullFeatureTest.FeatureIndex) +
-					" greater than the dataset's " +
-					nameof(_dataset.FeatureCount) +
-					".");
+			if (!_dataset.IsFeatureIndexValid(featureIndex))
+				throw new ArgumentOutOfRangeException($"{nameof(nullFeatureTest)}.{nameof(nullFeatureTest.FeatureIndex)} is invalid.");
 
 			var featureType = _dataset.GetFeatureType(featureIndex);
 			var featureValues = _dataset.GetSortedUniqueFeatureValues(featureIndex);

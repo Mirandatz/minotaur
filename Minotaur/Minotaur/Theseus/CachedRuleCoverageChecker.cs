@@ -35,7 +35,9 @@ namespace Minotaur.Theseus {
 				instaceIsCovered[i] = rule.Covers(instanceData);
 			}
 
-			return new RuleCoverage(instancesCovered: instaceIsCovered);
+			return new RuleCoverage(
+				dataset: _dataset,
+				instancesCovered: instaceIsCovered);
 		}
 	}
 
