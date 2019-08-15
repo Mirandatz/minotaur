@@ -20,7 +20,7 @@ namespace Minotaur.Theseus {
 			var isCached = _cache.TryGet(key: rule, out var ruleCoverage);
 			if (!isCached) {
 				ruleCoverage = ActuallyComputeRuleCoverage(rule);
-				_cache.Add(key: rule, val: ruleCoverage);
+				_cache.Add(key: rule, value: ruleCoverage);
 			}
 
 			return ruleCoverage;

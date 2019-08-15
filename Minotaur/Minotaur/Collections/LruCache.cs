@@ -18,14 +18,14 @@ namespace Minotaur.Collections {
 			this._capacity = capacity;
 		}
 
-		public void Add(K key, V val) {
+		public void Add(K key, V value) {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
 
 			if (_cacheMap.Count >= _capacity)
 				RemoveLastRecentlyUsed();
 
-			var cacheItem = new LRUCacheEntry<K, V>(key, val);
+			var cacheItem = new LRUCacheEntry<K, V>(key, value);
 			var node = new LinkedListNode<LRUCacheEntry<K, V>>(cacheItem);
 			_lruList.AddLast(node);
 			_cacheMap.Add(key, node);
@@ -48,6 +48,21 @@ namespace Minotaur.Collections {
 
 			value = node.Value.Value;
 			return true;
+		}
+
+		public V GetOrCreate(K key, Func<V> valueCreator) {
+			if (key == null)
+				throw new ArgumentNullException(nameof(key));
+			if (valueCreator == null)
+				throw new ArgumentNullException(nameof(valueCreator));
+
+			var cached = TryGet(key: key, out var value);
+			if (!cached) {
+				value = valueCreator();
+				Add(key: key, value: value);
+			}
+
+			return value;
 		}
 
 		private void RemoveLastRecentlyUsed() {

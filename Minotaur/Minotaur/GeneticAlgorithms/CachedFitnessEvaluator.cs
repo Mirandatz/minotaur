@@ -48,7 +48,7 @@ namespace Minotaur.GeneticAlgorithms {
 				if (!fitnessIsCached) {
 					fitness = Evaluate(individual);
 					lock (_cache) {
-						_cache.Add(key: individual, val: fitness);
+						_cache.Add(key: individual, value: fitness);
 					}
 				}
 
@@ -85,7 +85,7 @@ namespace Minotaur.GeneticAlgorithms {
 				if (!fitnessIsCached) {
 					fitness = EvaluateAsMaximizationTask(individual);
 					lock (_cache) {
-						_cache.Add(key: individual, val: fitness);
+						_cache.Add(key: individual, value: fitness);
 					}
 				}
 
