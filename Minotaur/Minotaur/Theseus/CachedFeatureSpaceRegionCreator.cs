@@ -5,12 +5,12 @@ namespace Minotaur.Theseus {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
-	public sealed class FeatureSpaceRegionCreator {
+	public sealed class CachedFeatureSpaceRegionCreator {
 		private readonly Dataset _dataset;
 		private readonly DimensionIntervalCreator _dimensionIntervalCreator;
 		private readonly LruCache<Rule, FeatureSpaceRegion> _cache;
 
-		public FeatureSpaceRegionCreator(
+		public CachedFeatureSpaceRegionCreator(
 			Dataset dataset,
 			DimensionIntervalCreator dimensionIntervalCreator,
 			LruCache<Rule, FeatureSpaceRegion> cache
@@ -20,20 +20,14 @@ namespace Minotaur.Theseus {
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
 
-		public FeatureSpaceRegion DoStuff(Rule rule) {
+		public FeatureSpaceRegion FromRule(Rule rule) {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 
-			var isCached = _cache.TryGet(key: rule, out var featureSpaceRegion);
-			if (!isCached) {
-				featureSpaceRegion = ActuallyDoStuff(rule);
-				_cache.Add(key: rule, value: featureSpaceRegion);
-			}
-
-			return featureSpaceRegion;
+			throw new NotImplementedException();
 		}
 
-		private FeatureSpaceRegion ActuallyDoStuff(Rule rule) {
+		private FeatureSpaceRegion CreateFeatureSpaceFromRule(Rule rule) {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 

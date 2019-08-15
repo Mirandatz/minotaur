@@ -50,21 +50,6 @@ namespace Minotaur.Collections {
 			return true;
 		}
 
-		public V GetOrCreate(K key, Func<V> valueCreator) {
-			if (key == null)
-				throw new ArgumentNullException(nameof(key));
-			if (valueCreator == null)
-				throw new ArgumentNullException(nameof(valueCreator));
-
-			var cached = TryGet(key: key, out var value);
-			if (!cached) {
-				value = valueCreator();
-				Add(key: key, value: value);
-			}
-
-			return value;
-		}
-
 		private void RemoveLastRecentlyUsed() {
 			// Remove from LRUPriority
 			var node = _lruList.First;
