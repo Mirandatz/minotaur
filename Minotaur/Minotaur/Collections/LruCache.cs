@@ -8,19 +8,28 @@ namespace Minotaur.Collections {
 	public sealed partial class LruCache<K, V> {
 
 		private readonly int _capacity;
-		private readonly Dictionary<K, LinkedListNode<LRUCacheEntry<K, V>>> _cacheMap = new Dictionary<K, LinkedListNode<LRUCacheEntry<K, V>>>();
-		private readonly LinkedList<LRUCacheEntry<K, V>> _lruList = new LinkedList<LRUCacheEntry<K, V>>();
+		private readonly Dictionary<K, LinkedListNode<LRUCacheEntry<K, V>>> _cacheMap;
+		private readonly LinkedList<LRUCacheEntry<K, V>> _lruList;
 
+		/// <summary>
+		/// Using <paramref name="capacity"/> equal to 0 effectively
+		/// disables caching.
+		/// </summary>
 		public LruCache(int capacity) {
-			if (capacity <= 0)
-				throw new ArgumentOutOfRangeException(nameof(capacity) + " must be > 0");
+			if (capacity < 0)
+				throw new ArgumentOutOfRangeException(nameof(capacity) + " must be >= 0");
 
 			this._capacity = capacity;
+			this._cacheMap = new Dictionary<K, LinkedListNode<LRUCacheEntry<K, V>>>(capacity: capacity);
+			this._lruList = new LinkedList<LRUCacheEntry<K, V>>();
 		}
 
 		public void Add(K key, V value) {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
+
+			if (_capacity == 0)
+				return;
 
 			if (_cacheMap.Count >= _capacity)
 				RemoveLastRecentlyUsed();
@@ -35,9 +44,9 @@ namespace Minotaur.Collections {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
 
-			var exists = _cacheMap.TryGetValue(key, out var node);
+			var isCached = _cacheMap.TryGetValue(key, out var node);
 
-			if (!exists) {
+			if (!isCached) {
 				value = default;
 				return false;
 			}
