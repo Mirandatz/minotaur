@@ -4,11 +4,11 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 
-	public sealed class CachedRuleCoverageChecker {
+	public sealed class RuleCoverageComputer {
 		private readonly Dataset _dataset;
 		private readonly LruCache<Rule, RuleCoverage> _cache;
 
-		public CachedRuleCoverageChecker(Dataset dataset, LruCache<Rule, RuleCoverage> cache) {
+		public RuleCoverageComputer(Dataset dataset, LruCache<Rule, RuleCoverage> cache) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
@@ -19,14 +19,14 @@ namespace Minotaur.Theseus {
 
 			var isCached = _cache.TryGet(key: rule, out var ruleCoverage);
 			if (!isCached) {
-				ruleCoverage = ActuallyComputeRuleCoverage(rule);
+				ruleCoverage = UncachedComputeRuleCoverage(rule);
 				_cache.Add(key: rule, value: ruleCoverage);
 			}
 
 			return ruleCoverage;
 		}
 
-		private RuleCoverage ActuallyComputeRuleCoverage(Rule rule) {
+		private RuleCoverage UncachedComputeRuleCoverage(Rule rule) {
 			var instanceCount = _dataset.InstanceCount;
 			var instaceIsCovered = new bool[instanceCount];
 
@@ -40,5 +40,4 @@ namespace Minotaur.Theseus {
 				instancesCovered: instaceIsCovered);
 		}
 	}
-
 }
