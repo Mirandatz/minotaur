@@ -9,28 +9,22 @@ namespace Minotaur.GeneticAlgorithms {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Metrics;
 
-	public sealed class CachedFitnessEvaluator {
+	public sealed class FitnessEvaluator {
 		public readonly Array<IMetric> Metrics;
 
 		private readonly LruCache<Individual, Fitness> _cache;
 
-		public CachedFitnessEvaluator(IEnumerable<IMetric> metrics, int cacheSize) {
+		public FitnessEvaluator(IEnumerable<IMetric> metrics, LruCache<Individual, Fitness> cache) {
 			if (metrics == null)
 				throw new ArgumentNullException(nameof(metrics));
-			if (cacheSize < 1)
-				throw new ArgumentOutOfRangeException(nameof(cacheSize) + " must be >= 1.");
 
-			_cache = new LruCache<Individual, Fitness>(cacheSize);
+			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 
-			var metricsAsArray = metrics.ToArray();
-
-			if (metricsAsArray.Length == 0)
+			Metrics = metrics.ToArray();
+			if (Metrics.Length == 0)
 				throw new ArgumentException(nameof(metrics) + " can't be empty.");
-			if (metricsAsArray.ContainsNulls())
+			if (Metrics.ContainsNulls())
 				throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
-
-			Metrics = metricsAsArray.AsReadOnly();
-			_cache = new LruCache<Individual, Fitness>(cacheSize);
 		}
 
 		public Fitness[] Evaluate(ReadOnlyMemory<Individual> population) {
@@ -43,13 +37,11 @@ namespace Minotaur.GeneticAlgorithms {
 
 			Parallel.For(0, fitnesses.Length, i => {
 				var individual = population.Span[i];
-				var fitnessIsCached = _cache.TryGet(key: individual, out var fitness);
 
-				if (!fitnessIsCached) {
+				var isCached = _cache.TryGet(key: individual, out var fitness);
+				if (!isCached) {
 					fitness = Evaluate(individual);
-					lock (_cache) {
-						_cache.Add(key: individual, value: fitness);
-					}
+					_cache.Add(key: individual, value: fitness);
 				}
 
 				fitnesses[i] = fitness;
@@ -59,10 +51,8 @@ namespace Minotaur.GeneticAlgorithms {
 		}
 
 		private Fitness Evaluate(Individual individual) {
-			if (individual == null)
-				throw new ArgumentNullException(nameof(individual));
-
 			var fitnesses = new float[Metrics.Length];
+
 			Parallel.For(0, fitnesses.Length, i => {
 				fitnesses[i] = Metrics[i].Evaluate(individual);
 			});
@@ -80,13 +70,11 @@ namespace Minotaur.GeneticAlgorithms {
 
 			Parallel.For(0, fitnesses.Length, i => {
 				var individual = population.Span[i];
-				var fitnessIsCached = _cache.TryGet(key: individual, out var fitness);
 
-				if (!fitnessIsCached) {
+				var isCached = _cache.TryGet(key: individual, out var fitness);
+				if (!isCached) {
 					fitness = EvaluateAsMaximizationTask(individual);
-					lock (_cache) {
-						_cache.Add(key: individual, value: fitness);
-					}
+					_cache.Add(key: individual, value: fitness);
 				}
 
 				fitnesses[i] = fitness;
@@ -96,10 +84,8 @@ namespace Minotaur.GeneticAlgorithms {
 		}
 
 		private Fitness EvaluateAsMaximizationTask(Individual individual) {
-			if (individual == null)
-				throw new ArgumentNullException(nameof(individual));
-
 			var fitnesses = new float[Metrics.Length];
+
 			Parallel.For(0, fitnesses.Length, i => {
 				fitnesses[i] = Metrics[i].EvaluateAsMaximizationTask(individual);
 			});
