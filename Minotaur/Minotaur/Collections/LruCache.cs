@@ -10,7 +10,7 @@ namespace Minotaur.Collections {
 	/// see https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU).
 	/// </summary>
 	/// <remarks>
-	/// This class is based on the following inplementation https://stackoverflow.com/a/3719378/1642116
+	/// This class is based on the following implementation https://stackoverflow.com/a/3719378/1642116
 	/// </remarks>
 	public sealed class LruCache<TKey, TValue>: ICache<TKey, TValue> {
 		private readonly int _capacity;
