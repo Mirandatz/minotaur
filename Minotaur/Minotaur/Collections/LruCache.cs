@@ -12,12 +12,12 @@ namespace Minotaur.Collections {
 	/// <remarks>
 	/// This class is based on the following inplementation https://stackoverflow.com/a/3719378/1642116
 	/// </remarks>
-	public sealed class LruCache<TKey, TValue> {
+	public sealed class LruCache<TKey, TValue>: ICache<TKey, TValue> {
 		private readonly int _capacity;
 		private readonly Dictionary<TKey, LinkedListNode<LruCacheEntry>> _cacheMap;
 		private readonly LinkedList<LruCacheEntry> _lruList = new LinkedList<LruCacheEntry>();
 		public readonly object SyncRoot = new object();
-				
+
 		/// <summary>
 		/// The constructor of the class.
 		/// <paramref name="capacity"/> must be >= 0.
@@ -93,20 +93,13 @@ namespace Minotaur.Collections {
 		/// <summary>
 		/// Tries to get the value associated with <paramref name="key"/>.
 		/// If the value is not stored in the cache,
-		/// the function <paramref name="valueCreator"/> is called 
-		/// and the result is stored in the cache.
-		/// If a <paramref name="valueCreatorSyncRoot"/> is provided,
-		/// the invocation of <typeparamref name="TValue"/> is wrapped
-		/// in a lock statement.
+		/// the function <paramref name="valueCreator"/> 
+		/// is called and the result is stored in the cache.
 		/// </summary>
 		/// <remarks>
 		/// This method is thread-safe.
 		/// </remarks>
-		public TValue GetOrCreate(
-			TKey key,
-			Func<TValue> valueCreator,
-			object valueCreatorSyncRoot
-			) {
+		public TValue GetOrCreate(TKey key, Func<TValue> valueCreator) {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
 			if (valueCreator is null)
@@ -125,9 +118,8 @@ namespace Minotaur.Collections {
 					return lruNode.Value.Value;
 				}
 
-				var value = CreateValue(
-					valueCreator: valueCreator,
-					valueCreatorSyncRoot: valueCreatorSyncRoot);
+				// I wish this could be called outside the lock :(
+				var value = valueCreator();
 
 				var cacheEntry = new LruCacheEntry(
 					key: key,
@@ -139,16 +131,6 @@ namespace Minotaur.Collections {
 				RemoveLeastRecentlyUsedIfNecessary();
 
 				return value;
-			}
-		}
-
-		private TValue CreateValue(Func<TValue> valueCreator, object valueCreatorSyncRoot) {
-			if (valueCreatorSyncRoot is null) {
-				return valueCreator();
-			} else {
-				lock (valueCreatorSyncRoot) {
-					return valueCreator();
-				}
 			}
 		}
 
