@@ -3,6 +3,7 @@ namespace Minotaur.Theseus {
 	using System.Collections.Generic;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
+	using Minotaur.ExtensionMethods.SystemArray;
 
 	public sealed class RuleCoverage {
 		public readonly Dataset Dataset;
@@ -29,6 +30,43 @@ namespace Minotaur.Theseus {
 
 			IndicesOfCoveredInstances = covered.ToArray();
 			IndicesOfUncoveredInstances = uncovered.ToArray();
+		}
+
+		public static RuleCoverage Or(Array<RuleCoverage> coverages) {
+			if (coverages == null)
+				throw new ArgumentNullException(nameof(coverages));
+			if (coverages.ContainsNulls())
+				throw new ArgumentException(nameof(coverages) + " can't contain nulls.");
+			if (coverages.Length == 0)
+				throw new ArgumentException(nameof(coverages) + " can't be empty.");
+
+			// @Improve checks (e.g. all coverages have the same dataset, etc)
+
+			var datasetInstaceCount = coverages[0]
+				.InstancesCovered
+				.Length;
+
+			var finalCoverage = new bool[datasetInstaceCount];
+
+			for (int i = 0; i < coverages.Length; i++)
+				Or(finalCoverage, coverages[i]);
+
+			return new RuleCoverage(
+				dataset: coverages[0].Dataset,
+				instancesCovered: finalCoverage);
+
+		}
+
+		private static void Or(bool[] finalCoverage, RuleCoverage ruleCoverage) {
+			var lhs = finalCoverage;
+			var rhs = ruleCoverage.InstancesCovered;
+
+			// Improve exception description
+			if (lhs.Length != rhs.Length)
+				throw new ArgumentException(nameof(ruleCoverage));
+
+			for (int i = 0; i < lhs.Length; i++)
+				lhs[i] = lhs[i] || rhs[i];
 		}
 	}
 }

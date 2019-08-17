@@ -33,6 +33,15 @@ namespace Minotaur.Theseus {
 			return featureSpace;
 		}
 
+		public FeatureSpaceRegion FromDatasetInstance(int datasetInstanceIndex) {
+			// @Improve exception text 
+
+			if (!_dataset.IsInstanceIndexValid(datasetInstanceIndex))
+				throw new ArgumentException(nameof(datasetInstanceIndex));
+
+			throw new NotImplementedException();
+		}
+
 		private FeatureSpaceRegion UnchachedFromRule(Rule rule) {
 			var tests = rule.Tests;
 			var dimensions = new IDimensionInterval[tests.Length];

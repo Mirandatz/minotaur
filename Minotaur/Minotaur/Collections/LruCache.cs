@@ -1,15 +1,18 @@
 namespace Minotaur.Collections {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
+	using System.Threading;
 
 	/// <remarks>
 	/// This class is based on the following inplementation https://stackoverflow.com/a/3719378/1642116
 	/// </remarks>
-	public sealed class LruCache<K, V> {
+	public sealed class LruCache<TKey, TValue> {
 		private readonly int _capacity;
-		private readonly Dictionary<K, LinkedListNode<LRUCacheEntry<K, V>>> _cacheMap;
-		private readonly LinkedList<LRUCacheEntry<K, V>> _lruList = new LinkedList<LRUCacheEntry<K, V>>();
-		private readonly object _lock = new object();
+		private readonly Dictionary<TKey, LinkedListNode<LruCacheEntry>> _cacheMap;
+
+		private readonly LinkedList<LruCacheEntry> _lruList = new LinkedList<LruCacheEntry>();
+		public readonly object SyncRoot = new object();
 
 		/// <remarks>
 		/// Providing the value 0 to <paramref name="capacity"/>
@@ -20,68 +23,79 @@ namespace Minotaur.Collections {
 				throw new ArgumentOutOfRangeException(nameof(capacity) + " must be >= 0");
 
 			this._capacity = capacity;
-			this._cacheMap = new Dictionary<K, LinkedListNode<LRUCacheEntry<K, V>>>(capacity: capacity);
+			this._cacheMap = new Dictionary<TKey, LinkedListNode<LruCacheEntry>>(capacity: capacity);
 		}
 
 		/// <remarks>
 		/// This method is thread-safe.
+		/// Null keys are not accepted.
 		/// </remarks>
-		public void Add(K key, V value) {
+		public void Add(TKey key, TValue value) {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
 
-			lock (_lock) {
-				if (_capacity == 0)
-					return;
+			if (_capacity == 0)
+				return;
 
-				if (_cacheMap.Count >= _capacity)
-					RemoveLastRecentlyUsed();
+			// We are doing as much work as we can outside of the lock
+			var cacheItem = new LruCacheEntry(key, value);
+			var lruNode = new LinkedListNode<LruCacheEntry>(cacheItem);
 
-				var cacheItem = new LRUCacheEntry<K, V>(key, value);
-				var node = new LinkedListNode<LRUCacheEntry<K, V>>(cacheItem);
-				_lruList.AddLast(node);
-				_cacheMap.Add(key, node);
+			lock (SyncRoot) {
+				if (_cacheMap.ContainsKey(key)) {
+					UpdateUsage(lruNode);
+				} else {
+					_cacheMap.Add(key: key, value: lruNode);
+					RemoveLeastRecentlyUsedIfNecessary();
+				}
 			}
 		}
 
 		/// <remarks>
 		/// This method is thread-safe.
 		/// </remarks>
-		public bool TryGet(K key, out V value) {
+		public bool TryGet(TKey key, out TValue value) {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
 
-			lock (_lock) {
+			lock (SyncRoot) {
 				var isCached = _cacheMap.TryGetValue(key, out var node);
 
-				if (!isCached) {
+				if (isCached) {
+					UpdateUsage(node);
+					// Maybe I should move the two lines below to outside the lock?
+					value = node.Value.Value;
+					return true;
+				} else {
 					value = default;
 					return false;
 				}
-
-				// Updating the last recently used thingy
-				_lruList.Remove(node);
-				_lruList.AddLast(node);
-
-				value = node.Value.Value;
-				return true;
 			}
 		}
 
-		private void RemoveLastRecentlyUsed() {
-			// Remove from lru list
+		private void UpdateUsage(LinkedListNode<LruCacheEntry> node) {
+			Debug.Assert(Monitor.IsEntered(SyncRoot));
+
+			_lruList.Remove(node);
+			_lruList.AddLast(node);
+		}
+
+		private void RemoveLeastRecentlyUsedIfNecessary() {
+			Debug.Assert(Monitor.IsEntered(SyncRoot));
+
+			if (_cacheMap.Count < _capacity)
+				return;
+
 			var node = _lruList.First;
 			_lruList.RemoveFirst();
-
-			// Remove from cache
 			_cacheMap.Remove(node.Value.Key);
 		}
 
-		private sealed class LRUCacheEntry<KeyType, ValueType> {
-			public readonly KeyType Key;
-			public readonly ValueType Value;
+		private sealed class LruCacheEntry {
+			public readonly TKey Key;
+			public readonly TValue Value;
 
-			public LRUCacheEntry(KeyType k, ValueType v) {
+			public LruCacheEntry(TKey k, TValue v) {
 				Key = k;
 				Value = v;
 			}
