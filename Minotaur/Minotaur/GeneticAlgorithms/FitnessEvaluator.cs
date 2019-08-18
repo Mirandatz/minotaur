@@ -12,9 +12,9 @@ namespace Minotaur.GeneticAlgorithms {
 	public sealed class FitnessEvaluator {
 		public readonly Array<IMetric> Metrics;
 
-		private readonly LruCache<Individual, Fitness> _cache;
+		private readonly ICache<Individual, Fitness> _cache;
 
-		public FitnessEvaluator(IEnumerable<IMetric> metrics, LruCache<Individual, Fitness> cache) {
+		public FitnessEvaluator(IEnumerable<IMetric> metrics, ICache<Individual, Fitness> cache) {
 			if (metrics == null)
 				throw new ArgumentNullException(nameof(metrics));
 

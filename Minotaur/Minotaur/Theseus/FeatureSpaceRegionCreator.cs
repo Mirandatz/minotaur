@@ -8,12 +8,12 @@ namespace Minotaur.Theseus {
 	public sealed class FeatureSpaceRegionCreator {
 		private readonly Dataset _dataset;
 		private readonly DimensionIntervalCreator _dimensionIntervalCreator;
-		private readonly LruCache<Rule, FeatureSpaceRegion> _cache;
+		private readonly ICache<Rule, FeatureSpaceRegion> _cache;
 
 		public FeatureSpaceRegionCreator(
 			Dataset dataset,
 			DimensionIntervalCreator dimensionIntervalCreator,
-			LruCache<Rule, FeatureSpaceRegion> cache
+			ICache<Rule, FeatureSpaceRegion> cache
 			) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_dimensionIntervalCreator = dimensionIntervalCreator ?? throw new ArgumentNullException(nameof(dimensionIntervalCreator));

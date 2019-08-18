@@ -6,9 +6,9 @@ namespace Minotaur.Theseus {
 
 	public sealed class RuleCoverageComputer {
 		private readonly Dataset _dataset;
-		private readonly LruCache<Rule, RuleCoverage> _cache;
+		private readonly ICache<Rule, RuleCoverage> _cache;
 
-		public RuleCoverageComputer(Dataset dataset, LruCache<Rule, RuleCoverage> cache) {
+		public RuleCoverageComputer(Dataset dataset, ICache<Rule, RuleCoverage> cache) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
