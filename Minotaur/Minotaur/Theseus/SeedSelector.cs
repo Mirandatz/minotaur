@@ -22,7 +22,7 @@ namespace Minotaur.Theseus {
 			_ruleCoverageComputer = ruleCoverageComputer ?? throw new ArgumentNullException(nameof(ruleCoverageComputer));
 		}
 
-		public bool TryFindSeed(Array<Rule> existingRules, out FeatureSpaceRegion seed) {
+		public bool TryFindSeed(Array<Rule> existingRules, out HyperRectangle seed) {
 			if (existingRules == null)
 				throw new ArgumentNullException(nameof(existingRules));
 			if (existingRules.ContainsNulls())

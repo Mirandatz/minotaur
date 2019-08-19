@@ -54,6 +54,10 @@ namespace Minotaur.Collections.Dataset {
 				.AsReadOnly();
 		}
 
+		internal object GetFeatureTypes() {
+			throw new NotImplementedException();
+		}
+
 		public static Dataset CreateFromMutableObjects(
 			FeatureType[] featureTypes,
 			MutableMatrix<float> data,

@@ -2,11 +2,11 @@ namespace Minotaur.Math.Dimensions {
 	using System;
 	using Minotaur.Collections;
 
-	public sealed class FeatureSpaceRegion {
+	public sealed class HyperRectangle {
 		public readonly Array<IDimensionInterval> Dimensions;
 		public readonly Array<FeatureType> DimensionTypes;
 
-		public FeatureSpaceRegion(Array<IDimensionInterval> dimensions, Array<FeatureType> dimensionTypes) {
+		public HyperRectangle(Array<IDimensionInterval> dimensions, Array<FeatureType> dimensionTypes) {
 			Dimensions = dimensions ?? throw new ArgumentNullException(nameof(dimensions));
 			DimensionTypes = dimensionTypes ?? throw new ArgumentNullException(nameof(dimensionTypes));
 

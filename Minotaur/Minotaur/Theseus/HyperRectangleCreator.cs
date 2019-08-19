@@ -8,19 +8,19 @@ namespace Minotaur.Theseus {
 	public sealed class FeatureSpaceRegionCreator {
 		private readonly Dataset _dataset;
 		private readonly DimensionIntervalCreator _dimensionIntervalCreator;
-		private readonly ICache<Rule, FeatureSpaceRegion> _cache;
+		private readonly ICache<Rule, HyperRectangle> _cache;
 
 		public FeatureSpaceRegionCreator(
 			Dataset dataset,
 			DimensionIntervalCreator dimensionIntervalCreator,
-			ICache<Rule, FeatureSpaceRegion> cache
+			ICache<Rule, HyperRectangle> cache
 			) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_dimensionIntervalCreator = dimensionIntervalCreator ?? throw new ArgumentNullException(nameof(dimensionIntervalCreator));
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
 
-		public FeatureSpaceRegion FromRule(Rule rule) {
+		public HyperRectangle FromRule(Rule rule) {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 
@@ -33,16 +33,22 @@ namespace Minotaur.Theseus {
 			return featureSpace;
 		}
 
-		public FeatureSpaceRegion FromDatasetInstance(int datasetInstanceIndex) {
+		public HyperRectangle FromDatasetInstance(int datasetInstanceIndex) {
 			// @Improve exception text 
-
 			if (!_dataset.IsInstanceIndexValid(datasetInstanceIndex))
 				throw new ArgumentException(nameof(datasetInstanceIndex));
+			
+			var instanceData = _dataset.GetInstanceData(datasetInstanceIndex);
+			var featureTypes = _dataset.GetFeatureTypes();
 
 			throw new NotImplementedException();
+
+			return new HyperRectangle(
+				dimensions: dimensions,
+				dimensionTypes: dimensionTypes);
 		}
 
-		private FeatureSpaceRegion UnchachedFromRule(Rule rule) {
+		private HyperRectangle UnchachedFromRule(Rule rule) {
 			var tests = rule.Tests;
 			var dimensions = new IDimensionInterval[tests.Length];
 			var dimensionTypes = new FeatureType[dimensions.Length];
@@ -52,7 +58,7 @@ namespace Minotaur.Theseus {
 				dimensionTypes[i] = _dataset.GetFeatureType(i);
 			};
 
-			return new FeatureSpaceRegion(
+			return new HyperRectangle(
 				dimensions: dimensions,
 				dimensionTypes: dimensionTypes);
 		}
