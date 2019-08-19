@@ -54,10 +54,6 @@ namespace Minotaur.Collections.Dataset {
 				.AsReadOnly();
 		}
 
-		internal object GetFeatureTypes() {
-			throw new NotImplementedException();
-		}
-
 		public static Dataset CreateFromMutableObjects(
 			FeatureType[] featureTypes,
 			MutableMatrix<float> data,
@@ -160,6 +156,8 @@ namespace Minotaur.Collections.Dataset {
 
 			return _featureTypes[featureIndex];
 		}
+
+		public Array<FeatureType> GetFeatureTypes() => _featureTypes;
 
 		public ReadOnlySpan<float> GetInstanceData(int instanceIndex) {
 			if (instanceIndex < 0 || instanceIndex >= InstanceCount)
