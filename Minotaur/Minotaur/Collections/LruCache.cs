@@ -45,14 +45,25 @@ namespace Minotaur.Collections {
 
 			// We are doing as much work as we can outside of the lock
 			var cacheItem = new LruCacheEntry(key, value);
-			var lruNode = new LinkedListNode<LruCacheEntry>(cacheItem);
+			var newLruNode = new LinkedListNode<LruCacheEntry>(cacheItem);
 
 			lock (SyncRoot) {
-				if (!_cacheMap.ContainsKey(key)) {
-					_cacheMap.Add(key: key, value: lruNode);
-					RemoveLeastRecentlyUsedIfNecessary();
+				var isCached = _cacheMap.TryGetValue(
+					key: key,
+					value: out var oldLruNode);
+
+				if (isCached) {
+					// Update key-value of cache
+					_cacheMap[key] = newLruNode;
+
+					// Update usage; not only the position in the lruList 
+					// but also the contents of the node, since the value
+					// in the cacheItem may have changed					
+					_lruList.Remove(oldLruNode);
+					_lruList.AddLast(newLruNode);
 				} else {
-					throw new InvalidOperationException("The value is already in the cache.");
+					_cacheMap.Add(key: key, value: newLruNode);
+					RemoveLeastRecentlyUsedIfNecessary();
 				}
 			}
 		}
@@ -97,7 +108,10 @@ namespace Minotaur.Collections {
 		/// is called and the result is stored in the cache.
 		/// </summary>
 		/// <remarks>
-		/// This method is thread-safe.
+		/// This method is thread-safe;
+		/// but the entire cache is locked during the operation,
+		/// therefore care must be taken when calling with an expensive
+		/// <paramref name="valueCreator"/>.
 		/// </remarks>
 		public TValue GetOrCreate(TKey key, Func<TValue> valueCreator) {
 			if (key == null)
