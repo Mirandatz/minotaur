@@ -35,6 +35,20 @@ namespace Minotaur.Random {
 			return Uniform() < biasForTrue;
 		}
 
+		public static bool[] Bools(int count) {
+			if (count < 0)
+				throw new ArgumentOutOfRangeException(nameof(count) + " must be > 0");
+
+			var labels = new bool[count];
+			// Todo: if shit hits the fan (it shouldn't), check this out
+			var bytes = MemoryMarshal.AsBytes<bool>(labels);
+			Instance.NextBytes(bytes);
+			for (int i = 0; i < bytes.Length; i++)
+				bytes[i] >>= 7;
+
+			return labels;
+		}
+
 		public static double Uniform() {
 			return Instance.NextDouble();
 		}
@@ -48,7 +62,7 @@ namespace Minotaur.Random {
 				throw new ArgumentException(nameof(inclusiveMin) + " must be <= " + nameof(exclusiveMax));
 
 			double range = exclusiveMax - inclusiveMin;
-			range *= Uniform();
+			range *= Instance.NextDouble();
 
 			return inclusiveMin + range;
 		}
@@ -59,20 +73,6 @@ namespace Minotaur.Random {
 
 		public static int Int(int inclusiveMin, int exclusiveMax) {
 			return Instance.Next(minValue: inclusiveMin, maxValue: exclusiveMax);
-		}
-
-		public static bool[] RandomLabels(int count) {
-			if (count < 0)
-				throw new ArgumentOutOfRangeException(nameof(count) + " must be > 0");
-
-			var labels = new bool[count];
-			// Todo: if shit hits the fan (it shouldn't), check this out
-			var bytes = MemoryMarshal.AsBytes<bool>(labels);
-			Instance.NextBytes(bytes);
-			for (int i = 0; i < bytes.Length; i++)
-				bytes[i] >>= 7;
-
-			return labels;
 		}
 
 		public static T Choice<T>(T first, T second) {
@@ -120,7 +120,9 @@ namespace Minotaur.Random {
 
 		public static void Shuffle<T>(Span<T> values) {
 			if (values.Length == 0)
-				throw new ArgumentException(nameof(values) + " can't be empty");
+				throw new ArgumentException(nameof(values) + " can't be empty.");
+			if (values.Length == 0)
+				throw new ArgumentException(nameof(values) + " can't be empty.");
 
 			var rng = Instance;
 			int n = values.Length;
@@ -137,7 +139,7 @@ namespace Minotaur.Random {
 			if (values == null)
 				throw new ArgumentNullException(nameof(values));
 			if (values.Length == 0)
-				throw new ArgumentException(nameof(values) + " can't be empty");
+				throw new ArgumentException(nameof(values) + " can't be empty.");
 
 			var rng = Instance;
 			int n = values.Length;
@@ -150,13 +152,13 @@ namespace Minotaur.Random {
 			}
 		}
 
-		public static void CopyRandomElements<T>(ReadOnlySpan<T> from, Span<T> to, int count) {
+		public static void CopyRandomWithoutReplacement<T>(ReadOnlySpan<T> from, Span<T> to, int count) {
 			if (count < 0)
 				throw new ArgumentOutOfRangeException(nameof(count) + " must be >= 0");
 			if (from.Length < count)
-				throw new ArgumentException(nameof(from) + " must have at least 'count' elements");
+				throw new ArgumentException(nameof(from) + $" must have at least {nameof(count)} elements.");
 			if (to.Length < count)
-				throw new ArgumentException(nameof(to) + "must have at least 'count' elements");
+				throw new ArgumentException(nameof(to) + $" must have at least {nameof(count)} elements.");
 
 			var rentedBuffer = ArrayPool<int>.Shared.Rent(minimumLength: from.Length);
 			var indexes = rentedBuffer.AsSpan().Slice(
@@ -174,12 +176,12 @@ namespace Minotaur.Random {
 			ArrayPool<int>.Shared.Return(rentedBuffer);
 		}
 
-		public static T[] SelectRandomElements<T>(ReadOnlySpan<T> from, int count) {
+		public static T[] SelectRandomWithoutReplacement<T>(ReadOnlySpan<T> from, int count) {
 			if (count < 0)
 				throw new ArgumentOutOfRangeException(nameof(count) + " must be >= 0");
 
 			var randomlySelected = new T[count];
-			CopyRandomElements(
+			CopyRandomWithoutReplacement(
 				from: from,
 				to: randomlySelected,
 				count: count);

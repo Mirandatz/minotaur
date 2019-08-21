@@ -40,7 +40,7 @@ namespace Minotaur.GeneticAlgorithms.Creation {
 				testArray[index] = _testCreator.CreateTest(featureIndex: index);
 			}
 
-			var predictedLabels = Random.RandomLabels(_dataset.ClassCount);
+			var predictedLabels = Random.Bools(_dataset.ClassCount);
 
 			return new Rule(
 				tests: testArray,
