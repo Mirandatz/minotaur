@@ -10,7 +10,7 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 	/// </remarks>
 	public static class Pareto {
 
-		public static int[] ComputeDominatedByCounts(ReadOnlyMemory<Fitness> fitnesses) {
+		public static int[] ComputeDominatedByCounts(Array<Fitness> fitnesses) {
 			if (fitnesses.Span.ContainsNulls())
 				throw new ArgumentException(nameof(fitnesses) + " can't contain nulls");
 
@@ -19,18 +19,19 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 
 			var dominatedByCounts = new int[fitnesses.Length];
 			Parallel.For(0, fitnesses.Length, i => {
-				var fitnessesSpan = fitnesses.Span;
-				var pivotFitness = fitnessesSpan[i];
-				var pivotDominatedByCount = ComputeDominatedByCount(pivotFitness, fitnessesSpan);
+				var pivotFitness = fitnesses[i];
+				var pivotDominatedByCount = ComputeDominatedByCount(pivotFitness, fitnesses);
 				dominatedByCounts[i] = pivotDominatedByCount;
 			});
 
 			return dominatedByCounts;
 		}
 
-		private static int ComputeDominatedByCount(Fitness pivot, ReadOnlySpan<Fitness> fitnesses) {
+		private static int ComputeDominatedByCount(Fitness pivot, Array<Fitness> fitnesses) {
 			if (pivot == null)
 				throw new ArgumentNullException(nameof(pivot));
+			if (fitnesses is null)
+				throw new ArgumentNullException(nameof(fitnesses));
 			if (fitnesses.Length == 0)
 				throw new ArgumentException(nameof(fitnesses) + " can't be empty");
 

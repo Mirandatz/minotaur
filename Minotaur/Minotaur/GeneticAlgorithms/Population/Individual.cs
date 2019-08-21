@@ -48,7 +48,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			HashCode = hash.ToHashCode();
 		}
 
-		public Array<bool> Predict(ReadOnlySpan<float> instance) {
+		public Array<bool> Predict(Array<float> instance) {
 			for (int i = 0; i < Rules.Length; i++) {
 				if (Rules[i].Covers(instance)) {
 					return Rules[i].PredictedLabels;

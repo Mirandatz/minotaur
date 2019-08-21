@@ -1,5 +1,6 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
+	using Minotaur.Collections;
 	using Newtonsoft.Json;
 
 	[JsonObject(MemberSerialization.OptIn)]
@@ -53,7 +54,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			}
 		}
 
-		public bool Matches(ReadOnlySpan<float> instance) {
+		public bool Matches(Array<float> instance) {
 			// We use 
 			// lowerBound <= threshold < upperBound
 			// instead of 

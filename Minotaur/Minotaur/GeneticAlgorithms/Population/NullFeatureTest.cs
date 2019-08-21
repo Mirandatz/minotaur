@@ -1,5 +1,6 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
+	using Minotaur.Collections;
 
 	public sealed class NullFeatureTest: IFeatureTest, IEquatable<NullFeatureTest> {
 
@@ -14,7 +15,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public int FeatureIndex { get; }
 
-		public bool Matches(ReadOnlySpan<float> instance) => true;
+		public bool Matches(Array<float> instance) => true;
 
 		public bool Overlaps(IFeatureTest featureTest) => true;
 

@@ -1,5 +1,6 @@
 namespace Minotaur.Math {
 	using System;
+	using Minotaur.Collections;
 
 	public sealed class MinMaxScaler {
 		private readonly float _min;
@@ -26,7 +27,7 @@ namespace Minotaur.Math {
 				_scalingFactor = 1;
 		}
 
-		public static MinMaxScaler Create(ReadOnlySpan<float> values) {
+		public static MinMaxScaler Create(Array<float> values) {
 			if (values.Length == 0)
 				throw new ArgumentException(nameof(values) + " can't be empty");
 

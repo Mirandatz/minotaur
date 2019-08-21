@@ -1,5 +1,6 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
+	using Minotaur.Collections;
 	using Newtonsoft.Json;
 
 	[JsonObject(MemberSerialization.OptIn)]
@@ -12,8 +13,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		///<remarks>
 		/// We're using floats just because the .csv parser
 		/// only handles floats.
-		/// And because it allows us to use ReadOnlySpan`float 
-		/// to represent dataset instances :)
 		/// </remarks>
 		[JsonProperty] public readonly float Value;
 
@@ -34,7 +33,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public bool Covers(float featureValue) => Value == featureValue;
 
-		public bool Matches(ReadOnlySpan<float> instance) => instance[FeatureIndex] == Value;
+		public bool Matches(Array<float> instance) => instance[FeatureIndex] == Value;
 
 		public bool Overlaps(IFeatureTest featureTest) {
 			if (featureTest == null)

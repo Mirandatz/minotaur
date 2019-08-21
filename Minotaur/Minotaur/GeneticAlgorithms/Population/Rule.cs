@@ -63,7 +63,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			return hash.ToHashCode();
 		}
 
-		public bool Covers(ReadOnlySpan<float> instance) {
+		public bool Covers(Array<float> instance) {
 			for (int i = 0; i < Tests.Length; i++) {
 				if (!Tests[i].Matches(instance))
 					return false;

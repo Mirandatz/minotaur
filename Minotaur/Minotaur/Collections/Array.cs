@@ -68,8 +68,6 @@ namespace Minotaur.Collections {
 		IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
 
 		public static implicit operator Array<T>(T[] mutableArray) => Wrap(mutableArray);
-
-		public static implicit operator ReadOnlySpan<T>(Array<T> readOnlyArray) => readOnlyArray.Span;
 	}
 
 	public static class ReadOnlyArrayExtensions {
