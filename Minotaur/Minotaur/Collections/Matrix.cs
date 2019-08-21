@@ -1,6 +1,5 @@
 namespace Minotaur.Collections {
 	using System;
-	using System.Linq;
 	using Newtonsoft.Json;
 
 	/// <remarks>This matrix is row major.</remarks>
@@ -11,7 +10,12 @@ namespace Minotaur.Collections {
 
 		[JsonProperty] public readonly int RowCount;
 
-		[JsonProperty] private readonly T[] _values;
+		[JsonProperty] public readonly Array<T> FlattenedValues;
+
+		// We store the values in two formats,
+		// rows of values and flattened values,
+		// for performance reasons
+		public readonly Array<Array<T>> Rows;
 
 		[JsonConstructor]
 		public Matrix(int rowCount, int columnCount, T[] values) {
@@ -24,10 +28,32 @@ namespace Minotaur.Collections {
 
 			ColumnCount = columnCount;
 			RowCount = rowCount;
-			_values = values.ToArray();
-		}
 
-		public ReadOnlySpan<T> FlattenedValues => new ReadOnlySpan<T>(_values);
+			var rows = new Array<T>[rowCount];
+
+			for (int i = 0; i < rows.Length; i++) {
+				var newRow = new T[columnCount];
+
+				System.Array.Copy(
+					sourceArray: values,
+					sourceIndex: i * columnCount,
+					destinationArray: newRow,
+					destinationIndex: 0,
+					length: columnCount);
+
+				rows[i] = Array<T>.Wrap(newRow);
+			}
+
+			Rows = Array<Array<T>>.Wrap(rows);
+
+			var clonedValues = new T[values.Length];
+			System.Array.Copy(
+				sourceArray: values,
+				destinationArray: clonedValues,
+				length: values.Length);
+
+			FlattenedValues = Array<T>.Wrap(clonedValues);
+		}
 
 		public T Get(int rowIndex, int columnIndex) {
 			if (rowIndex < 0 || rowIndex >= RowCount)
@@ -35,17 +61,14 @@ namespace Minotaur.Collections {
 			if (columnIndex < 0 || columnIndex >= ColumnCount)
 				throw new ArgumentOutOfRangeException(nameof(columnIndex) + $" must be between [0,{ColumnCount - 1}]");
 
-			return _values[(rowIndex * ColumnCount) + columnIndex];
+			return FlattenedValues[(rowIndex * ColumnCount) + columnIndex];
 		}
 
-		public ReadOnlySpan<T> GetRow(int rowIndex) {
+		public Array<T> GetRow(int rowIndex) {
 			if (rowIndex < 0 || rowIndex >= RowCount)
 				throw new ArgumentOutOfRangeException(nameof(rowIndex) + $" must be between [0,{RowCount - 1}]");
 
-			return new ReadOnlySpan<T>(
-				array: _values,
-				start: rowIndex * ColumnCount,
-				length: ColumnCount);
+			return Rows[rowIndex];
 		}
 	}
 }

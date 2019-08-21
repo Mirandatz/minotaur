@@ -3,7 +3,6 @@ namespace Minotaur.Collections.Dataset {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
-	using Minotaur.ExtensionMethods.SystemArray;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class Dataset {
@@ -13,18 +12,13 @@ namespace Minotaur.Collections.Dataset {
 
 		public readonly Matrix<bool> InstanceLabels;
 
-		// This is stored just for convenience
-		public readonly Array<bool> DefaultClassificationLabels;
-
-		private readonly FeatureType[] _featureTypes;
-		private readonly Matrix<float> _data;
+		public readonly Array<FeatureType> FeatureTypes;
+		public readonly Matrix<float> Data;
 
 		// These are stored for performance reasons
-		private readonly Matrix<float> _dataTransposed;
-		private readonly Matrix<bool> _labelsTransposed;
+		public readonly Matrix<float> DataTransposed;
 		private readonly float[][] _sortedUniqueFeatureValues;
 		private readonly Dictionary<float, int>[] _featureValueFrequencies;
-		//private readonly ConstrainedFeatureSpace[] _constrainedFeatureSpaces;
 
 		private Dataset(
 			FeatureType[] featureTypes,
@@ -32,27 +26,19 @@ namespace Minotaur.Collections.Dataset {
 			Matrix<float> dataTransposed,
 			float[][] sortedUniqueFeatureValues,
 			Dictionary<float, int>[] featureValueFrequencies,
-			//ConstrainedFeatureSpace[] constrainedFeatureSpaces,
 			Matrix<bool> labels,
 			Matrix<bool> labelsTransposed
 			) {
-			_featureTypes = featureTypes;
-			_data = data;
-			_dataTransposed = dataTransposed;
-			_labelsTransposed = labelsTransposed;
+			FeatureTypes = featureTypes;
+			Data = data;
+			DataTransposed = dataTransposed;
 			_sortedUniqueFeatureValues = sortedUniqueFeatureValues;
 			_featureValueFrequencies = featureValueFrequencies;
-			//_constrainedFeatureSpaces = constrainedFeatureSpaces;
 
 			InstanceCount = data.RowCount;
 			FeatureCount = data.ColumnCount;
 			ClassCount = labels.ColumnCount;
 			InstanceLabels = labels;
-
-			DefaultClassificationLabels = Enumerable
-				.Repeat(false, ClassCount)
-				.ToArray()
-				.AsReadOnly();
 		}
 
 		public static Dataset CreateFromMutableObjects(
@@ -82,7 +68,6 @@ namespace Minotaur.Collections.Dataset {
 
 			var sortedUniqueFeatureValues = new float[featuresCount][];
 			var featureValueFrequencies = new Dictionary<float, int>[featuresCount];
-			//var constrainedFeatureSpaces = new ConstrainedFeatureSpace[featuresCount];
 
 			Parallel.For(
 				fromInclusive: 0,
@@ -103,13 +88,6 @@ namespace Minotaur.Collections.Dataset {
 						elementSelector: g => g.Count());
 
 					featureValueFrequencies[featureIndex] = counts;
-
-					//var cfs = new ConstrainedFeatureSpace(
-					//	featureIndex: featureIndex,
-					//	featureType: featureTypes[featureIndex],
-					//	values: featureValues);
-
-					//constrainedFeatureSpaces[featureIndex] = cfs;
 				});
 
 			return new Dataset(
@@ -118,7 +96,6 @@ namespace Minotaur.Collections.Dataset {
 				dataTransposed: dataTransposedCopy,
 				sortedUniqueFeatureValues: sortedUniqueFeatureValues,
 				featureValueFrequencies: featureValueFrequencies,
-				//constrainedFeatureSpaces: constrainedFeatureSpaces,
 				labels: labelsCopy,
 				labelsTransposed: labelsTransposedCopy);
 		}
@@ -161,45 +138,43 @@ namespace Minotaur.Collections.Dataset {
 
 		public float GetDatum(int instanceIndex, int featureIndex) {
 			if (!IsInstanceIndexValid(instanceIndex))
-				throw new ArgumentOutOfRangeException(nameof(instanceIndex));
+				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
 			if (!IsFeatureIndexValid(featureIndex))
-				throw new ArgumentOutOfRangeException(nameof(featureIndex));
+				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
 
-			return _data.Get(rowIndex: instanceIndex, columnIndex: featureIndex);
+			return Data.Get(rowIndex: instanceIndex, columnIndex: featureIndex);
 		}
 
 		public FeatureType GetFeatureType(int featureIndex) {
-			if (featureIndex < 0 || featureIndex >= FeatureCount)
+			if (!IsFeatureIndexValid(featureIndex))
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
 
-			return _featureTypes[featureIndex];
+			return FeatureTypes[featureIndex];
 		}
 
-		public Array<FeatureType> GetFeatureTypes() => _featureTypes;
-
-		public ReadOnlySpan<float> GetInstanceData(int instanceIndex) {
-			if (instanceIndex < 0 || instanceIndex >= InstanceCount)
+		public Array<float> GetInstanceData(int instanceIndex) {
+			if (!IsInstanceIndexValid(instanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
 
-			return _data.GetRow(instanceIndex);
+			return Data.GetRow(instanceIndex);
 		}
 
-		public ReadOnlySpan<float> GetFeatureValues(int featureIndex) {
-			if (featureIndex < 0 || featureIndex >= FeatureCount)
+		public Array<float> GetFeatureValues(int featureIndex) {
+			if (!IsFeatureIndexValid(featureIndex))
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
 
-			return _dataTransposed.GetRow(featureIndex);
+			return DataTransposed.GetRow(featureIndex);
 		}
 
-		public ReadOnlySpan<float> GetSortedUniqueFeatureValues(int featureIndex) {
-			if (featureIndex < 0 || featureIndex >= FeatureCount)
+		public Array<float> GetSortedUniqueFeatureValues(int featureIndex) {
+			if (!IsFeatureIndexValid(featureIndex))
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
 
 			return _sortedUniqueFeatureValues[featureIndex];
 		}
 
 		public int GetFeatureValueFrequency(int featureIndex, float featureValue) {
-			if (featureIndex < 0 || featureIndex >= FeatureCount)
+			if (!IsFeatureIndexValid(featureIndex))
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
 
 			return _featureValueFrequencies[featureIndex].GetValueOrDefault(
@@ -207,8 +182,8 @@ namespace Minotaur.Collections.Dataset {
 				defaultValue: 0);
 		}
 
-		public ReadOnlySpan<bool> GetInstanceLabels(int instanceIndex) {
-			if (instanceIndex < 0 || instanceIndex >= InstanceCount)
+		public Array<bool> GetInstanceLabels(int instanceIndex) {
+			if (!IsInstanceIndexValid(instanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
 
 			return InstanceLabels.GetRow(instanceIndex);
