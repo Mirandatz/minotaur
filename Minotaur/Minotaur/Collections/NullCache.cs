@@ -5,7 +5,9 @@ namespace Minotaur.Collections {
 	/// This class is used to effectively disable caching
 	/// in place where a ICache can be used.
 	/// </summary>
-	public sealed class NullCache<TKey, TValue>: ICache<TKey, TValue> {
+	public sealed class NullCache<TKey, TValue>: IConcurrentCache<TKey, TValue> {
+
+		public object SyncRoot { get; } = new object();
 
 		/// <summary>
 		/// Does nothing.
@@ -30,22 +32,6 @@ namespace Minotaur.Collections {
 
 			value = default;
 			return false;
-		}
-
-		/// <summary>
-		/// Invokes <paramref name="valueCreator"/> and returns its output.
-		/// </summary>
-		/// <remarks>
-		/// Neither <paramref name="key"/> nor <paramref name="valueCreator"/> can be
-		/// null.
-		/// </remarks>
-		public TValue GetOrCreate(TKey key, Func<TValue> valueCreator) {
-			if (key == null)
-				throw new ArgumentNullException(nameof(key));
-			if (valueCreator is null)
-				throw new ArgumentNullException(nameof(valueCreator));
-
-			return valueCreator();
 		}
 	}
 }

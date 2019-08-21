@@ -1,9 +1,8 @@
 namespace Minotaur.Collections {
-	using System;
 
-	public interface ICache<TKey, TValue> {
+	public interface IConcurrentCache<TKey, TValue> {
+		object SyncRoot { get; }
 		void Add(TKey key, TValue value);
 		bool TryGet(TKey key, out TValue value);
-		TValue GetOrCreate(TKey key, Func<TValue> valueCreator);
 	}
 }

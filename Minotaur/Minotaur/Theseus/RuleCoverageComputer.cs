@@ -6,9 +6,9 @@ namespace Minotaur.Theseus {
 
 	public sealed class RuleCoverageComputer {
 		private readonly Dataset _dataset;
-		private readonly ICache<Rule, RuleCoverage> _cache;
+		private readonly IConcurrentCache<Rule, RuleCoverage> _cache;
 
-		public RuleCoverageComputer(Dataset dataset, ICache<Rule, RuleCoverage> cache) {
+		public RuleCoverageComputer(Dataset dataset, IConcurrentCache<Rule, RuleCoverage> cache) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
@@ -17,9 +17,11 @@ namespace Minotaur.Theseus {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 
-			var ruleCoverage = _cache.GetOrCreate(
-				key: rule,
-				valueCreator: () => UncachedComputeRuleCoverage(rule));
+			var isCached = _cache.TryGet(key: rule, out var ruleCoverage);
+			if (!isCached) {
+				ruleCoverage = UncachedComputeRuleCoverage(rule);
+				_cache.Add(key: rule, value: ruleCoverage);
+			}
 
 			return ruleCoverage;
 		}

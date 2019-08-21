@@ -8,12 +8,12 @@ namespace Minotaur.Theseus {
 	public sealed class FeatureSpaceRegionCreator {
 		private readonly Dataset _dataset;
 		private readonly DimensionIntervalCreator _dimensionIntervalCreator;
-		private readonly ICache<Rule, HyperRectangle> _cache;
+		private readonly IConcurrentCache<Rule, HyperRectangle> _cache;
 
 		public FeatureSpaceRegionCreator(
 			Dataset dataset,
 			DimensionIntervalCreator dimensionIntervalCreator,
-			ICache<Rule, HyperRectangle> cache
+			IConcurrentCache<Rule, HyperRectangle> cache
 			) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_dimensionIntervalCreator = dimensionIntervalCreator ?? throw new ArgumentNullException(nameof(dimensionIntervalCreator));
@@ -41,9 +41,13 @@ namespace Minotaur.Theseus {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 
-			return _cache.GetOrCreate(
-				key: rule,
-				valueCreator: () => UnchachedFromRule(rule));
+			var isCached = _cache.TryGet(key: rule, out var hyperRectangle);
+			if (!isCached) {
+				hyperRectangle = UnchachedFromRule(rule);
+				_cache.Add(key: rule, value: hyperRectangle);
+			}
+
+			return hyperRectangle;
 		}
 
 		private HyperRectangle UnchachedFromRule(Rule rule) {

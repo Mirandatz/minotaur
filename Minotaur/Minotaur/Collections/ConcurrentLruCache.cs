@@ -11,12 +11,13 @@ namespace Minotaur.Collections {
 	/// </summary>
 	/// <remarks>
 	/// This class is based on the following implementation https://stackoverflow.com/a/3719378/1642116
+	/// 
 	/// </remarks>
-	public sealed class LruCache<TKey, TValue>: ICache<TKey, TValue> {
+	public sealed class ConcurrentLruCache<TKey, TValue>: IConcurrentCache<TKey, TValue> {
 		private readonly int _capacity;
 		private readonly Dictionary<TKey, LinkedListNode<LruCacheEntry>> _cacheMap;
 		private readonly LinkedList<LruCacheEntry> _lruList = new LinkedList<LruCacheEntry>();
-		public readonly object SyncRoot = new object();
+		public object SyncRoot { get; } = new object();
 
 		/// <summary>
 		/// The constructor of the class.
@@ -24,7 +25,7 @@ namespace Minotaur.Collections {
 		/// If you want to disable the caching of the system,
 		/// consindering using the NullCache class.
 		/// </summary>
-		public LruCache(int capacity) {
+		public ConcurrentLruCache(int capacity) {
 			if (capacity <= 0)
 				throw new ArgumentOutOfRangeException(nameof(capacity) + " must be > 0");
 
@@ -37,7 +38,7 @@ namespace Minotaur.Collections {
 		/// to the cache.
 		/// If the key is already in the cache, an exception is thrown.
 		/// <remarks>
-		/// This method is thread-safe.
+		/// This operation is atomic.
 		/// </remarks>
 		public void Add(TKey key, TValue value) {
 			if (key == null)
@@ -81,7 +82,7 @@ namespace Minotaur.Collections {
 		/// and the method returns false.
 		/// </summary>
 		/// <remarks>
-		/// This method is thread-safe.
+		/// This operation is atomic.
 		/// </remarks>
 		public bool TryGet(TKey key, out TValue value) {
 			if (key == null)
@@ -98,53 +99,6 @@ namespace Minotaur.Collections {
 					value = lruNode.Value.Value;
 					return true;
 				}
-			}
-		}
-
-		/// <summary>
-		/// Tries to get the value associated with <paramref name="key"/>.
-		/// If the value is not stored in the cache,
-		/// the function <paramref name="valueCreator"/> 
-		/// is called and the result is stored in the cache.
-		/// </summary>
-		/// <remarks>
-		/// This method is thread-safe;
-		/// but the entire cache is locked during the operation,
-		/// therefore care must be taken when calling with an expensive
-		/// <paramref name="valueCreator"/>.
-		/// </remarks>
-		public TValue GetOrCreate(TKey key, Func<TValue> valueCreator) {
-			if (key == null)
-				throw new ArgumentNullException(nameof(key));
-			if (valueCreator is null)
-				throw new ArgumentNullException(nameof(valueCreator));
-
-			// We take the lock for a long time,
-			// but we must ensure that the entire operation is atomic.
-			// Maybe using System.Threading.ReaderWriterLockSlim and some
-			// black magic we could reduce contention, but aint that 
-			// high level of a wizard
-
-			lock (SyncRoot) {
-				var isCached = _cacheMap.TryGetValue(key: key, value: out var lruNode);
-				if (isCached) {
-					UpdateUsage(lruNode);
-					return lruNode.Value.Value;
-				}
-
-				// I wish this could be called outside the lock :(
-				var value = valueCreator();
-
-				var cacheEntry = new LruCacheEntry(
-					key: key,
-					valeu: value);
-
-				lruNode = new LinkedListNode<LruCacheEntry>(cacheEntry);
-
-				_cacheMap.Add(key: key, value: lruNode);
-				RemoveLeastRecentlyUsedIfNecessary();
-
-				return value;
 			}
 		}
 
