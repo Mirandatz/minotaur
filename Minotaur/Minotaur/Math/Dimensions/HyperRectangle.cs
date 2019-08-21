@@ -6,7 +6,10 @@ namespace Minotaur.Math.Dimensions {
 		public readonly Array<IDimensionInterval> Dimensions;
 
 		public HyperRectangle(Array<IDimensionInterval> dimensions) {
-			Dimensions = dimensions ?? throw new ArgumentNullException(nameof(dimensions));
+			if (dimensions == null)
+				throw new ArgumentNullException(nameof(dimensions));
+
+			Dimensions = dimensions.Clone();
 
 			// Checking wether the dimensions are not null and that their
 			// dimensions indices match with their positions in the provided array

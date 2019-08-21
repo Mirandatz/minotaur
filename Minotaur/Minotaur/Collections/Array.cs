@@ -5,6 +5,7 @@ namespace Minotaur.Collections {
 	using Newtonsoft.Json;
 	using Minotaur.ExtensionMethods.SystemArray;
 	using System.Text;
+	using Minotaur.Math.Dimensions;
 
 	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class Array<T>: IEnumerable<T> {
@@ -38,19 +39,18 @@ namespace Minotaur.Collections {
 
 		public ReadOnlyMemory<T> Memory => new ReadOnlyMemory<T>(_items);
 
-		//public ReadOnlyArray<T> Swap(int index, T newItem) {
-		//	if (index < 0 || index > Length)
-		//		throw new ArgumentOutOfRangeException(nameof(index) + " must be >= 0 and < " + nameof(Length));
+		public Array<T> Clone() {
 
-		//	var copy = new T[_items.Length];
-		//	Array.Copy(
-		//		sourceArray: _items,
-		//		destinationArray: copy,
-		//		length: _items.Length);
+			var itemsClone = new T[this.Length];
+			Array.Copy(
+				sourceArray: this._items,
+				destinationArray: itemsClone,
+				length: Length);
 
-		//	copy[index] = newItem;
-		//	return copy;
-		//}
+			return new Array<T>(
+				items: itemsClone,
+				length: Length);
+		}
 
 		public T[] ToArray() {
 			var copy = new T[Length];
