@@ -7,6 +7,22 @@ namespace Minotaur.Math.Dimensions {
 
 		public HyperRectangle(Array<IDimensionInterval> dimensions) {
 			Dimensions = dimensions ?? throw new ArgumentNullException(nameof(dimensions));
+
+			// Checking wether the dimensions are not null and that their
+			// dimensions indices match with their positions in the provided array
+			for (int i = 0; i < dimensions.Length; i++) {
+				var dimension = dimensions[i];
+
+				if (dimension == null)
+					throw new ArgumentException(nameof(dimension) + " can't contain nulls.");
+
+				var dimensionIndex = dimension.DimensionIndex;
+				if (dimensionIndex != i) {
+					throw new ArgumentException($"" +
+						$"There is a mismatch between {nameof(IDimensionInterval.DimensionIndex)}" +
+						$"at position {i}.");
+				}
+			}
 		}
 	}
 }
