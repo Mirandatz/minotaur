@@ -1,0 +1,5 @@
+- Modify Dataset structures to use arrays of arrays; Span ain't cutting it
+- Improve exception messages
+- Add loads of "safety checks"
+- Polish code
+- Do "todo" stuff

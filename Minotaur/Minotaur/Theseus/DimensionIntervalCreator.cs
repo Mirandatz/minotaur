@@ -5,10 +5,48 @@ namespace Minotaur.Theseus {
 	using Minotaur.Math.Dimensions;
 
 	public sealed class DimensionIntervalCreator {
-		private readonly Dataset _dataset;
+		public readonly Dataset Dataset;
 
 		public DimensionIntervalCreator(Dataset dataset) {
-			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+		}
+
+		public IDimensionInterval FromDatasetInstance(int datasetInstanceIndex, int dimensionIndex) {
+			if (!Dataset.IsFeatureIndexValid(datasetInstanceIndex))
+				throw new ArgumentOutOfRangeException(nameof(datasetInstanceIndex));
+			if (!Dataset.IsFeatureIndexValid(dimensionIndex))
+				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
+
+			switch (Dataset.GetFeatureType(featureIndex: dimensionIndex)) {
+
+			case FeatureType.Categorical: {
+				var value = Dataset.GetDatum(
+					instanceIndex: datasetInstanceIndex,
+					featureIndex: dimensionIndex);
+
+				return new CategoricalDimensionInterval(
+					dimensionIndex: dimensionIndex,
+					values: new float[] { value });
+			}
+
+			case FeatureType.Continuous: {
+				var value = Dataset.GetDatum(
+					instanceIndex: datasetInstanceIndex,
+					featureIndex: dimensionIndex);
+
+				var bound = new DimensionBound(
+					value: value,
+					isInclusive: true);
+
+				return new ContinuousDimensionInterval(
+					dimensionIndex: dimensionIndex,
+					start: bound,
+					end: bound);
+			}
+
+			default:
+			throw new InvalidOperationException($"Unknown value of {nameof(FeatureType)}.");
+			}
 		}
 
 		public IDimensionInterval FromFeatureTest(IFeatureTest test) {
@@ -32,11 +70,11 @@ namespace Minotaur.Theseus {
 
 		private IDimensionInterval FromNullFeatureTest(NullFeatureTest nullFeatureTest) {
 			var featureIndex = nullFeatureTest.FeatureIndex;
-			if (!_dataset.IsFeatureIndexValid(featureIndex))
+			if (!Dataset.IsFeatureIndexValid(featureIndex))
 				throw new ArgumentOutOfRangeException($"{nameof(nullFeatureTest)}.{nameof(nullFeatureTest.FeatureIndex)} is invalid.");
 
-			var featureType = _dataset.GetFeatureType(featureIndex);
-			var featureValues = _dataset.GetSortedUniqueFeatureValues(featureIndex);
+			var featureType = Dataset.GetFeatureType(featureIndex);
+			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
 
 			switch (featureType) {
 

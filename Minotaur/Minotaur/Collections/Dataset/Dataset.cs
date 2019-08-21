@@ -4,6 +4,7 @@ namespace Minotaur.Collections.Dataset {
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Minotaur.ExtensionMethods.SystemArray;
+	using Minotaur.Math.Dimensions;
 
 	public sealed class Dataset {
 		public readonly int InstanceCount;
@@ -148,6 +149,23 @@ namespace Minotaur.Collections.Dataset {
 
 		public bool IsInstanceIndexValid(int instanceIndex) {
 			return instanceIndex >= 0 && instanceIndex < InstanceCount;
+		}
+
+		public bool IsDimesionIntervalValid(IDimensionInterval dimensionInterval) {
+			if (dimensionInterval is null)
+				throw new ArgumentNullException(nameof(dimensionInterval));
+
+			var featureIndex = dimensionInterval.DimensionIndex;
+			throw new NotImplementedException();
+		}
+
+		public float GetDatum(int instanceIndex, int featureIndex) {
+			if (!IsInstanceIndexValid(instanceIndex))
+				throw new ArgumentOutOfRangeException(nameof(instanceIndex));
+			if (!IsFeatureIndexValid(featureIndex))
+				throw new ArgumentOutOfRangeException(nameof(featureIndex));
+
+			return _data.Get(rowIndex: instanceIndex, columnIndex: featureIndex);
 		}
 
 		public FeatureType GetFeatureType(int featureIndex) {

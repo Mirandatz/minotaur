@@ -20,6 +20,23 @@ namespace Minotaur.Theseus {
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
 
+		public HyperRectangle FromDatasetInstance(int datasetInstanceIndex) {
+			// @Improve exception message 
+			if (!_dataset.IsInstanceIndexValid(datasetInstanceIndex))
+				throw new ArgumentException(nameof(datasetInstanceIndex));
+
+			var dimensionCount = _dataset.FeatureCount;
+			var dimensions = new IDimensionInterval[dimensionCount];
+
+			for (int i = 0; i < dimensions.Length; i++) {
+				dimensions[i] = _dimensionIntervalCreator.FromDatasetInstance(
+					datasetInstanceIndex: datasetInstanceIndex,
+					dimensionIndex: i);
+			}
+
+			return new HyperRectangle(dimensions);
+		}
+
 		public HyperRectangle FromRule(Rule rule) {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
@@ -33,34 +50,14 @@ namespace Minotaur.Theseus {
 			return featureSpace;
 		}
 
-		public HyperRectangle FromDatasetInstance(int datasetInstanceIndex) {
-			// @Improve exception text 
-			if (!_dataset.IsInstanceIndexValid(datasetInstanceIndex))
-				throw new ArgumentException(nameof(datasetInstanceIndex));
-			
-			var instanceData = _dataset.GetInstanceData(datasetInstanceIndex);
-			var featureTypes = _dataset.GetFeatureTypes();
-
-			throw new NotImplementedException();
-
-			return new HyperRectangle(
-				dimensions: dimensions,
-				dimensionTypes: dimensionTypes);
-		}
-
 		private HyperRectangle UnchachedFromRule(Rule rule) {
 			var tests = rule.Tests;
 			var dimensions = new IDimensionInterval[tests.Length];
-			var dimensionTypes = new FeatureType[dimensions.Length];
 
-			for (int i = 0; i < dimensions.Length; i++) {
+			for (int i = 0; i < dimensions.Length; i++)
 				dimensions[i] = _dimensionIntervalCreator.FromFeatureTest(tests[i]);
-				dimensionTypes[i] = _dataset.GetFeatureType(i);
-			};
 
-			return new HyperRectangle(
-				dimensions: dimensions,
-				dimensionTypes: dimensionTypes);
+			return new HyperRectangle(dimensions: dimensions);
 		}
 	}
 }
