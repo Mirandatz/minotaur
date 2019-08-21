@@ -17,11 +17,9 @@ namespace Minotaur.Theseus {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 
-			var isCached = _cache.TryGet(key: rule, out var ruleCoverage);
-			if (!isCached) {
-				ruleCoverage = UncachedComputeRuleCoverage(rule);
-				_cache.Add(key: rule, value: ruleCoverage);
-			}
+			var ruleCoverage = _cache.GetOrCreate(
+				key: rule,
+				valueCreator: () => UncachedComputeRuleCoverage(rule));
 
 			return ruleCoverage;
 		}

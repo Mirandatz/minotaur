@@ -38,6 +38,7 @@ namespace Minotaur.GeneticAlgorithms {
 			Parallel.For(0, fitnesses.Length, i => {
 				var individual = population.Span[i];
 
+#warning THIS MUST BE PATCHED
 				var isCached = _cache.TryGet(key: individual, out var fitness);
 				if (!isCached) {
 					fitness = Evaluate(individual);

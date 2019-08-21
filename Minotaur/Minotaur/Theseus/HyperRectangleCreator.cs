@@ -41,13 +41,9 @@ namespace Minotaur.Theseus {
 			if (rule is null)
 				throw new ArgumentNullException(nameof(rule));
 
-			var isCached = _cache.TryGet(key: rule, out var featureSpace);
-			if (!isCached) {
-				featureSpace = UnchachedFromRule(rule);
-				_cache.Add(key: rule, value: featureSpace);
-			}
-
-			return featureSpace;
+			return _cache.GetOrCreate(
+				key: rule,
+				valueCreator: () => UnchachedFromRule(rule));
 		}
 
 		private HyperRectangle UnchachedFromRule(Rule rule) {
