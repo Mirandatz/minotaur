@@ -9,11 +9,11 @@ namespace Minotaur.Math.Dimensions {
 			_dimensionIntervals = dimensionIntervals;
 		}
 
-		public IDimensionInterval GetDimensionInterval(int index) {
-			if (index < 0 || index >= _dimensionIntervals.Length)
-				throw new ArgumentOutOfRangeException(nameof(index));
+		public IDimensionInterval GetDimensionInterval(int dimensionIndex) {
+			if (dimensionIndex < 0 || dimensionIndex >= _dimensionIntervals.Length)
+				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
 
-			return _dimensionIntervals[index];
+			return _dimensionIntervals[dimensionIndex];
 		}
 
 		public void SetDimensionInterval(IDimensionInterval dimensionInterval) {

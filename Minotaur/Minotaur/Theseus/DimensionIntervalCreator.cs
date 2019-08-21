@@ -11,8 +11,15 @@ namespace Minotaur.Theseus {
 			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 		}
 
+		public IDimensionInterval MaximalInterval(int dimensionIndex) {
+			if (!Dataset.IsFeatureIndexValid(dimensionIndex))
+				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
+
+			throw new NotImplementedException();
+		}
+
 		public IDimensionInterval FromDatasetInstance(int datasetInstanceIndex, int dimensionIndex) {
-			if (!Dataset.IsFeatureIndexValid(datasetInstanceIndex))
+			if (!Dataset.IsInstanceIndexValid(datasetInstanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(datasetInstanceIndex));
 			if (!Dataset.IsFeatureIndexValid(dimensionIndex))
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
