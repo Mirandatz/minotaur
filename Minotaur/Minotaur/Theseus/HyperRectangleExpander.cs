@@ -18,8 +18,6 @@ namespace Minotaur.Theseus {
 				throw new ArgumentNullException(nameof(target));
 			if (others is null)
 				throw new ArgumentNullException(nameof(others));
-			if (others.IsEmpty)
-				throw new ArgumentException(nameof(others) + " can't be empty.");
 			if (dimensionExpansionOrder is null)
 				throw new ArgumentNullException(nameof(dimensionExpansionOrder));
 			if (dimensionExpansionOrder.IsEmpty)
@@ -55,29 +53,47 @@ namespace Minotaur.Theseus {
 			throw new NotImplementedException();
 
 			case FeatureType.Continuous:
-			throw new NotImplementedException();
+			return EnlargeContinuousDimension(others, dimensionIndex);
+
 
 			default:
 			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
 			}
 		}
 
-		private IDimensionInterval EnlargeCategoricalDimension(
-			CategoricalDimensionInterval target,
-			Array<HyperRectangle> others,
-			int dimensionIndex
-			) {
+		private static IDimensionInterval EnlargeContinuousDimension(Array<HyperRectangle> others, int dimensionIndex) {
+			// @Assumption that continuous feature may have
+			// any value from -infinity to +infinity
 
 			throw new NotImplementedException();
-		}
 
-		private IDimensionInterval EnlargeContinuousDimension(
-			ContinuousDimensionInterval target,
-			Array<HyperRectangle> others,
-			int dimensionIndex
-			) {
+			//var min = float.NegativeInfinity;
+			//var minInclusive = true;
 
-			throw new NotImplementedException();
+			//var max = float.PositiveInfinity;
+			//var maxInclusive = true;
+
+			//for (int i = 0; i < others.Length; i++) {
+			//	var other = others[i];
+
+			//	var intersects = Intersects(
+			//		target: mutable,
+			//		others: others,
+			//		dimensionIndex: dimensionIndex);
+			//}
+
+			//var lowerBound = new DimensionBound(
+			//	value: min,
+			//	isInclusive: minInclusive);
+
+			//var upperBound = new DimensionBound(
+			//	value: max,
+			//	isInclusive: maxInclusive);
+
+			//return new ContinuousDimensionInterval(
+			//	dimensionIndex: dimensionIndex,
+			//	start: lowerBound,
+			//	end: upperBound);
 		}
 	}
 }

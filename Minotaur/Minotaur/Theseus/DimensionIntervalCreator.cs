@@ -16,6 +16,9 @@ namespace Minotaur.Theseus {
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
 
 			throw new NotImplementedException();
+
+			// @Assumption that continous variables can have any values
+			// from minus infinity to positive infinity
 		}
 
 		public IDimensionInterval FromDatasetInstance(int datasetInstanceIndex, int dimensionIndex) {

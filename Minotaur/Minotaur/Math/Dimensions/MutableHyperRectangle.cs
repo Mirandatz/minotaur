@@ -1,12 +1,15 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
 
-	public sealed class MutableHyperRectangle {
+	public sealed class MutableHyperRectangle: IHyperRectangle {
 
 		private readonly IDimensionInterval[] _dimensionIntervals;
 
+		public int DimensionCount { get; }
+
 		private MutableHyperRectangle(IDimensionInterval[] dimensionIntervals) {
 			_dimensionIntervals = dimensionIntervals;
+			DimensionCount = _dimensionIntervals.Length;
 		}
 
 		public IDimensionInterval GetDimensionInterval(int dimensionIndex) {
@@ -39,5 +42,28 @@ namespace Minotaur.Math.Dimensions {
 		}
 
 		public HyperRectangle ToHyperRectangle() => new HyperRectangle(_dimensionIntervals);
+
+		public bool IsCompatibleWith(IHyperRectangle other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
+			if (this.DimensionCount != other.DimensionCount)
+				return false;
+
+			var dimensionCount = _dimensionIntervals.Length;
+
+			for (int i = 0; i < dimensionCount; i++) {
+				var lhs = GetDimensionInterval(dimensionIndex: i);
+				var rhs = other.GetDimensionInterval(dimensionIndex: i);
+
+				if (lhs.DimensionIndex != rhs.DimensionIndex)
+					return false;
+
+				if (lhs.GetType() != rhs.GetType())
+					return false;
+			}
+
+			return true;
+		}
 	}
 }

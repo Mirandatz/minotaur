@@ -8,7 +8,7 @@ namespace Minotaur.Math.Dimensions {
 		public int DimensionIndex { get; }
 
 		private readonly float[] _values;
-		public Array<float> Values => Array<float>.Wrap(_values);
+		public Array<float> SortedValues => Array<float>.Wrap(_values);
 
 		public CategoricalDimensionInterval(int dimensionIndex, float[] values) {
 			if (dimensionIndex < 0)
