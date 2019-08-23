@@ -9,11 +9,14 @@ namespace Minotaur.Math.Dimensions {
 
 		public ContinuousDimensionInterval(
 			int dimensionIndex,
-			DimensionBound start, 
+			DimensionBound start,
 			DimensionBound end
 			) {
 			if (dimensionIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex) + " must be >= 0.");
+
+			if (start.Value > end.Value)
+				throw new ArgumentException(nameof(start) + " must be <= " + nameof(end));
 
 			DimensionIndex = dimensionIndex;
 			Start = start;
