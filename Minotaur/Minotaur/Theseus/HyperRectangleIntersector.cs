@@ -1,8 +1,5 @@
 namespace Minotaur.Theseus {
 	using System;
-	using System.Collections.Generic;
-	using System.Text;
-	using Minotaur.Collections;
 	using Minotaur.Math.Dimensions;
 
 	public static class HyperRectangleIntersector {
@@ -19,10 +16,13 @@ namespace Minotaur.Theseus {
 				throw new ArgumentNullException(nameof(target));
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
-			if (target.DimensionCount != other.Dimensions.Length)
-				throw new InvalidOperationException();
-			if (dimensionToSkip < 0 || dimensionToSkip >= target.DimensionCount)
-				throw new ArgumentOutOfRangeException(nameof(dimensionToSkip));
+
+			if (!target.IsCompatibleWith(other)) {
+				throw new ArgumentException(
+					$"{nameof(target)} " +
+					$"must be compatible (i.e. same number and types of dimensions " +
+					$"with {nameof(other)}");
+			}
 
 			var dimensionCount = target.DimensionCount;
 			for (int i = 0; i < dimensionCount; i++) {
@@ -30,8 +30,7 @@ namespace Minotaur.Theseus {
 					continue;
 
 				var lhs = target.GetDimensionInterval(i);
-				var rhs = other.Dimensions[i];
-
+				var rhs = other.GetDimensionInterval(i);
 				if (Intersects(lhs, rhs))
 					return true;
 			}
@@ -42,30 +41,40 @@ namespace Minotaur.Theseus {
 		private static bool Intersects(IDimensionInterval lhs, IDimensionInterval rhs) {
 			var lhsCat = lhs as CategoricalDimensionInterval;
 			var rhsCat = rhs as CategoricalDimensionInterval;
-			if (!(lhsCat is null) && !(rhsCat is null)) {
+			if (!(lhsCat is null))
 				return IntersectsCategorical(lhsCat, rhsCat);
-			}
+
 
 			var lhsCont = lhs as ContinuousDimensionInterval;
 			var rhsCont = rhs as ContinuousDimensionInterval;
-			if (!(lhsCont is null) && !(rhsCont is null)) {
+			if (!(lhsCont is null))
 				return IntersectsContinuous(lhsCont, rhsCont);
-			}
 
-			throw new InvalidOperationException();
+			throw new InvalidOperationException("This line should never be reached.");
 		}
 
 		private static bool IntersectsCategorical(CategoricalDimensionInterval lhsCat, CategoricalDimensionInterval rhsCat) {
-			var lhsValues = lhsCat.SortedValues;
-			var rhsValues = rhsCat.SortedValues;
+			var lhsValues = lhsCat.SortedValues.Span;
+			var rhsValues = rhsCat.SortedValues.Span;
 
-			throw new NotImplementedException();
+			if (lhsValues.IsEmpty || rhsValues.IsEmpty)
+				return false;
+
+			// @Improve performance
+			for (int i = 0; i < lhsValues.Length; i++) {
+				var featureValue = lhsValues[i];
+				var indexOnRhs = rhsValues.BinarySearch(featureValue);
+				if (indexOnRhs != -1)
+					return true;
+			}
+
+			return false;
 		}
 
 		public static bool IntersectsContinuous(ContinuousDimensionInterval lhsCont, ContinuousDimensionInterval rhsCont) {
 			// @Improve performance?
 			// @Verify correctness
-			var aStart= lhsCont.Start;
+			var aStart = lhsCont.Start;
 			var aEnd = lhsCont.End;
 
 			var bStart = rhsCont.Start;
