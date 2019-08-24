@@ -93,7 +93,7 @@ namespace Minotaur.Theseus {
 			}
 
 			// @Assumption that all lower bounds are inclusive,
-			// because the lower bounds are exclusive
+			// because the upper bounds are exclusive
 			var lowerBound = new DimensionBound(
 				value: min,
 				isInclusive: true);
