@@ -9,6 +9,10 @@ namespace Minotaur.Theseus {
 
 		public readonly Dataset Dataset;
 
+		public HyperRectangleExpander(Dataset dataset) {
+			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+		}
+
 		public HyperRectangle Enlarge(
 			HyperRectangle target,
 			Array<HyperRectangle> others,
@@ -53,7 +57,10 @@ namespace Minotaur.Theseus {
 			throw new NotImplementedException();
 
 			case FeatureType.Continuous:
-			return EnlargeContinuousDimension(others, dimensionIndex);
+			return EnlargeContinuousDimension(
+				target: target,
+				others: others,
+				dimensionToEnlarge: dimensionIndex);
 
 
 			default:
@@ -61,39 +68,45 @@ namespace Minotaur.Theseus {
 			}
 		}
 
-		private static IDimensionInterval EnlargeContinuousDimension(Array<HyperRectangle> others, int dimensionIndex) {
-			// @Assumption that continuous feature may have
-			// any value from -infinity to +infinity
+		private IDimensionInterval EnlargeContinuousDimension(
+			MutableHyperRectangle target,
+			Array<HyperRectangle> others,
+			int dimensionToEnlarge
+			) {
+			// @Assumption that continous dimensions may have values
+			// from negative infinity all the way to positive infinity
+			var min = float.NegativeInfinity;
+			var max = float.PositiveInfinity;
 
-			throw new NotImplementedException();
+			for (int i = 0; i < others.Length; i++) {
+				var other = others[i];
+				var intersects = HyperRectangleIntersector.Intersects(
+					target: target,
+					other: other,
+					dimensionToSkip: dimensionToEnlarge);
 
-			//var min = float.NegativeInfinity;
-			//var minInclusive = true;
+				if (intersects) {
+					var otherDimension = (ContinuousDimensionInterval) (other.GetDimensionInterval(dimensionToEnlarge));
+					min = Math.Max(min, otherDimension.Start.Value);
+					max = Math.Min(max, otherDimension.End.Value);
+				}
+			}
 
-			//var max = float.PositiveInfinity;
-			//var maxInclusive = true;
+			// @Assumption that all lower bounds are inclusive,
+			// because the lower bounds are exclusive
+			var lowerBound = new DimensionBound(
+				value: min,
+				isInclusive: true);
 
-			//for (int i = 0; i < others.Length; i++) {
-			//	var other = others[i];
+			// @Assumption that all upper bounds are not inclusive
+			var upperBound = new DimensionBound(
+				value: max,
+				isInclusive: false);
 
-			//	var intersects = Intersects(
-			//		target: mutable,
-			//		others: others,
-			//		dimensionIndex: dimensionIndex);
-			//}
-
-			//var lowerBound = new DimensionBound(
-			//	value: min,
-			//	isInclusive: minInclusive);
-
-			//var upperBound = new DimensionBound(
-			//	value: max,
-			//	isInclusive: maxInclusive);
-
-			//return new ContinuousDimensionInterval(
-			//	dimensionIndex: dimensionIndex,
-			//	start: lowerBound,
-			//	end: upperBound);
+			return new ContinuousDimensionInterval(
+				dimensionIndex: dimensionToEnlarge,
+				start: lowerBound,
+				end: upperBound);
 		}
 	}
 }
