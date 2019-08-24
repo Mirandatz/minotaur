@@ -80,7 +80,7 @@ namespace Minotaur.Theseus {
 
 			for (int i = 0; i < others.Length; i++) {
 				var other = others[i];
-				var intersects = HyperRectangleIntersector.Intersects(
+				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
 					target: target,
 					other: other,
 					dimensionToSkip: dimensionToEnlarge);
@@ -92,13 +92,12 @@ namespace Minotaur.Theseus {
 				}
 			}
 
-			// @Assumption that all lower bounds are inclusive,
-			// because the upper bounds are exclusive
+			// @Assumption: all lower bounds are inclusive
 			var lowerBound = new DimensionBound(
 				value: min,
 				isInclusive: true);
 
-			// @Assumption that all upper bounds are not inclusive
+			// @Assumption: all upper bounds are exclusive
 			var upperBound = new DimensionBound(
 				value: max,
 				isInclusive: false);

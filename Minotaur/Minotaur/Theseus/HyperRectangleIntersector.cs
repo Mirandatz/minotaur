@@ -7,7 +7,7 @@ namespace Minotaur.Theseus {
 		/// <summary>
 		/// This one really needs documentation
 		/// </summary>
-		public static bool Intersects(
+		public static bool IntersectsInAllButOneDimension(
 			MutableHyperRectangle target,
 			HyperRectangle other,
 			int dimensionToSkip
@@ -31,11 +31,11 @@ namespace Minotaur.Theseus {
 
 				var lhs = target.GetDimensionInterval(i);
 				var rhs = other.GetDimensionInterval(i);
-				if (Intersects(lhs, rhs))
-					return true;
+				if (!Intersects(lhs, rhs))
+					return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		private static bool Intersects(IDimensionInterval lhs, IDimensionInterval rhs) {
