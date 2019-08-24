@@ -71,7 +71,7 @@ namespace Minotaur.Theseus {
 			return false;
 		}
 
-		public static bool IntersectsContinuous(ContinuousDimensionInterval lhsCont, ContinuousDimensionInterval rhsCont) {
+		private static bool IntersectsContinuous(ContinuousDimensionInterval lhsCont, ContinuousDimensionInterval rhsCont) {
 			// @Improve performance?
 			// @Verify correctness
 			var aStart = lhsCont.Start;
