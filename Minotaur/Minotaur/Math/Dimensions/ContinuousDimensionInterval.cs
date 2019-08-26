@@ -31,6 +31,8 @@ namespace Minotaur.Math.Dimensions {
 				IsEmpty = !start.IsInclusive;
 			}
 
+			IsEmpty = false;
+
 			DimensionIndex = dimensionIndex;
 			Start = start;
 			End = end;
