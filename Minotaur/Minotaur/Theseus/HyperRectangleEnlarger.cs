@@ -1,17 +1,16 @@
 namespace Minotaur.Theseus {
 	using System;
-	using System.Collections.Generic;
 	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math.Dimensions;
 
 	// @Improve exception messages
-	public sealed class HyperRectangleExpander {
+	public sealed class HyperRectangleEnlarger {
 
 		public readonly Dataset Dataset;
 
-		public HyperRectangleExpander(Dataset dataset) {
+		public HyperRectangleEnlarger(Dataset dataset) {
 			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 		}
 
@@ -66,7 +65,6 @@ namespace Minotaur.Theseus {
 				target: target,
 				others: others,
 				dimensionToEnlarge: dimensionIndex);
-
 
 			default:
 			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");

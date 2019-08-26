@@ -9,12 +9,12 @@ namespace Minotaur.Theseus {
 
 	public sealed class SeedSelector {
 		private readonly Dataset _dataset;
-		private readonly FeatureSpaceRegionCreator _featureSpaceRegionCreator;
+		private readonly HyperRectangleCreator _featureSpaceRegionCreator;
 		private readonly RuleCoverageComputer _ruleCoverageComputer;
 
 		public SeedSelector(
 			Dataset dataset,
-			FeatureSpaceRegionCreator featureSpaceRegionCreator, 
+			HyperRectangleCreator featureSpaceRegionCreator, 
 			RuleCoverageComputer ruleCoverageComputer
 			) {
 			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));

@@ -5,12 +5,12 @@ namespace Minotaur.Theseus {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
-	public sealed class FeatureSpaceRegionCreator {
+	public sealed class HyperRectangleCreator {
 		private readonly Dataset _dataset;
 		private readonly DimensionIntervalCreator _dimensionIntervalCreator;
 		private readonly IConcurrentCache<Rule, HyperRectangle> _cache;
 
-		public FeatureSpaceRegionCreator(
+		public HyperRectangleCreator(
 			Dataset dataset,
 			DimensionIntervalCreator dimensionIntervalCreator,
 			IConcurrentCache<Rule, HyperRectangle> cache
