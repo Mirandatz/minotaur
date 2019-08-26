@@ -4,6 +4,7 @@ namespace Minotaur.Math.Dimensions {
 	public sealed class ContinuousDimensionInterval: IDimensionInterval {
 
 		public int DimensionIndex { get; }
+		public bool IsEmpty { get; }
 		public readonly DimensionBound Start;
 		public readonly DimensionBound End;
 
@@ -17,6 +18,18 @@ namespace Minotaur.Math.Dimensions {
 
 			if (start.Value > end.Value)
 				throw new ArgumentException(nameof(start) + " must be <= " + nameof(end));
+
+			if (start.Value == end.Value) {
+				if (start.IsInclusive ^ end.IsInclusive) {
+					throw new ArgumentException("Bruh, check your arguments... " +
+						$"It doesn't make sense to have " +
+						$"{nameof(start)}.{nameof(start.Value)} == " +
+						$"{nameof(end)}.{nameof(end.Value)} AND" +
+						$"have one of the values inclusive and the other exclusive.");
+				}
+
+				IsEmpty = !start.IsInclusive;
+			}
 
 			DimensionIndex = dimensionIndex;
 			Start = start;

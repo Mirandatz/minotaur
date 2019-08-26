@@ -6,6 +6,7 @@ namespace Minotaur.Math.Dimensions {
 		private readonly IDimensionInterval[] _dimensionIntervals;
 
 		public int DimensionCount { get; }
+		public bool IsEmpty { get; }
 
 		private MutableHyperRectangle(IDimensionInterval[] dimensionIntervals) {
 			_dimensionIntervals = dimensionIntervals;

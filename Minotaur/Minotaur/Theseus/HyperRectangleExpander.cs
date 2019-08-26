@@ -1,5 +1,7 @@
 namespace Minotaur.Theseus {
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math.Dimensions;
@@ -54,7 +56,10 @@ namespace Minotaur.Theseus {
 			switch (Dataset.GetFeatureType(dimensionIndex)) {
 
 			case FeatureType.Categorical:
-			throw new NotImplementedException();
+			return EnlargeCategoricalDimension(
+			target: target,
+			others: others,
+			dimensionToEnlarge: dimensionIndex);
 
 			case FeatureType.Continuous:
 			return EnlargeContinuousDimension(
@@ -66,6 +71,35 @@ namespace Minotaur.Theseus {
 			default:
 			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
 			}
+		}
+
+		private IDimensionInterval EnlargeCategoricalDimension(
+			MutableHyperRectangle target,
+			Array<HyperRectangle> others,
+			int dimensionToEnlarge
+			) {
+
+			// @Improve performance
+			var possibleValues = Dataset
+				.GetSortedUniqueFeatureValues(featureIndex: dimensionToEnlarge)
+				.ToHashSet();
+
+			for (int i = 0; i < others.Length; i++) {
+				var other = others[i];
+				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
+					target: target,
+					other: other,
+					dimensionToSkip: dimensionToEnlarge);
+
+				if (intersects) {
+					var otherDimension = (CategoricalDimensionInterval) (other.GetDimensionInterval(dimensionToEnlarge));
+					possibleValues.ExceptWith(otherDimension.SortedValues);
+				}
+			}
+
+			return new CategoricalDimensionInterval(
+				dimensionIndex: dimensionToEnlarge,
+				values: possibleValues.ToArray());
 		}
 
 		private IDimensionInterval EnlargeContinuousDimension(

@@ -6,6 +6,7 @@ namespace Minotaur.Math.Dimensions {
 
 	public sealed class CategoricalDimensionInterval: IDimensionInterval {
 		public int DimensionIndex { get; }
+		public bool IsEmpty { get; }
 
 		private readonly float[] _values;
 		public Array<float> SortedValues => Array<float>.Wrap(_values);
@@ -23,6 +24,8 @@ namespace Minotaur.Math.Dimensions {
 				.Distinct()
 				.OrderBy(v => v)
 				.ToArray();
+
+			IsEmpty = _values.Length == 0;
 
 			if (_values.Any(v => v.IsNanOrInfinity()))
 				throw new ArgumentException(nameof(values) + " must contain only finite values.");
