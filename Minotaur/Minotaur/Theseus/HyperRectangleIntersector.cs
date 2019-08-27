@@ -64,7 +64,7 @@ namespace Minotaur.Theseus {
 			for (int i = 0; i < lhsValues.Length; i++) {
 				var featureValue = lhsValues[i];
 				var indexOnRhs = rhsValues.BinarySearch(featureValue);
-				if (indexOnRhs != -1)
+				if (indexOnRhs >= 0)
 					return true;
 			}
 

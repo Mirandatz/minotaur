@@ -37,7 +37,7 @@ namespace Minotaur.Math.Dimensions {
 				throw new ArgumentOutOfRangeException(nameof(value) + " must be finite.");
 
 			var index = Array.BinarySearch(_values, value);
-			return index != -1;
+			return index >= 0;
 		}
 	}
 }

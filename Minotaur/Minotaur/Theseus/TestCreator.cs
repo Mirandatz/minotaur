@@ -3,6 +3,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
+	using Random = Random.ThreadStaticRandom;
 
 	public sealed class TestCreator {
 
