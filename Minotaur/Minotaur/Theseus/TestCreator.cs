@@ -3,6 +3,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
+	using Minotaur.Collections;
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class TestCreator {
@@ -25,8 +26,7 @@ namespace Minotaur.Theseus {
 
 			default:
 			throw new InvalidOperationException(
-				"Unknown / unsupported implementation of " +
-				$"{nameof(IDimensionInterval)} .");
+				$"Unknown / unsupported implementation of {nameof(IDimensionInterval)}.");
 			}
 		}
 
@@ -34,8 +34,38 @@ namespace Minotaur.Theseus {
 			throw new NotImplementedException();
 		}
 
+		// @Remark: ContinuousFeatureTests created by this method
+		// use feature values _from the dataset_ as bounds
+		// Values that appear more often in the dataset have a higher chance
+		// of being used as a bound
 		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cont) {
-			throw new NotImplementedException();
+			var possibleValues = Dataset.GetSortedFeatureValues(cont.DimensionIndex);
+
+			var startValue = cont.Start.Value;
+			var indexOfStartValue = possibleValues.BinarySearch(startValue);
+			if (indexOfStartValue < 0)
+				throw new InvalidOperationException();
+
+			var endValue = cont.End.Value;
+			var indexOfEndValue = possibleValues.BinarySearch(endValue);
+			if (indexOfEndValue < 0)
+				throw new InvalidOperationException();
+
+			var indexOfFirstBound = Random.Int(
+				inclusiveMin: indexOfStartValue,
+				exclusiveMax: indexOfEndValue + 1);
+			var firstBound = possibleValues[indexOfFirstBound];
+
+			var indexOfSecondBound = Random.Int(
+				inclusiveMin: indexOfStartValue,
+				exclusiveMax: indexOfEndValue + 1);
+			var secondBound = possibleValues[indexOfSecondBound];
+
+			return new ContinuousFeatureTest(
+				featureIndex: cont.DimensionIndex,
+				lowerBound: Math.Min(firstBound, secondBound),
+				upperBound: Math.Max(firstBound, secondBound)
+				);
 		}
 	}
 }

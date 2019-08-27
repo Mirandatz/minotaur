@@ -17,6 +17,7 @@ namespace Minotaur.Collections.Dataset {
 
 		// These are stored for performance reasons
 		public readonly Matrix<float> DataTransposed;
+		private readonly float[][] _sortedFeatureValues;
 		private readonly float[][] _sortedUniqueFeatureValues;
 		private readonly Dictionary<float, int>[] _featureValueFrequencies;
 
@@ -24,6 +25,7 @@ namespace Minotaur.Collections.Dataset {
 			FeatureType[] featureTypes,
 			Matrix<float> data,
 			Matrix<float> dataTransposed,
+			float[][] sortedFeatureValues,
 			float[][] sortedUniqueFeatureValues,
 			Dictionary<float, int>[] featureValueFrequencies,
 			Matrix<bool> labels,
@@ -32,6 +34,7 @@ namespace Minotaur.Collections.Dataset {
 			FeatureTypes = featureTypes;
 			Data = data;
 			DataTransposed = dataTransposed;
+			_sortedFeatureValues = sortedFeatureValues;
 			_sortedUniqueFeatureValues = sortedUniqueFeatureValues;
 			_featureValueFrequencies = featureValueFrequencies;
 
@@ -66,6 +69,7 @@ namespace Minotaur.Collections.Dataset {
 
 			var featuresCount = featureTypes.Length;
 
+			var sortedFeatureValues = new float[featuresCount][];
 			var sortedUniqueFeatureValues = new float[featuresCount][];
 			var featureValueFrequencies = new Dictionary<float, int>[featuresCount];
 
@@ -78,6 +82,10 @@ namespace Minotaur.Collections.Dataset {
 
 					sortedUniqueFeatureValues[featureIndex] = featureValues
 					.Distinct()
+					.OrderBy(v => v)
+					.ToArray();
+
+					sortedFeatureValues[featureIndex] = featureValues
 					.OrderBy(v => v)
 					.ToArray();
 
@@ -94,6 +102,7 @@ namespace Minotaur.Collections.Dataset {
 				featureTypes: featureTypesCopy,
 				data: dataCopy,
 				dataTransposed: dataTransposedCopy,
+				sortedFeatureValues: sortedFeatureValues,
 				sortedUniqueFeatureValues: sortedUniqueFeatureValues,
 				featureValueFrequencies: featureValueFrequencies,
 				labels: labelsCopy,
@@ -164,6 +173,13 @@ namespace Minotaur.Collections.Dataset {
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
 
 			return DataTransposed.GetRow(featureIndex);
+		}
+
+		public Array<float> GetSortedFeatureValues(int featureIndex) {
+			if (!IsFeatureIndexValid(featureIndex))
+				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
+
+			return _sortedFeatureValues[featureIndex];
 		}
 
 		public Array<float> GetSortedUniqueFeatureValues(int featureIndex) {

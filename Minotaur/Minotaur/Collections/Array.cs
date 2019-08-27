@@ -39,6 +39,10 @@ namespace Minotaur.Collections {
 
 		public ReadOnlyMemory<T> Memory => new ReadOnlyMemory<T>(_items);
 
+		public int BinarySearch(T value) {
+			return System.Array.BinarySearch(_items, value);
+		}
+
 		public Array<T> Clone() {
 
 			var itemsClone = new T[this.Length];
@@ -70,7 +74,7 @@ namespace Minotaur.Collections {
 		public static implicit operator Array<T>(T[] mutableArray) => Wrap(mutableArray);
 	}
 
-	public static class ReadOnlyArrayExtensions {
+	public static class ArrayExtensions {
 
 		public static bool ContainsNulls<T>(this Array<T> readOnlyArray) where T : class {
 			for (int i = 0; i < readOnlyArray.Length; i++)
