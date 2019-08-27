@@ -64,22 +64,22 @@ namespace Minotaur.Random {
 				i < _accumulatedProbabilities.Length - 1; // We don't even need to check against the last probability
 				i++) {
 				if (probability <= _accumulatedProbabilities[i].AccumulatedProbability)
-					return _accumulatedProbabilities[i].Choise;
+					return _accumulatedProbabilities[i].Choice;
 			}
 
-			return _accumulatedProbabilities[_accumulatedProbabilities.Length - 1].Choise;
+			return _accumulatedProbabilities[_accumulatedProbabilities.Length - 1].Choice;
 		}
 
 		private sealed class BiasedChoice {
 			public readonly float AccumulatedProbability;
-			public readonly T Choise;
+			public readonly T Choice;
 
 			public BiasedChoice(T choice, float accumulatedProbability) {
 				if (!(0 <= accumulatedProbability && accumulatedProbability <= 1))
 					throw new ArgumentOutOfRangeException(nameof(accumulatedProbability) + " must be between [0,1].");
 
 				AccumulatedProbability = accumulatedProbability;
-				Choise = choice;
+				Choice = choice;
 			}
 		}
 	}
