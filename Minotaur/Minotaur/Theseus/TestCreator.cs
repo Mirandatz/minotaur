@@ -5,6 +5,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Collections;
 	using Random = Random.ThreadStaticRandom;
+	using Minotaur.Random;
 
 	public sealed class TestCreator {
 
@@ -31,6 +32,21 @@ namespace Minotaur.Theseus {
 		}
 
 		private CategoricalFeatureTest FromCategorical(CategoricalDimensionInterval cat) {
+			var featureIndex = cat.DimensionIndex;
+
+			var possibleValues = cat.SortedValues;
+			var weights = new float[possibleValues.Length];
+
+			var scalingFactor = Dataset.InstanceCount;
+			for (int i = 0; i < weights.Length; i++) {
+				var frequency = Dataset.GetFeatureValueFrequency(
+					featureIndex: featureIndex,
+					featureValue: possibleValues[i]);
+
+				var weight = ((float) frequency) / scalingFactor;
+				weights[i] = weight;
+			}
+
 			throw new NotImplementedException();
 		}
 

@@ -1,4 +1,4 @@
-- Modify Dataset structures to use arrays of arrays; Span ain't cutting it
+- Write tests (loads) for BiasedOptionChooser
 - Improve exception messages
 - Add loads of "safety checks"
 - Polish code
