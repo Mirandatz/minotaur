@@ -4,6 +4,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class RuleCreator {
@@ -12,6 +13,18 @@ namespace Minotaur.Theseus {
 		private readonly SeedSelector _seedSelector;
 		private readonly HyperRectangleCreator _hyperRectangleCreator;
 		private readonly HyperRectangleEnlarger _hyperRectangleExpander;
+
+		public RuleCreator(
+			Dataset dataset,
+			SeedSelector seedSelector,
+			HyperRectangleCreator hyperRectangleCreator,
+			HyperRectangleEnlarger hyperRectangleExpander
+			) {
+			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			_seedSelector = seedSelector ?? throw new ArgumentNullException(nameof(seedSelector));
+			_hyperRectangleCreator = hyperRectangleCreator ?? throw new ArgumentNullException(nameof(hyperRectangleCreator));
+			_hyperRectangleExpander = hyperRectangleExpander ?? throw new ArgumentNullException(nameof(hyperRectangleExpander));
+		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, out Rule rule) {
 			if (existingRules is null)
@@ -33,10 +46,14 @@ namespace Minotaur.Theseus {
 				hyperRectangles[i] = hyperRectangle;
 			});
 
+			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
+				inclusiveStart: 0,
+				exclusiveEnd: Dataset.FeatureCount);
+
 			var enlargedSpace = _hyperRectangleExpander.Enlarge(
 				target: seed,
 				others: hyperRectangles,
-				dimensionExpansionOrder: null);
+				dimensionExpansionOrder: dimensionExpansionOrder);
 
 			throw new NotImplementedException();
 		}

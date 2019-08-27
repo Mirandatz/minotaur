@@ -3,6 +3,7 @@ namespace Minotaur.Theseus {
 	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
+	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
 
 	// @Improve exception messages
@@ -17,7 +18,7 @@ namespace Minotaur.Theseus {
 		public HyperRectangle Enlarge(
 			HyperRectangle target,
 			Array<HyperRectangle> others,
-			Array<int> dimensionExpansionOrder
+			NaturalRange dimensionExpansionOrder
 			) {
 			if (target is null)
 				throw new ArgumentNullException(nameof(target));
@@ -25,8 +26,6 @@ namespace Minotaur.Theseus {
 				throw new ArgumentNullException(nameof(others));
 			if (dimensionExpansionOrder is null)
 				throw new ArgumentNullException(nameof(dimensionExpansionOrder));
-			if (dimensionExpansionOrder.IsEmpty)
-				throw new ArgumentException(nameof(dimensionExpansionOrder) + " can't be empty.");
 
 			// @Add buttloads of checks
 

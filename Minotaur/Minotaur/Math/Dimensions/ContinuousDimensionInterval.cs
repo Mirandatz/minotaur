@@ -1,10 +1,10 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
 
+	// @Assumption: intervals can not  be empty.
 	public sealed class ContinuousDimensionInterval: IDimensionInterval {
 
 		public int DimensionIndex { get; }
-		public bool IsEmpty { get; }
 		public readonly DimensionBound Start;
 		public readonly DimensionBound End;
 
@@ -28,10 +28,12 @@ namespace Minotaur.Math.Dimensions {
 						$"have one of the values inclusive and the other exclusive.");
 				}
 
-				IsEmpty = !start.IsInclusive;
+				// No need to check if !end.IsInclusive,
+				// because we already xor'd it with start.IsInclusive
+				if (!start.IsInclusive) {
+					throw new ArgumentException("It's not possible to create empty continuous intervals.");
+				}
 			}
-
-			IsEmpty = false;
 
 			DimensionIndex = dimensionIndex;
 			Start = start;
