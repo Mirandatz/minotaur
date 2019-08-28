@@ -109,6 +109,8 @@ namespace Minotaur.Collections.Dataset {
 				labelsTransposed: labelsTransposedCopy);
 		}
 
+		// @Todo: change this to a method that returns a bool indicating
+		// whether the datasets are compatible
 		public static void ThrowIfTrainAndTestAreIncompatible(Dataset trainDataset, Dataset testDataset) {
 			if (trainDataset == null)
 				throw new ArgumentNullException(nameof(trainDataset));
@@ -142,7 +144,71 @@ namespace Minotaur.Collections.Dataset {
 				throw new ArgumentNullException(nameof(dimensionInterval));
 
 			var featureIndex = dimensionInterval.DimensionIndex;
-			throw new NotImplementedException();
+			if (!IsFeatureIndexValid(featureIndex))
+				return false;
+
+			var featureType = GetFeatureType(featureIndex);
+			switch (featureType) {
+
+			case FeatureType.Categorical: {
+				var categorical = dimensionInterval as CategoricalDimensionInterval;
+				if (categorical == null)
+					return false;
+
+				var possibleValues = _sortedUniqueFeatureValues[featureIndex];
+				var actualValues = categorical.SortedValues;
+
+				// @Improve performance of the look-up operation.
+				// Maybe use HashSet to store the unique values?
+				for (int i = 0; i < actualValues.Length; i++) {
+					var valueIndex = Array.BinarySearch(
+						array: possibleValues,
+						value: actualValues[i]);
+
+					if (valueIndex < 0)
+						return false;
+				}
+
+				return true;
+			}
+
+			case FeatureType.Continuous: {
+				var continuous = dimensionInterval as ContinuousDimensionInterval;
+				if (continuous == null)
+					return false;
+
+				var possibleValues = _sortedUniqueFeatureValues[featureIndex];
+				var lowerBound = continuous.Start.Value;
+
+				// @Improve performance of the look-up operation.
+				// Maybe use HashSet to store the unique values?
+				if (!float.IsNegativeInfinity(lowerBound)) {
+					var valueIndex = Array.BinarySearch(
+						array: possibleValues,
+						value: lowerBound);
+
+					if (valueIndex < 0)
+						return false;
+				}
+
+				// @Improve performance of the look-up operation.
+				// Maybe use HashSet to store the unique values?
+				var upperBound = continuous.End.Value;
+				if (!float.IsPositiveInfinity(upperBound)) {
+					var valueIndex = Array.BinarySearch(
+						array: possibleValues,
+						value: upperBound);
+
+					if (valueIndex < 0)
+						return false;
+				}
+
+				return true;
+			}
+
+			default:
+			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
+			}
 		}
 
 		public float GetDatum(int instanceIndex, int featureIndex) {
