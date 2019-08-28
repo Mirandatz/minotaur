@@ -8,9 +8,13 @@ namespace Minotaur.Theseus {
 
 	public sealed class TestCreator {
 
-		public Dataset Dataset;
+		public readonly Dataset Dataset;
 
-		public IFeatureTest TryCreate(IDimensionInterval dimensionInterval) {
+		public TestCreator(Dataset dataset) {
+			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+		}
+
+		public IFeatureTest FromDimensionInterval(IDimensionInterval dimensionInterval) {
 			if (dimensionInterval is null)
 				throw new ArgumentNullException(nameof(dimensionInterval));
 			if (!Dataset.IsDimesionIntervalValid(dimensionInterval))
