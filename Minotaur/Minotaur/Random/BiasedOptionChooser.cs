@@ -3,84 +3,86 @@ namespace Minotaur.Random {
 	using System.Linq;
 
 	public sealed class BiasedOptionChooser<T> {
-		private const Decimal Epsilon = ((Decimal) 1) / 100000;
+		private readonly T[] _options;
+		private readonly int[] _weights;
+		private readonly int _sumOfWeights;
 
-		private readonly BiasedChoice[] _accumulatedProbabilities;
-
-		private BiasedOptionChooser(BiasedChoice[] accumulatedProbabilities) {
-			_accumulatedProbabilities = accumulatedProbabilities;
+		private BiasedOptionChooser(T[] options, int[] weights, int sumOfWeights) {
+			_options = options;
+			_weights = weights;
+			_sumOfWeights = sumOfWeights;
 		}
 
-		public static BiasedOptionChooser<T> Create(T[] options, float[] probabilities) {
+		public static BiasedOptionChooser<T> Create(T[] options, int[] weights) {
 			if (options is null)
 				throw new ArgumentNullException(nameof(options));
-			if (probabilities is null)
-				throw new ArgumentNullException(nameof(probabilities));
-			if (options.Length != probabilities.Length)
-				throw new ArgumentException(nameof(options) + " and " + nameof(probabilities) + " must have the same length.");
+			if (weights is null)
+				throw new ArgumentNullException(nameof(weights));
+			if (options.Length != weights.Length)
+				throw new ArgumentException(nameof(options) + " and " + nameof(weights) + " must have the same length.");
 			if (options.Length == 0)
 				throw new ArgumentException(nameof(options) + " can't be empty.");
-			if ((probabilities.Select(w => (Decimal) w).Sum() - 1) > Epsilon)
-				throw new ArgumentException("Probabilities must sum to 1.");
-			if (probabilities.Any(p => !(0 <= p && p <= 1)))
-				throw new ArgumentException("All weights must be between [0,1].");
 
-			var optionsAndProbabilities = new (T option, float probability)[options.Length];
-			for (int i = 0; i < optionsAndProbabilities.Length; i++)
-				optionsAndProbabilities[i] = (option: options[i], probability: probabilities[i]);
-
-			return Create(optionsAndProbabilities);
-		}
-
-		private static BiasedOptionChooser<T> Create(params (T option, float probability)[] weightedOptions) {
-			// OrderBy -op.probability is used
-			// to achiev the result of OrderBy followed by a Reverse
-
-			var sortedProbabilities = weightedOptions
-				.OrderBy(op => -op.probability)
-				.ToList();
-
-			var accumulatedProbabilities = new BiasedChoice[sortedProbabilities.Count];
-
-			float accumulatedProbability = 0;
-			for (int i = 0; i < accumulatedProbabilities.Length; i++) {
-				var option = sortedProbabilities[i].option;
-				var probability = sortedProbabilities[i].probability;
-				accumulatedProbability += probability;
-
-				accumulatedProbabilities[i] = new BiasedChoice(
-					choice: option,
-					accumulatedProbability: accumulatedProbability);
+			for (int i = 0; i < weights.Length; i++) {
+				if (weights[i] <= 0)
+					throw new ArgumentException(nameof(weights) + " can't contain non-positive values.");
 			}
 
-			return new BiasedOptionChooser<T>(accumulatedProbabilities);
+			var optionsAndProbabilities = new (T option, int weight)[options.Length];
+			for (int i = 0; i < optionsAndProbabilities.Length; i++)
+				optionsAndProbabilities[i] = (option: options[i], weight: weights[i]);
+
+			return FromWeightedOptions(optionsAndProbabilities);
+		}
+
+		private static BiasedOptionChooser<T> FromWeightedOptions((T option, int weight)[] weightedOptions) {
+			var sortedWeightedOptions = weightedOptions
+				.OrderBy(op => op.weight)
+				.ToList();
+
+			var options = new T[sortedWeightedOptions.Count];
+			var weights = new int[sortedWeightedOptions.Count];
+			var sumOfWeights = 0;
+
+			/* option A, weight 10
+			 * option B, weight 10
+			 * option C, weight 30
+			 * 
+			 * weights are stored in this way
+			 * [10, 20, 50]
+			 * 
+			 * We then roll a dice between 0 and 50
+			 * if dice < 10, we choose option a
+			 * if dice < 20, we choose option b
+			 * else we chose option c
+			 */
+
+			for (int i = 0; i < sortedWeightedOptions.Count; i++) {
+				var (option, weight) = sortedWeightedOptions[i];
+
+				sumOfWeights += weight;
+				options[i] = option;
+				weights[i] = sumOfWeights;
+			}
+
+			return new BiasedOptionChooser<T>(
+				options: options,
+				weights: weights,
+				sumOfWeights: sumOfWeights);
 		}
 
 		public T GetRandomChoice() {
-			var probability = ThreadStaticRandom.Uniform();
+			var probability = ThreadStaticRandom.Int(
+				inclusiveMin: 0,
+				exclusiveMax: _sumOfWeights);
 
-			for (
-				int i = 0;
-				i < _accumulatedProbabilities.Length - 1; // We don't even need to check against the last probability
-				i++) {
-				if (probability <= _accumulatedProbabilities[i].AccumulatedProbability)
-					return _accumulatedProbabilities[i].Choice;
+			// @Improve performance by utilizing BinarySearch
+			for (int i = 0; i < _weights.Length - 1; i++) {
+				if (probability < _weights[i])
+					return _options[i];
 			}
 
-			return _accumulatedProbabilities[_accumulatedProbabilities.Length - 1].Choice;
-		}
-
-		private sealed class BiasedChoice {
-			public readonly float AccumulatedProbability;
-			public readonly T Choice;
-
-			public BiasedChoice(T choice, float accumulatedProbability) {
-				if (!(0 <= accumulatedProbability && accumulatedProbability <= 1))
-					throw new ArgumentOutOfRangeException(nameof(accumulatedProbability) + " must be between [0,1].");
-
-				AccumulatedProbability = accumulatedProbability;
-				Choice = choice;
-			}
+			return _options[_options.Length - 1];
 		}
 	}
 }
