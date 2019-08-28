@@ -3,9 +3,8 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
-	using Minotaur.Collections;
-	using Random = Random.ThreadStaticRandom;
 	using Minotaur.Random;
+	using Random = Random.ThreadStaticRandom;
 
 	public sealed class TestCreator {
 
@@ -31,29 +30,39 @@ namespace Minotaur.Theseus {
 			}
 		}
 
+		// @Remark: Any CategoricalFeatureTest created by this method
+		// will use feature values _from the dataset_ as "target values" for the test.
+		// That means that values that appear more often in the dataset
+		// have a higher chance of being used. 
 		private CategoricalFeatureTest FromCategorical(CategoricalDimensionInterval cat) {
 			var featureIndex = cat.DimensionIndex;
 
 			var possibleValues = cat.SortedValues;
-			var weights = new float[possibleValues.Length];
+			var weights = new int[possibleValues.Length];
 
-			var scalingFactor = Dataset.InstanceCount;
 			for (int i = 0; i < weights.Length; i++) {
 				var frequency = Dataset.GetFeatureValueFrequency(
 					featureIndex: featureIndex,
 					featureValue: possibleValues[i]);
 
-				var weight = ((float) frequency) / scalingFactor;
-				weights[i] = weight;
+				weights[i] = frequency;
 			}
 
-			throw new NotImplementedException();
+			var chooser = BiasedOptionChooser<float>.Create(
+				options: possibleValues,
+				weights: weights);
+
+			var value = chooser.GetRandomChoice();
+
+			return new CategoricalFeatureTest(
+				featureIndex: cat.DimensionIndex,
+				value: value);
 		}
 
-		// @Remark: ContinuousFeatureTests created by this method
-		// use feature values _from the dataset_ as bounds
-		// Values that appear more often in the dataset have a higher chance
-		// of being used as a bound
+		// @Remark: Any ContinuousFeatureTest created by this method
+		// will use feature values _from the dataset_ as bounds.
+		// That means that values that appear more often in the dataset
+		// have a higher chance	of being used as a bound.
 		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cont) {
 			var possibleValues = Dataset.GetSortedFeatureValues(cont.DimensionIndex);
 

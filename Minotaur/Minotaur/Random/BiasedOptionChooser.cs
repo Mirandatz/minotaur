@@ -1,6 +1,7 @@
 namespace Minotaur.Random {
 	using System;
 	using System.Linq;
+	using Minotaur.Collections;
 
 	public sealed class BiasedOptionChooser<T> {
 		private readonly T[] _options;
@@ -13,7 +14,7 @@ namespace Minotaur.Random {
 			_sumOfWeights = sumOfWeights;
 		}
 
-		public static BiasedOptionChooser<T> Create(T[] options, int[] weights) {
+		public static BiasedOptionChooser<T> Create(Array<T> options, Array<int> weights) {
 			if (options is null)
 				throw new ArgumentNullException(nameof(options));
 			if (weights is null)
