@@ -14,6 +14,10 @@ namespace Minotaur.Theseus {
 			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 		}
 
+		// @Remarks: any IFeatureTests created by this method
+		// will use feature values _from the dataset_, instead of random values.
+		// That means that values that appear more often in the dataset
+		// have a higher chance of being used.
 		public IFeatureTest FromDimensionInterval(IDimensionInterval dimensionInterval) {
 			if (dimensionInterval is null)
 				throw new ArgumentNullException(nameof(dimensionInterval));
@@ -34,7 +38,7 @@ namespace Minotaur.Theseus {
 			}
 		}
 
-		// @Remark: Any CategoricalFeatureTest created by this method
+		// @Remarks: Any CategoricalFeatureTest created by this method
 		// will use feature values _from the dataset_ as "target values" for the test.
 		// That means that values that appear more often in the dataset
 		// have a higher chance of being used. 
@@ -63,7 +67,7 @@ namespace Minotaur.Theseus {
 				value: value);
 		}
 
-		// @Remark: Any ContinuousFeatureTest created by this method
+		// @Remarks: Any ContinuousFeatureTest created by this method
 		// will use feature values _from the dataset_ as bounds.
 		// That means that values that appear more often in the dataset
 		// have a higher chance	of being used as a bound.
