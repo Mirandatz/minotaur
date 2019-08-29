@@ -1,12 +1,11 @@
 namespace Minotaur.Theseus {
 	using System;
-	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Random;
 	using Random = Random.ThreadStaticRandom;
 
-	// @Assumption: all individuals have the same default predictions
+	// @Assumption: all individuals have the sa\me default predictions
 	public sealed class IndividualMutator {
 
 		public readonly Dataset Dataset;
@@ -87,7 +86,8 @@ namespace Minotaur.Theseus {
 
 			// Copying all but the rule to be mutated
 			var withoutCandidate = new Rule[oldRules.Length - 1];
-			for (int i = 0, j = 0;
+			for (
+				int i = 0, j = 0;
 				i < oldRules.Length;
 				i++
 				) {
@@ -98,11 +98,11 @@ namespace Minotaur.Theseus {
 				j += 1;
 			}
 
-			// Since we removed a rule, it should _always_ 
-			// be possible to create a new rule.
-			// Even if it is the same rule.
-			// So if we get a false this method call,
-			// we throwing bruh, coz that indicates
+			// Since we removed a rule, 
+			// it should _always_ be possible to create a new rule,
+			// even if it is the same rule.
+			// So if we get false as return from this method call,
+			// we throwing bruh... coz that indicates
 			// there's something wrong somewhere
 			var canCreate = _ruleCreator.TryCreateRule(
 				existingRules: withoutCandidate,
@@ -123,7 +123,25 @@ namespace Minotaur.Theseus {
 		}
 
 		private bool TryRemoveRule(Individual original, out Individual mutated) {
-			throw new NotImplementedException();
+			var oldRules = original.Rules;
+
+			// Can't have individuals with no rules
+			if (oldRules.Length == 1) {
+				mutated = null;
+				return false;
+			}
+
+			var indexToRemove = Random.Int(
+				inclusiveMin: 0,
+				exclusiveMax: oldRules.Length);
+
+			var newRules = oldRules.Remove(indexToRemove);
+
+			mutated = new Individual(
+				rules: newRules,
+				defaultLabels: original.DefaultLabels);
+
+			return true;
 		}
 	}
 }
