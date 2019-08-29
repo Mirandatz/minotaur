@@ -14,5 +14,9 @@ namespace Minotaur {
 		private static string[] LazyDevArguments() {
 			throw new NotImplementedException();
 		}
+
+		private static int OnExecute(ProgramSettings settings) {
+			throw new NotImplementedException();
+		}
 	}
 }

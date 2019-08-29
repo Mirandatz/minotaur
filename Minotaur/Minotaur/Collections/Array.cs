@@ -2,10 +2,9 @@ namespace Minotaur.Collections {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
-	using Newtonsoft.Json;
-	using Minotaur.ExtensionMethods.SystemArray;
 	using System.Text;
-	using Minotaur.Math.Dimensions;
+	using Minotaur.ExtensionMethods.SystemArray;
+	using Newtonsoft.Json;
 
 	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class Array<T>: IEnumerable<T> {
@@ -35,12 +34,32 @@ namespace Minotaur.Collections {
 
 		public T this[int index] => _items[index];
 
+		// Implementation of IEnumerable<T>
+
+		public IEnumerator<T> GetEnumerator() => _items.GetGenericEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
+
+		// Conversion from System.Array to Array, again just for convenience
+
+		public static implicit operator Array<T>(T[] mutableArray) => Wrap(mutableArray);
+
+		// Below  here there are just some convenience methods
+
 		public ReadOnlySpan<T> Span => new ReadOnlySpan<T>(_items);
 
-		public ReadOnlyMemory<T> Memory => new ReadOnlyMemory<T>(_items);
-
+		// <returns>
+		// The index of the specified value in the specified array, if value is found; otherwise,
+		// a negative number. If value is not found and value is less than one or more elements
+		// in array, the negative number returned is the bitwise complement of the index
+		// of the first element that is larger than value. If value is not found and value
+		// is greater than all elements in array, the negative number returned is the bitwise
+		// complement of (the index of the last element plus 1). If this method is called
+		// with a non-sorted array, the return value can be incorrect and a negative number
+		// could be returned, even if value is present in array.
+		/// </returns>
 		public int BinarySearch(T value) {
-			return System.Array.BinarySearch(_items, value);
+			return Array.BinarySearch(_items, value);
 		}
 
 		public Array<T> Clone() {
@@ -67,22 +86,66 @@ namespace Minotaur.Collections {
 			return copy;
 		}
 
-		public IEnumerator<T> GetEnumerator() => _items.GetGenericEnumerator();
+		public Array<T> Append(T item) {
+			var newArray = new T[_items.Length + 1];
 
-		IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
+			for (int i = 0; i < _items.Length; i++)
+				newArray[i] = _items[i];
 
-		public static implicit operator Array<T>(T[] mutableArray) => Wrap(mutableArray);
+			newArray[newArray.Length - 1] = item;
+
+			return newArray;
+		}
+
+		public Array<T> Swap(int index, T newItem) {
+			if (index < 0 || index >= _items.Length) {
+				throw new ArgumentOutOfRangeException(
+					nameof(index) + $" must be in range " +
+					$"[0, {nameof(Array)}.{nameof(Array.Length)}[.");
+			}
+
+			// Copy everyone and overwrite should be faster 
+			// than conditionally copying
+			var newArray = Clone();
+			newArray._items[index] = newItem;
+
+			return newArray;
+		}
+
+		public Array<T> Remove(int index) {
+			if (IsEmpty) {
+				throw new InvalidOperationException($"Can't remove items from an empty {nameof(Array<T>)}.");
+			}
+
+			if (index < 0 || index >= _items.Length) {
+				throw new ArgumentOutOfRangeException(
+					nameof(index) + $" must be in range " +
+					$"[0, {nameof(Array)}.{nameof(Array.Length)}[.");
+			}
+
+			var newArray = new T[_items.Length - 1];
+
+			// Copy "items before" and "items after" should be faster
+			// than conditionally copying
+
+			for (int i = 0; i < index; i++)
+				newArray[i] = _items[i];
+
+			var oldIndex = index + 1;
+			var newIndex = index;
+
+			for (;
+				oldIndex < _items.Length;
+				oldIndex++, newIndex++
+				) {
+				newArray[newIndex] = _items[oldIndex];
+			}
+
+			return newArray;
+		}
 	}
 
-	public static class ArrayExtensions {
-
-		public static bool ContainsNulls<T>(this Array<T> readOnlyArray) where T : class {
-			for (int i = 0; i < readOnlyArray.Length; i++)
-				if (readOnlyArray[i] == null)
-					return true;
-
-			return false;
-		}
+	public static class FloatArrayExtensions {
 
 		public static bool ContainsNaNs(this Array<float> readOnlyArray) {
 			for (int i = 0; i < readOnlyArray.Length; i++)
@@ -91,6 +154,31 @@ namespace Minotaur.Collections {
 
 			return false;
 		}
+
+		public static string ToReadableString(this Array<float> readOnlyArray) {
+			var builder = new StringBuilder();
+
+			for (int i = 0; i < readOnlyArray.Length; i++) {
+				builder.Append(readOnlyArray[i]);
+				builder.Append(" ");
+			}
+
+			return builder.ToString();
+		}
+	}
+
+	public static class ReferenceTypesArrayExtensions {
+
+		public static bool ContainsNulls<T>(this Array<T> self) where T : class {
+			for (int i = 0; i < self.Length; i++)
+				if (self[i] is null)
+					return true;
+
+			return false;
+		}
+	}
+
+	public static class IEquatableArrayExtensions {
 
 		public static bool SequenceEquals<T>(this Array<T> self, Array<T> other) where T : IEquatable<T> {
 			// We check ReferenceEquals before checking for nulls because we don't expect to
@@ -117,67 +205,6 @@ namespace Minotaur.Collections {
 			}
 
 			return true;
-		}
-
-		public static Array<T> Append<T>(this Array<T> self, T item) {
-			var newArray = new T[self.Length + 1];
-
-			for (int i = 0; i < self.Length; i++)
-				newArray[i] = self[i];
-
-			newArray[newArray.Length - 1] = item;
-
-			return newArray;
-		}
-
-		public static Array<T> Swap<T>(this Array<T> self, T item, int index) {
-			if (index < 0 || index >= self.Length)
-				throw new ArgumentOutOfRangeException(nameof(index) + $" must be in range [0, {self.Length}[");
-
-			// Copy everyone and overwrite should be faster 
-			// than conditionally copying
-			var newArray = self.ToArray();
-			newArray[index] = item;
-
-			return newArray;
-		}
-
-		public static Array<T> Remove<T>(this Array<T> self, int index) {
-			if (self.Length == 0)
-				throw new InvalidOperationException($"Can't remove items from an empty {nameof(Array<T>)}");
-			if (index < 0 || index >= self.Length)
-				throw new ArgumentOutOfRangeException(nameof(index) + $" must be in range [0, {self.Length}[");
-
-			var newArray = new T[self.Length - 1];
-
-			// Copy "items before" and "items after" should be faster
-			// than conditionally copying
-
-			for (int i = 0; i < index; i++)
-				newArray[i] = self[i];
-
-			var oldIndex = index + 1;
-			var newIndex = index;
-
-			for (;
-				oldIndex < self.Length;
-				oldIndex++, newIndex++
-				) {
-				newArray[newIndex] = self[oldIndex];
-			}
-
-			return newArray;
-		}
-
-		public static string ToReadableString(this Array<float> readOnlyArray) {
-			var builder = new StringBuilder();
-
-			for (int i = 0; i < readOnlyArray.Length; i++) {
-				builder.Append(readOnlyArray[i]);
-				builder.Append(" ");
-			}
-
-			return builder.ToString();
 		}
 	}
 }
