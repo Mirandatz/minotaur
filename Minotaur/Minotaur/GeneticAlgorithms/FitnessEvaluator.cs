@@ -27,10 +27,12 @@ namespace Minotaur.GeneticAlgorithms {
 				throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
 		}
 
-		public Fitness[] Evaluate(ReadOnlyMemory<Individual> population) {
+		public Fitness[] Evaluate(Array<Individual> population) {
+			if (population is null)
+				throw new ArgumentNullException(nameof(population));
 			if (population.IsEmpty)
 				throw new ArgumentException(nameof(population) + " can't be empty.");
-			if (population.Span.ContainsNulls())
+			if (population.ContainsNulls())
 				throw new ArgumentException(population + " can't contain nulls.");
 
 			var fitnesses = new Fitness[population.Length];
@@ -60,7 +62,9 @@ namespace Minotaur.GeneticAlgorithms {
 			return Fitness.Wrap(fitnesses);
 		}
 
-		public Fitness[] EvaluateAsMaximizationTask(ReadOnlyMemory<Individual> population) {
+		public Fitness[] EvaluateAsMaximizationTask(Array<Individual> population) {
+			if (population is null)
+				throw new ArgumentNullException(nameof(population));
 			if (population.IsEmpty)
 				throw new ArgumentException(nameof(population) + " can't be empty.");
 			if (population.Span.ContainsNulls())
