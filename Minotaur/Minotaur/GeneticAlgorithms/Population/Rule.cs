@@ -23,32 +23,27 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			Tests = tests ?? throw new ArgumentNullException(nameof(tests));
 			PredictedLabels = predictedLabels ?? throw new ArgumentNullException(nameof(predictedLabels));
 
-			if (tests.ContainsNulls())
-				throw new ArgumentException(nameof(tests) + " can't contain nulls");
-
-			ThrowIfTestsAreNotSortedOrDoesntContainEnoughNonNullTests(tests);
-
 			NonNullTestCount = 0;
-			for (int i = 0; i < tests.Length; i++)
-				if (!(tests[i] is NullFeatureTest))
-					NonNullTestCount += 1;
-
-			_precomputedHashCode = PrecompileHashcode(tests, predictedLabels);
-		}
-
-		private static void ThrowIfTestsAreNotSortedOrDoesntContainEnoughNonNullTests(Array<IFeatureTest> tests) {
-			var nonNulltests = 0;
-
 			for (int i = 0; i < tests.Length; i++) {
-				if (tests[i].FeatureIndex != i)
+				var currentTest = tests[i];
+
+				if (currentTest is null)
+					throw new ArgumentException(nameof(tests) + " can't contain nulls.");
+
+				if (currentTest.FeatureIndex != i)
 					throw new ArgumentException(nameof(tests) + " must be sorted and can not contain multiple tests for the same feature");
 
-				if (!(tests[i] is NullFeatureTest))
-					nonNulltests += 1;
+				if (!(currentTest is NullFeatureTest))
+					NonNullTestCount += 1;
 			}
 
-			if (nonNulltests < MinimumTestCount)
-				throw new ArgumentException(nameof(tests) + $" must contain at least {MinimumTestCount} non-null tests");
+			if (NonNullTestCount < MinimumTestCount) {
+				throw new ArgumentException(
+					nameof(tests) + $" must contain at least {MinimumTestCount} " +
+					$"tests that are not {nameof(NullFeatureTest)}.");
+			}
+
+			_precomputedHashCode = PrecompileHashcode(tests, predictedLabels);
 		}
 
 		private int PrecompileHashcode(Array<IFeatureTest> tests, Array<bool> predictedLabels) {
@@ -72,12 +67,10 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			return true;
 		}
 
-		// Code below is for IEquatable<Rule> and IEquatable<IRule>
-
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object obj) => Equals(obj as Rule);
-		
+
 		public bool Equals(Rule other) {
 			// We check ReferenceEquals before checking for nulls because we don't expect to
 			// compare to nulls (ever)

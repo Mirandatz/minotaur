@@ -65,25 +65,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			return LowerBound <= featureValue && featureValue < UpperBound;
 		}
 
-		public bool Overlaps(IFeatureTest featureTest) {
-			if (featureTest == null)
-				throw new ArgumentNullException(nameof(featureTest));
-
-			if (featureTest.FeatureIndex != FeatureIndex)
-				return false;
-
-			if (featureTest is NullFeatureTest)
-				return true;
-
-			var other = featureTest as ContinuousFeatureTest;
-			if (other == null)
-				throw new InvalidOperationException(nameof(featureTest) + " is testing the same feature, but is not a " + nameof(ContinuousFeatureTest));
-
-			// https://stackoverflow.com/questions/3269434/whats-the-most-efficient-way-to-test-two-integer-ranges-for-overlap/3269471#3269471
-			return LowerBound <= other.UpperBound &&
-				other.LowerBound <= UpperBound;
-		}
-
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object obj) => Equals(obj as ContinuousFeatureTest);

@@ -11,7 +11,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		public int TestSize => 1;
 
 		///<remarks>
-		/// We're using floats just because the .csv parser
+		/// We're using floats because the .csv parser
 		/// only handles floats.
 		/// </remarks>
 		[JsonProperty] public readonly float Value;
@@ -34,23 +34,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		public bool Covers(float featureValue) => Value == featureValue;
 
 		public bool Matches(Array<float> instance) => instance[FeatureIndex] == Value;
-
-		public bool Overlaps(IFeatureTest featureTest) {
-			if (featureTest == null)
-				throw new ArgumentNullException(nameof(featureTest));
-
-			if (featureTest.FeatureIndex != FeatureIndex)
-				return false;
-
-			if (featureTest is NullFeatureTest)
-				return true;
-
-			var other = featureTest as CategoricalFeatureTest;
-			if (other == null)
-				throw new InvalidOperationException(nameof(featureTest) + " is testing the same feature, but is not a " + nameof(CategoricalFeatureTest));
-
-			return other.Value == Value;
-		}
 
 		public override int GetHashCode() => _precomputedHashCode;
 

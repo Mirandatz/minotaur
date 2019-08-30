@@ -24,9 +24,9 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		[JsonConstructor]
 		public Individual(Array<Rule> rules, Array<bool> defaultLabels) {
-			if (rules == null)
+			if (rules is null)
 				throw new ArgumentNullException(nameof(rules));
-			if (defaultLabels == null)
+			if (defaultLabels is null)
 				throw new ArgumentNullException(nameof(defaultLabels));
 			if (rules.Length < MinimumRuleCount)
 				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
