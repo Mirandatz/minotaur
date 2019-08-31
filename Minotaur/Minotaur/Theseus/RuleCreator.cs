@@ -21,13 +21,13 @@ namespace Minotaur.Theseus {
 			SeedSelector seedSelector,
 			TestCreator testCreator,
 			HyperRectangleCreator hyperRectangleCreator,
-			HyperRectangleEnlarger hyperRectangleExpander
+			HyperRectangleEnlarger hyperRectangleEnlarger
 			) {
 			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_seedSelector = seedSelector ?? throw new ArgumentNullException(nameof(seedSelector));
 			_testCreator = testCreator ?? throw new ArgumentNullException(nameof(testCreator));
 			_hyperRectangleCreator = hyperRectangleCreator ?? throw new ArgumentNullException(nameof(hyperRectangleCreator));
-			_hyperRectangleExpander = hyperRectangleExpander ?? throw new ArgumentNullException(nameof(hyperRectangleExpander));
+			_hyperRectangleExpander = hyperRectangleEnlarger ?? throw new ArgumentNullException(nameof(hyperRectangleEnlarger));
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, out Rule rule) {

@@ -109,28 +109,6 @@ namespace Minotaur.Collections.Dataset {
 				labelsTransposed: labelsTransposedCopy);
 		}
 
-		// @Todo: change this to a method that returns a bool indicating
-		// whether the datasets are compatible
-		public static void ThrowIfTrainAndTestAreIncompatible(Dataset trainDataset, Dataset testDataset) {
-			if (trainDataset == null)
-				throw new ArgumentNullException(nameof(trainDataset));
-			if (testDataset == null)
-				throw new ArgumentNullException(nameof(testDataset));
-
-			if (trainDataset.FeatureCount != testDataset.FeatureCount)
-				throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same feature count");
-			if (trainDataset.ClassCount != testDataset.ClassCount)
-				throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same class count");
-
-			for (int i = 0; i < trainDataset.FeatureCount; i++) {
-				var trainFeatureType = trainDataset.GetFeatureType(i);
-				var testFeatureType = testDataset.GetFeatureType(i);
-
-				if (trainFeatureType != testFeatureType)
-					throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same feature types");
-			}
-		}
-
 		public bool IsFeatureIndexValid(int featureIndex) {
 			return featureIndex >= 0 && featureIndex < FeatureCount;
 		}

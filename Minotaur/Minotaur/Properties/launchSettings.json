@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Minotaur": {
+      "commandName": "Project",
+      "commandLineArgs": "--lazy-dev-switch"
+    }
+  }
+}

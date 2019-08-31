@@ -11,15 +11,21 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 	// @Refactor this
 	public sealed class NSGA2: IFittestSelector {
 
+		private readonly int _fittestCount;
 		private readonly FitnessEvaluator _fitnessEvaluator;
 
-		public NSGA2(FitnessEvaluator fitnessEvaluator) {
+		public NSGA2(FitnessEvaluator fitnessEvaluator, int fittestCount) {
 			_fitnessEvaluator = fitnessEvaluator ?? throw new ArgumentNullException(nameof(fitnessEvaluator));
+
+			if (fittestCount <= 0)
+				throw new ArgumentOutOfRangeException(nameof(fittestCount) + " must be >= 1.");
+
+			_fittestCount = fittestCount;
 		}
 
-		public Individual[] SelectFittest(Array<Individual> population, int fittestCount) {
-			if (fittestCount < 0)
-				throw new ArgumentOutOfRangeException(nameof(fittestCount) + " must be  >= 0");
+		public Individual[] SelectFittest(Array<Individual> population) {
+			if (_fittestCount < 0)
+				throw new ArgumentOutOfRangeException(nameof(_fittestCount) + " must be  >= 0");
 			if (population.ContainsNulls())
 				throw new ArgumentException(nameof(population) + " can't contain nulls");
 
@@ -41,14 +47,14 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 				.Select(frontWithKey => frontWithKey.ToList())
 				.ToList();
 
-			var fittest = new List<Individual>(capacity: fittestCount);
+			var fittest = new List<Individual>(capacity: _fittestCount);
 
 			foreach (var front in fronts) {
-				if (fittest.Count + front.Count <= fittestCount) {
+				if (fittest.Count + front.Count <= _fittestCount) {
 					fittest.AddRange(front);
 				} else {
 					var mostDiverse = OrderFrontByDiversity(front, fitnessesDict)
-						.Take(fittestCount - (fittest.Count));
+						.Take(_fittestCount - (fittest.Count));
 
 					fittest.AddRange(mostDiverse);
 					break;
@@ -56,7 +62,7 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 			}
 
 			// Sanity check
-			if (fittest.Count != fittestCount)
+			if (fittest.Count != _fittestCount)
 				throw new InvalidOperationException();
 
 			return fittest.ToArray();

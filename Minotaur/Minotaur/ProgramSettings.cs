@@ -5,6 +5,15 @@ namespace Minotaur {
 
 	public sealed class ProgramSettings {
 
+		/// <summary>
+		/// I'm using this unelegant approach 
+		/// because the CommandLineUtils API is somewhat... Limited.
+		/// Either that or I couldn't find the appropriate method to call.
+		/// </summary>
+		public int OnExecute() {
+			return Program.Run(this);
+		}
+
 		[Required]
 		[FileExists]
 		[Option(ShortName = "",
@@ -69,15 +78,35 @@ namespace Minotaur {
 		public int MaximumGenerations { get; }
 
 		[Required]
-		[Option(ShortName = "", LongName = "maximum-plateau-length",
+		[Option(ShortName = "",
+			LongName = "hyperrectangle-cache-size",
 			Description =
-			"Every gereration the algorithm checks if the average fitness improved, i.e., if" +
-			"the current average fitness pareto dominates the previous one." +
-			"If the average fitness haven't improved in --maximum-plateau-length generations," +
-			"the evolutionary algorithm stops."
+			"The maximum number of entries in the cache of hyperrectangle creator. " +
+			"If set to 0, effectively disables caching."
 			)]
-		[Range(1, int.MaxValue)]
-		public int MaximumPlateauLength { get; }
+		[Range(0, int.MaxValue)]
+		public int HyperRectangleCacheSize { get; }
+
+		[Required]
+		[Option(ShortName = "",
+			LongName = "rule-coverage-cache-size",
+			Description =
+			"The maximum number of entries in the cache of rule coverage computer. " +
+			"If set to 0, effectively disables caching."
+			)]
+		[Range(0, int.MaxValue)]
+		public int RuleCoverageCacheSize { get; }
+
+		//[Required]
+		//[Option(ShortName = "", LongName = "maximum-plateau-length",
+		//	Description =
+		//	"Every gereration the algorithm checks if the average fitness improved, i.e., if" +
+		//	"the current average fitness pareto dominates the previous one." +
+		//	"If the average fitness haven't improved in --maximum-plateau-length generations," +
+		//	"the evolutionary algorithm stops."
+		//	)]
+		//[Range(1, int.MaxValue)]
+		//public int MaximumPlateauLength { get; }
 
 		[Required]
 		[Option(ShortName = "", LongName = "population-size", Description = "The number of individuals in the initial and final populations.")]
@@ -141,7 +170,7 @@ namespace Minotaur {
 		public float RuleMutationModifyTestProbability { get; }
 
 		[Required]
-		[Option(ShortName = "", LongName = "modify-rule-consequent-weight",
+		[Option(ShortName = "", LongName = "rule-mutation-modify-consequent-probability",
 			Description =
 			"The probability, when mutating a rule, of modifying it's consequent (the labels it predicts)."
 			)]
