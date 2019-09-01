@@ -75,29 +75,33 @@ namespace Minotaur.Theseus {
 			var possibleValues = Dataset.GetSortedFeatureValues(cont.DimensionIndex);
 
 			var startValue = cont.Start.Value;
-			var indexOfStartValue = possibleValues.BinarySearch(startValue);
-			if (indexOfStartValue < 0)
+			var startValueIndex = float.IsNegativeInfinity(startValue)
+				? 0
+				: possibleValues.BinarySearch(startValue);
+			if (startValueIndex < 0)
 				throw new InvalidOperationException();
 
 			var endValue = cont.End.Value;
-			var indexOfEndValue = possibleValues.BinarySearch(endValue);
-			if (indexOfEndValue < 0)
+			var endValueIndex = float.IsPositiveInfinity(endValue)
+				? possibleValues.Length - 1
+				: possibleValues.BinarySearch(endValue);
+			if (endValueIndex < 0)
 				throw new InvalidOperationException();
 
-			var indexOfFirstBound = Random.Int(
-				inclusiveMin: indexOfStartValue,
-				exclusiveMax: indexOfEndValue + 1);
-			var firstBound = possibleValues[indexOfFirstBound];
+			var firstBoundIndex = Random.Int(
+				inclusiveMin: startValueIndex,
+				exclusiveMax: endValueIndex + 1);
+			var firstBoundValue = possibleValues[firstBoundIndex];
 
-			var indexOfSecondBound = Random.Int(
-				inclusiveMin: indexOfStartValue,
-				exclusiveMax: indexOfEndValue + 1);
-			var secondBound = possibleValues[indexOfSecondBound];
+			var secondBoundIndex = Random.Int(
+				inclusiveMin: startValueIndex,
+				exclusiveMax: endValueIndex + 1);
+			var secondBoundValue = possibleValues[secondBoundIndex];
 
 			return new ContinuousFeatureTest(
 				featureIndex: cont.DimensionIndex,
-				lowerBound: Math.Min(firstBound, secondBound),
-				upperBound: Math.Max(firstBound, secondBound)
+				lowerBound: Math.Min(firstBoundValue, secondBoundValue),
+				upperBound: Math.Max(firstBoundValue, secondBoundValue)
 				);
 		}
 	}
