@@ -38,6 +38,9 @@ namespace Minotaur {
 				"--population-size=200",
 				"--maximum-initial-rule-count=200",
 
+				"--hyperrectangle-cache-size=50000",
+				"--rule-coverage-cache-size=50000",
+
 				"--fittest-selection=nsga2",
 				"--mutation-probability=1.0",
 
