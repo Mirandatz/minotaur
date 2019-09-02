@@ -85,6 +85,11 @@ namespace Minotaur.Collections.Dataset {
 					.OrderBy(v => v)
 					.ToArray();
 
+					if (sortedUniqueFeatureValues[featureIndex].Length == 1) {
+						throw new InvalidOperationException($"" +
+							$"Feature {featureIndex} contains only 1 unique value.");
+					}
+
 					sortedFeatureValues[featureIndex] = featureValues
 					.OrderBy(v => v)
 					.ToArray();
