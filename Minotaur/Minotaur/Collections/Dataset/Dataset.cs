@@ -247,6 +247,17 @@ namespace Minotaur.Collections.Dataset {
 				defaultValue: 0);
 		}
 
+		public Dictionary<float, int> GetFeatureValueFrequenciesDictionary(int featureIndex) {
+			if (!IsFeatureIndexValid(featureIndex)) {
+				throw new ArgumentOutOfRangeException(
+				$"{nameof(featureIndex)} must be between [0, {FeatureCount}[.");
+			}
+
+			// @Performance
+			var frequenciesDict = _featureValueFrequencies[featureIndex];
+			return new Dictionary<float, int>(frequenciesDict);
+		}
+
 		public Array<bool> GetInstanceLabels(int instanceIndex) {
 			if (!IsInstanceIndexValid(instanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
