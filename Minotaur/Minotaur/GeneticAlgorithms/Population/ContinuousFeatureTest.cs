@@ -33,6 +33,31 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			_precomputedHashCode = HashCode.Combine(LowerBound, UpperBound, FeatureIndex);
 		}
 
+		public static ContinuousFeatureTest FromUnsortedBounds(
+			int featureIndex,
+			float firstBound,
+			float secondBound
+			) {
+			if (featureIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be >= 0");
+			if (float.IsNaN(firstBound))
+				throw new ArgumentOutOfRangeException(nameof(firstBound) + " can't be NaN.");
+			if (float.IsNaN(secondBound))
+				throw new ArgumentOutOfRangeException(nameof(secondBound) + " can't be NaN.");
+
+			if (firstBound < secondBound) {
+				return new ContinuousFeatureTest(
+					featureIndex: featureIndex,
+					lowerBound: firstBound,
+					upperBound: secondBound);
+			} else {
+				return new ContinuousFeatureTest(
+					featureIndex: featureIndex,
+					lowerBound: secondBound,
+					upperBound: firstBound);
+			}
+		}
+
 		public bool Matches(Array<float> instance) {
 			// We use 
 			// lowerBound <= threshold < upperBound

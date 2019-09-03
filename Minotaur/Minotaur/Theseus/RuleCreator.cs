@@ -82,11 +82,13 @@ namespace Minotaur.Theseus {
 
 		private HyperRectangle[] CreateHyperRectangles(Array<Rule> existingRules) {
 			var hyperRectangles = new HyperRectangle[existingRules.Length];
+
 			Parallel.For(0, hyperRectangles.Length, i => {
 				var currentRule = existingRules[i];
 				var hyperRectangle = _hyperRectangleCreator.FromRule(currentRule);
 				hyperRectangles[i] = hyperRectangle;
 			});
+
 			return hyperRectangles;
 		}
 	}

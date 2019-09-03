@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus {
 	using System;
+	using System.Collections.Generic;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
@@ -67,42 +68,68 @@ namespace Minotaur.Theseus {
 				value: value);
 		}
 
+
+		// @Improve performance
 		// @Remarks: Any ContinuousFeatureTest created by this method
 		// will use feature values _from the dataset_ as bounds.
 		// That means that values that appear more often in the dataset
 		// have a higher chance	of being used as a bound.
 		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cont) {
-			var possibleValues = Dataset.GetSortedFeatureValues(cont.DimensionIndex);
-
+			var dimensionIndex = cont.DimensionIndex;
 			var startValue = cont.Start.Value;
-			var startValueIndex = float.IsNegativeInfinity(startValue)
-				? 0
-				: possibleValues.BinarySearch(startValue);
-			if (startValueIndex < 0)
-				throw new InvalidOperationException();
-
 			var endValue = cont.End.Value;
-			var endValueIndex = float.IsPositiveInfinity(endValue)
-				? possibleValues.Length - 1
-				: possibleValues.BinarySearch(endValue);
-			if (endValueIndex < 0)
-				throw new InvalidOperationException();
 
-			var firstBoundIndex = Random.Int(
-				inclusiveMin: startValueIndex,
-				exclusiveMax: endValueIndex + 1);
-			var firstBoundValue = possibleValues[firstBoundIndex];
+			var featureValues = Dataset.GetSortedUniqueFeatureValues(
+				featureIndex: dimensionIndex);
 
-			var secondBoundIndex = Random.Int(
-				inclusiveMin: startValueIndex,
-				exclusiveMax: endValueIndex + 1);
-			var secondBoundValue = possibleValues[secondBoundIndex];
+			if (float.IsFinite(cont.Start.Value) &&
+				featureValues.BinarySearch(startValue) < 0
+				) {
+				throw new InvalidOperationException(
+					$"{nameof(cont)}.{nameof(cont.Start)}.{nameof(cont.Start.Value)} " +
+					$"is not contained in the {nameof(Dataset)}.");
+			}
 
-			return new ContinuousFeatureTest(
-				featureIndex: cont.DimensionIndex,
-				lowerBound: Math.Min(firstBoundValue, secondBoundValue),
-				upperBound: Math.Max(firstBoundValue, secondBoundValue)
-				);
+			if (float.IsFinite(cont.End.Value) &&
+				featureValues.BinarySearch(endValue) < 0
+				) {
+				throw new InvalidOperationException(
+					$"{nameof(cont)}.{nameof(cont.End)}.{nameof(cont.End.Value)} " +
+					$"is not contained in the {nameof(Dataset)}.");
+			}
+
+			// +2 to account for the case where lower bound is -infinity or
+			// the upper bound is +infinity
+			var weights = new Dictionary<float, int>(capacity: featureValues.Length + 2);
+
+			if (float.IsNegativeInfinity(startValue))
+				weights[float.NegativeInfinity] = 1;
+			if (float.IsPositiveInfinity(endValue))
+				weights[float.PositiveInfinity] = 1;
+
+			for (int i = 0; i < featureValues.Length; i++) {
+				var currentValue = featureValues[i];
+				if (currentValue >= startValue && currentValue <= endValue) {
+					weights[currentValue] = Dataset.GetFeatureValueFrequency(
+						featureIndex: dimensionIndex,
+						featureValue: currentValue);
+				}
+			}
+
+			var firstBoundChooser = BiasedOptionChooser<float>.Create(
+				weightedOptions: weights);
+			var firstBound = firstBoundChooser.GetRandomChoice();
+
+			weights.Remove(key: firstBound);
+
+			var secondBoundChooser = BiasedOptionChooser<float>.Create(
+				weightedOptions: weights);
+			var secondBound = secondBoundChooser.GetRandomChoice();
+
+			return ContinuousFeatureTest.FromUnsortedBounds(
+				featureIndex: dimensionIndex,
+				firstBound: firstBound,
+				secondBound: secondBound);
 		}
 	}
 }
