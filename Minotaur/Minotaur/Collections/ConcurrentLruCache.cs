@@ -65,6 +65,7 @@ namespace Minotaur.Collections {
 				} else {
 					_cacheMap.Add(key: key, value: newLruNode);
 					RemoveLeastRecentlyUsedIfNecessary();
+					_lruList.AddLast(newLruNode);
 				}
 			}
 		}
@@ -91,13 +92,13 @@ namespace Minotaur.Collections {
 			lock (SyncRoot) {
 				var isCached = _cacheMap.TryGetValue(key, out var lruNode);
 
-				if (!isCached) {
-					value = default;
-					return false;
-				} else {
+				if (isCached) {
 					UpdateUsage(lruNode);
 					value = lruNode.Value.Value;
 					return true;
+				} else {
+					value = default;
+					return false;
 				}
 			}
 		}
