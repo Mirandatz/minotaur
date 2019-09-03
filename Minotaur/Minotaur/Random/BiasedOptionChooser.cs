@@ -1,5 +1,6 @@
 namespace Minotaur.Random {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using Minotaur.Collections;
 
@@ -36,7 +37,56 @@ namespace Minotaur.Random {
 			return FromWeightedOptions(optionsAndProbabilities);
 		}
 
-		private static BiasedOptionChooser<T> FromWeightedOptions((T option, int weight)[] weightedOptions) {
+		public static BiasedOptionChooser<T> Create(Dictionary<T, int> weightedOptions) {
+			if (weightedOptions is null)
+				throw new ArgumentNullException(nameof(weightedOptions));
+			if (weightedOptions.Count == 0)
+				throw new ArgumentException(nameof(weightedOptions) + " can't be empty.");
+
+			var sortedWeightedOptions = weightedOptions
+				.OrderBy(kvp => kvp.Value)
+				.ToList();
+
+			for (int i = 0; i < sortedWeightedOptions.Count; i++) {
+				if (sortedWeightedOptions[i].Value <= 0) {
+					throw new ArgumentException(nameof(weightedOptions) + " can't contain non-positive weights.");
+				}
+			}
+
+			var options = new T[sortedWeightedOptions.Count];
+			var weights = new int[sortedWeightedOptions.Count];
+			var sumOfWeights = 0;
+
+			/* option A, weight 10
+			 * option B, weight 10
+			 * option C, weight 30
+			 * 
+			 * weights are stored in this way
+			 * [10, 20, 50]
+			 * 
+			 * We then roll a dice between 0 and 50
+			 * if dice < 10, we choose option a
+			 * if dice < 20, we choose option b
+			 * else we chose option c
+			 */
+
+			for (int i = 0; i < sortedWeightedOptions.Count; i++) {
+				var (option, weight) = sortedWeightedOptions[i];
+
+				sumOfWeights += weight;
+				options[i] = option;
+				weights[i] = sumOfWeights;
+			}
+
+			return new BiasedOptionChooser<T>(
+				options: options,
+				weights: weights,
+				sumOfWeights: sumOfWeights);
+		}
+
+		private static BiasedOptionChooser<T> FromWeightedOptions(
+			(T option, int weight)[] weightedOptions
+			) {
 			var sortedWeightedOptions = weightedOptions
 				.OrderBy(op => op.weight)
 				.ToList();
