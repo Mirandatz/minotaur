@@ -86,8 +86,19 @@ namespace Minotaur.Collections.Dataset {
 					.ToArray();
 
 					if (sortedUniqueFeatureValues[featureIndex].Length == 1) {
-						throw new InvalidOperationException($"" +
-							$"Feature {featureIndex} contains only 1 unique value.");
+						switch (featureTypes[featureIndex]) {
+
+						case FeatureType.Categorical:
+						featureTypes[featureIndex] = FeatureType.CategoricalButTriviallyValued;
+						break;
+
+						case FeatureType.Continuous:
+						featureTypes[featureIndex] = FeatureType.ContinuousButTriviallyValued;
+						break;
+
+						default:
+						throw new InvalidOperationException();
+						}
 					}
 
 					sortedFeatureValues[featureIndex] = featureValues
