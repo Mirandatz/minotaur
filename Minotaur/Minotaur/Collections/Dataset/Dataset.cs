@@ -45,27 +45,27 @@ namespace Minotaur.Collections.Dataset {
 		}
 
 		public static Dataset CreateFromMutableObjects(
-			FeatureType[] featureTypes,
-			MutableMatrix<float> data,
-			MutableMatrix<bool> labels
+			FeatureType[] mutableFeatureTypes,
+			MutableMatrix<float> mutableData,
+			MutableMatrix<bool> mutableLabels
 			) {
-			if (featureTypes == null)
-				throw new ArgumentNullException(nameof(featureTypes));
-			if (data == null)
-				throw new ArgumentNullException(nameof(data));
-			if (labels == null)
-				throw new ArgumentNullException(nameof(labels));
+			if (mutableFeatureTypes == null)
+				throw new ArgumentNullException(nameof(mutableFeatureTypes));
+			if (mutableData == null)
+				throw new ArgumentNullException(nameof(mutableData));
+			if (mutableLabels == null)
+				throw new ArgumentNullException(nameof(mutableLabels));
 
-			if (featureTypes.Length != data.ColumnCount)
+			if (mutableFeatureTypes.Length != mutableData.ColumnCount)
 				throw new ArgumentException("featureTypes.Length must be equal to  data.ColumnCount");
-			if (data.RowCount != labels.RowCount)
+			if (mutableData.RowCount != mutableLabels.RowCount)
 				throw new ArgumentException("label.RowCount must be equal to data.RowCount");
 
-			var featureTypesCopy = featureTypes.ToArray();
-			var dataCopy = data.ToMatrix();
-			var dataTransposedCopy = data.Transpose().ToMatrix();
-			var labelsCopy = labels.ToMatrix();
-			var labelsTransposedCopy = labels.Transpose().ToMatrix();
+			var featureTypes = mutableFeatureTypes.ToArray();
+			var data = mutableData.ToMatrix();
+			var dataTransposed = mutableData.Transpose().ToMatrix();
+			var labels = mutableLabels.ToMatrix();
+			var labelsTranposed = mutableLabels.Transpose().ToMatrix();
 
 			var featuresCount = featureTypes.Length;
 
@@ -78,7 +78,7 @@ namespace Minotaur.Collections.Dataset {
 				toExclusive: featuresCount,
 				body: featureIndex => {
 
-					var featureValues = dataTransposedCopy.GetRow(featureIndex).ToArray();
+					var featureValues = dataTransposed.GetRow(featureIndex).ToArray();
 
 					sortedUniqueFeatureValues[featureIndex] = featureValues
 					.Distinct()
@@ -89,11 +89,11 @@ namespace Minotaur.Collections.Dataset {
 						switch (featureTypes[featureIndex]) {
 
 						case FeatureType.Categorical:
-						featureTypesCopy[featureIndex] = FeatureType.CategoricalButTriviallyValued;
+						featureTypes[featureIndex] = FeatureType.CategoricalButTriviallyValued;
 						break;
 
 						case FeatureType.Continuous:
-						featureTypesCopy[featureIndex] = FeatureType.ContinuousButTriviallyValued;
+						featureTypes[featureIndex] = FeatureType.ContinuousButTriviallyValued;
 						break;
 
 						default:
@@ -115,14 +115,14 @@ namespace Minotaur.Collections.Dataset {
 				});
 
 			return new Dataset(
-				featureTypes: featureTypesCopy,
-				data: dataCopy,
-				dataTransposed: dataTransposedCopy,
+				featureTypes: featureTypes,
+				data: data,
+				dataTransposed: dataTransposed,
 				sortedFeatureValues: sortedFeatureValues,
 				sortedUniqueFeatureValues: sortedUniqueFeatureValues,
 				featureValueFrequencies: featureValueFrequencies,
-				labels: labelsCopy,
-				labelsTransposed: labelsTransposedCopy);
+				labels: labels,
+				labelsTransposed: labelsTranposed);
 		}
 
 		public bool IsFeatureIndexValid(int featureIndex) {

@@ -20,8 +20,8 @@ namespace Minotaur.Theseus {
 			if (!target.IsCompatibleWith(other)) {
 				throw new ArgumentException(
 					$"{nameof(target)} " +
-					$"must be compatible (i.e. same number and types of dimensions " +
-					$"with {nameof(other)}");
+					$"must be compatible (i.e. same number and types of dimensions) " +
+					$"with {nameof(other)}.");
 			}
 
 			var dimensionCount = target.DimensionCount;
@@ -31,14 +31,14 @@ namespace Minotaur.Theseus {
 
 				var lhs = target.GetDimensionInterval(i);
 				var rhs = other.GetDimensionInterval(i);
-				if (!Intersects(lhs, rhs))
+				if (!DimensionIntersects(lhs, rhs))
 					return false;
 			}
 
 			return true;
 		}
 
-		private static bool Intersects(IDimensionInterval lhs, IDimensionInterval rhs) {
+		private static bool DimensionIntersects(IDimensionInterval lhs, IDimensionInterval rhs) {
 			var lhsCat = lhs as CategoricalDimensionInterval;
 			var rhsCat = rhs as CategoricalDimensionInterval;
 			if (!(lhsCat is null))

@@ -56,7 +56,7 @@ namespace Minotaur {
 
 		public static int Run(ProgramSettings settings) {
 			(var trainDataset, var testDataset) = LoadDatasets(settings);
-
+			
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
 			IConcurrentCache<Rule, HyperRectangle> hyperRectangleCreatorCache;
@@ -132,14 +132,14 @@ namespace Minotaur {
 			Console.WriteLine(" Done.");
 
 			var trainDataset = Dataset.CreateFromMutableObjects(
-				featureTypes: featureTypes.Result,
-				data: trainData.Result,
-				labels: trainLabels.Result);
+				mutableFeatureTypes: featureTypes.Result,
+				mutableData: trainData.Result,
+				mutableLabels: trainLabels.Result);
 
 			var testDataset = Dataset.CreateFromMutableObjects(
-				featureTypes: featureTypes.Result,
-				data: testData.Result,
-				labels: testLabels.Result);
+				mutableFeatureTypes: featureTypes.Result,
+				mutableData: testData.Result,
+				mutableLabels: testLabels.Result);
 
 			Console.Write("Checking if TrainDataset and TestDataset are compatible...");
 

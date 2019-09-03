@@ -69,13 +69,13 @@ namespace Minotaur.Theseus {
 			return tests;
 		}
 
-		private HyperRectangle EnlargeRectangle(HyperRectangle seed, HyperRectangle[] hyperRectangles) {
+		private HyperRectangle EnlargeRectangle(Array<float> seed, HyperRectangle[] hyperRectangles) {
 			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
 							inclusiveStart: 0,
 							exclusiveEnd: Dataset.FeatureCount);
 
 			return _hyperRectangleExpander.Enlarge(
-				target: seed,
+				seed: seed,
 				others: hyperRectangles,
 				dimensionExpansionOrder: dimensionExpansionOrder);
 		}

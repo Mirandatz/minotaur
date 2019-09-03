@@ -1,5 +1,6 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
+	using Minotaur.Collections;
 
 	public sealed class MutableHyperRectangle: IHyperRectangle {
 
@@ -32,6 +33,13 @@ namespace Minotaur.Math.Dimensions {
 			}
 
 			_dimensionIntervals[index] = dimensionInterval;
+		}
+
+		public static MutableHyperRectangle FromDatasetInstance(Array<float> seed) {
+			if (seed is null)
+				throw new ArgumentNullException(nameof(seed));
+
+			throw new NotImplementedException();
 		}
 
 		public static MutableHyperRectangle FromHyperRectangle(HyperRectangle rect) {

@@ -8,7 +8,7 @@ namespace Minotaur.Theseus {
 	using Random = Minotaur.Random.ThreadStaticRandom;
 
 	public sealed class SeedSelector {
-		private readonly Dataset _dataset;
+		public readonly Dataset Dataset;
 		private readonly HyperRectangleCreator _featureSpaceRegionCreator;
 		private readonly RuleCoverageComputer _ruleCoverageComputer;
 
@@ -17,12 +17,12 @@ namespace Minotaur.Theseus {
 			HyperRectangleCreator featureSpaceRegionCreator,
 			RuleCoverageComputer ruleCoverageComputer
 			) {
-			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_featureSpaceRegionCreator = featureSpaceRegionCreator ?? throw new ArgumentNullException(nameof(featureSpaceRegionCreator));
 			_ruleCoverageComputer = ruleCoverageComputer ?? throw new ArgumentNullException(nameof(ruleCoverageComputer));
 		}
 
-		public bool TryFindSeed(Array<Rule> existingRules, out HyperRectangle seed) {
+		public bool TryFindSeed(Array<Rule> existingRules, out Array<float> seed) {
 			if (existingRules == null)
 				throw new ArgumentNullException(nameof(existingRules));
 			if (existingRules.ContainsNulls())
@@ -31,9 +31,9 @@ namespace Minotaur.Theseus {
 			if (existingRules.IsEmpty) {
 				var datasetInstanceIndex = Random.Int(
 					inclusiveMin: 0,
-					exclusiveMax: _dataset.InstanceCount);
+					exclusiveMax: Dataset.InstanceCount);
 
-				seed = _featureSpaceRegionCreator.FromDatasetInstance(datasetInstanceIndex);
+				seed = Dataset.GetInstanceData(datasetInstanceIndex);
 				return true;
 			}
 
@@ -45,7 +45,7 @@ namespace Minotaur.Theseus {
 				return false;
 			} else {
 				var datasetInstanceIndex = Random.Choice(potentialSeeds);
-				seed = _featureSpaceRegionCreator.FromDatasetInstance(datasetInstanceIndex);
+				seed = Dataset.GetInstanceData(datasetInstanceIndex);
 				return true;
 			}
 		}
