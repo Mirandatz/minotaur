@@ -152,8 +152,52 @@ namespace Minotaur {
 				var trainFeatureType = trainDataset.GetFeatureType(i);
 				var testFeatureType = testDataset.GetFeatureType(i);
 
-				if (trainFeatureType != testFeatureType)
-					throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same feature types");
+				switch (trainFeatureType) {
+
+				case FeatureType.Categorical:
+				if (testFeatureType == FeatureType.Categorical ||
+					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+				case FeatureType.Continuous:
+				if (testFeatureType == FeatureType.Continuous ||
+					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+
+				case FeatureType.CategoricalButTriviallyValued:
+				if (testFeatureType == FeatureType.Categorical ||
+					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+				case FeatureType.ContinuousButTriviallyValued:
+				if (testFeatureType == FeatureType.Continuous ||
+					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+				default:
+				throw new InvalidOperationException("Unknown / unsupported value for {nameof(FeatureType)}.");
+				}
 			}
 
 			Console.WriteLine(" Ok.");

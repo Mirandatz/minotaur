@@ -89,11 +89,11 @@ namespace Minotaur.Collections.Dataset {
 						switch (featureTypes[featureIndex]) {
 
 						case FeatureType.Categorical:
-						featureTypes[featureIndex] = FeatureType.CategoricalButTriviallyValued;
+						featureTypesCopy[featureIndex] = FeatureType.CategoricalButTriviallyValued;
 						break;
 
 						case FeatureType.Continuous:
-						featureTypes[featureIndex] = FeatureType.ContinuousButTriviallyValued;
+						featureTypesCopy[featureIndex] = FeatureType.ContinuousButTriviallyValued;
 						break;
 
 						default:
