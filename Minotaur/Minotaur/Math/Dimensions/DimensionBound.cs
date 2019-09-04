@@ -12,5 +12,29 @@ namespace Minotaur.Math.Dimensions {
 			Value = value;
 			IsInclusive = isInclusive;
 		}
+
+		/// <remarks>
+		/// All continuous interval "stars" are inclusive.
+		/// </remarks>
+		public static DimensionBound CreateStart(float value) {
+			if (float.IsNaN(value))
+				throw new ArgumentOutOfRangeException(nameof(value) + " can't be NaN.");
+
+			return new DimensionBound(
+				value: value,
+				isInclusive: true);
+		}
+
+		/// <remarks>
+		/// All continuous interval "ends" are exclusive.
+		/// </remarks>
+		public static DimensionBound CreateEnd(float value) {
+			if (float.IsNaN(value))
+				throw new ArgumentOutOfRangeException(nameof(value) + " can't be NaN.");
+
+			return new DimensionBound(
+				value: value,
+				isInclusive: false);
+		}
 	}
 }

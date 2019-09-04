@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus {
 	using System;
+	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -21,6 +22,10 @@ namespace Minotaur.Theseus {
 			Dataset = dimensionIntervalCreator.Dataset;
 		}
 
+		/// <summary>
+		/// To understand what the heck is going on,
+		/// check this https://arxiv.org/abs/1908.09652
+		/// </summary>
 		public HyperRectangle CreateLargestNonIntersectingHyperRectangle(
 			Array<float> seed,
 			Array<HyperRectangle> existingRectangles,
@@ -33,18 +38,133 @@ namespace Minotaur.Theseus {
 			if (dimensionExpansionOrder is null)
 				throw new ArgumentNullException(nameof(dimensionExpansionOrder));
 
-			var dimensions = new IDimensionInterval[seed.Length];
-
+			// @Todo: add loads of safety checks
 			if (existingRectangles.IsEmpty) {
+				var dimensions = new IDimensionInterval[seed.Length];
 				for (int i = 0; i < dimensions.Length; i++)
-					dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimension(dimensionIndex: i);
+					dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimensionInterval(dimensionIndex: i);
 
 				return new HyperRectangle(dimensions);
 			}
 
+			var mutable = MutableHyperRectangle.FromDatasetInstance(seed);
 
-			throw new NotImplementedException();
+			for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
+				var dimensionIndex = dimensionExpansionOrder[i];
 
+				switch (Dataset.GetFeatureType(dimensionIndex)) {
+				case FeatureType.Categorical:
+				EnlargeCategoricalDimension(
+					seed: seed,
+					mutable: mutable,
+					dimensionIndex: dimensionIndex,
+					existingRectangles: existingRectangles);
+				break;
+
+				case FeatureType.CategoricalButTriviallyValued:
+				// Ain't nothing to do, bruh... There is a single
+				// value in the dataset... Whata pain...
+				break;
+
+				case FeatureType.Continuous:
+				EnlargeContinuousDimension(
+					seed: seed,
+					mutable: mutable,
+					dimensionIndex: dimensionIndex,
+					existingRectangles: existingRectangles);
+				break;
+
+				case FeatureType.ContinuousButTriviallyValued:
+				EnlargeContinuousDimension(
+					seed: seed,
+					mutable: mutable,
+					dimensionIndex: dimensionIndex,
+					existingRectangles: existingRectangles);
+				break;
+
+				default:
+				throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
+				}
+			}
+
+			return mutable.ToHyperRectangle();
+		}
+
+		private void EnlargeCategoricalDimension(
+			Array<float> seed,
+			MutableHyperRectangle mutable,
+			int dimensionIndex,
+			Array<HyperRectangle> existingRectangles
+			) {
+
+			var possibleValues = Dataset
+				.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex)
+				.ToHashSet();
+
+			for (int i = 0; i < existingRectangles.Length; i++) {
+				var other = existingRectangles[i];
+
+				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
+					target: mutable,
+					other: other,
+					dimensionToSkip: dimensionIndex);
+
+				var otherDimension = (CategoricalDimensionInterval) other.GetDimensionInterval(dimensionIndex);
+
+				if (intersects)
+					possibleValues.ExceptWith(otherDimension.SortedValues);
+			}
+
+			var sortedPossibleValues = possibleValues
+				.OrderBy(v => v)
+				.ToArray();
+
+			var enlargedDimension = CategoricalDimensionInterval.FromSortedUniqueValues(
+				dimensionIndex: dimensionIndex,
+				sortedUniqueValues: sortedPossibleValues);
+
+			mutable.SetDimensionInterval(enlargedDimension);
+		}
+
+		private void EnlargeContinuousDimension(
+			Array<float> seed,
+			MutableHyperRectangle mutable,
+			int dimensionIndex,
+			Array<HyperRectangle> existingRectangles
+			) {
+
+			// @Assumption: continuous feature may have
+			// any have from negative infinity to positive infinity
+			var min = float.NegativeInfinity;
+			var max = float.PositiveInfinity;
+
+			for (int i = 0; i < existingRectangles.Length; i++) {
+				var other = existingRectangles[i];
+				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
+					target: mutable,
+					other: other,
+					dimensionToSkip: dimensionIndex);
+
+				if (!intersects)
+					continue;
+
+				var otherDimension = (ContinuousDimensionInterval) other.Dimensions[dimensionIndex];
+				if (seed[dimensionIndex] > otherDimension.End.Value)
+					min = Math.Max(min, otherDimension.End.Value);
+				else
+					max = Math.Min(max, otherDimension.Start.Value);
+			}
+
+			// @Assumption all continuous intervals have 
+			// inclusive start values and exclusive end values
+			var start = DimensionBound.CreateStart(min);
+			var end = DimensionBound.CreateEnd(max);
+			var enlargedDimension = new ContinuousDimensionInterval(
+				dimensionIndex: dimensionIndex,
+				start: start,
+				end: end);
+
+			mutable.SetDimensionInterval(enlargedDimension);
 		}
 
 		public HyperRectangle FromRule(Rule rule) {

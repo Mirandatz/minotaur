@@ -72,7 +72,7 @@ namespace Minotaur.Theseus {
 				value: categorical.Value);
 		}
 
-		public IDimensionInterval CreateMaximalDimension(int dimensionIndex) {
+		public IDimensionInterval CreateMaximalDimensionInterval(int dimensionIndex) {
 			if (!Dataset.IsFeatureIndexValid(dimensionIndex))
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
 

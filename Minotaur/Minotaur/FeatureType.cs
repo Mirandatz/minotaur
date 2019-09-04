@@ -29,8 +29,8 @@ namespace Minotaur {
 	/// </summary>
 	public enum FeatureType {
 		Categorical,
-		Continuous,
 		CategoricalButTriviallyValued,
+		Continuous,
 		ContinuousButTriviallyValued
 	}
 }
