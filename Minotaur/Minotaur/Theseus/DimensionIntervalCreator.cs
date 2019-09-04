@@ -10,7 +10,7 @@ namespace Minotaur.Theseus {
 		public DimensionIntervalCreator(Dataset dataset) {
 			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 		}
-	
+
 		public IDimensionInterval FromFeatureTest(IFeatureTest test) {
 			if (test is null)
 				throw new ArgumentNullException(nameof(test));
@@ -42,9 +42,9 @@ namespace Minotaur.Theseus {
 
 			// @Improve performance
 			case FeatureType.Categorical:
-			return new CategoricalDimensionInterval(
+			return CategoricalDimensionInterval.FromSortedUniqueValues(
 				dimensionIndex: featureIndex,
-				values: featureValues.ToArray());
+				sortedUniqueValues: featureValues);
 
 			case FeatureType.Continuous:
 			var min = featureValues[0];
@@ -67,9 +67,66 @@ namespace Minotaur.Theseus {
 		}
 
 		private IDimensionInterval FromCategoricalFeatureTest(CategoricalFeatureTest categorical) {
-			return new CategoricalDimensionInterval(
+			return CategoricalDimensionInterval.FromSingleValue(
 				dimensionIndex: categorical.FeatureIndex,
-				values: new float[] { categorical.Value });
+				value: categorical.Value);
+		}
+
+		public IDimensionInterval CreateMaximalDimension(int dimensionIndex) {
+			if (!Dataset.IsFeatureIndexValid(dimensionIndex))
+				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
+
+			switch (Dataset.GetFeatureType(dimensionIndex)) {
+
+			case FeatureType.Categorical: {
+				var values = Dataset.GetSortedUniqueFeatureValues(dimensionIndex);
+				return CategoricalDimensionInterval.FromSortedUniqueValues(
+					dimensionIndex: dimensionIndex,
+					sortedUniqueValues: values);
+			}
+
+			case FeatureType.CategoricalButTriviallyValued: {
+				var values = Dataset.GetSortedUniqueFeatureValues(dimensionIndex);
+				return CategoricalDimensionInterval.FromSortedUniqueValues(
+					dimensionIndex: dimensionIndex,
+					sortedUniqueValues: values);
+			}
+
+			case FeatureType.Continuous: {
+				var lowerBound = new DimensionBound(
+					value: float.NegativeInfinity,
+					isInclusive: true);
+
+				// @Careful, this feels weird...
+				var upperBound = new DimensionBound(
+					value: float.PositiveInfinity,
+					isInclusive: true);
+
+				return new ContinuousDimensionInterval(
+					dimensionIndex: dimensionIndex,
+					start: lowerBound,
+					end: upperBound);
+			}
+
+			case FeatureType.ContinuousButTriviallyValued: {
+				var lowerBound = new DimensionBound(
+					value: float.NegativeInfinity,
+					isInclusive: true);
+
+				// @Careful, this feels weird...
+				var upperBound = new DimensionBound(
+					value: float.PositiveInfinity,
+					isInclusive: true);
+
+				return new ContinuousDimensionInterval(
+					dimensionIndex: dimensionIndex,
+					start: lowerBound,
+					end: upperBound);
+			}
+
+			default:
+			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
+			}
 		}
 	}
 }

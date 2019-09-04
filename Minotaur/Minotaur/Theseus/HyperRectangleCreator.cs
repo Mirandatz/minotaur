@@ -36,10 +36,15 @@ namespace Minotaur.Theseus {
 			var dimensions = new IDimensionInterval[seed.Length];
 
 			if (existingRectangles.IsEmpty) {
-				throw new NotImplementedException();
-			} else {
-				throw new NotImplementedException();
+				for (int i = 0; i < dimensions.Length; i++)
+					dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimension(dimensionIndex: i);
+
+				return new HyperRectangle(dimensions);
 			}
+
+
+			throw new NotImplementedException();
+
 		}
 
 		public HyperRectangle FromRule(Rule rule) {
