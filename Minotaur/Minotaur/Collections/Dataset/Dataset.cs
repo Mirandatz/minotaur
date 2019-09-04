@@ -80,6 +80,9 @@ namespace Minotaur.Collections.Dataset {
 
 					var featureValues = dataTransposed.GetRow(featureIndex).ToArray();
 
+					if (featureValues.Any(v => !float.IsFinite(v)))
+						throw new InvalidOperationException(nameof(Dataset) + " only supports finite values.");
+
 					sortedUniqueFeatureValues[featureIndex] = featureValues
 					.Distinct()
 					.OrderBy(v => v)

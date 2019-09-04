@@ -65,7 +65,18 @@ namespace Minotaur.Collections.Dataset {
 				var parsed = float.TryParse(splits[i], out var value);
 
 				if (!parsed) {
-					throw new InvalidOperationException($"Unable to parse element. Line: {lineNumber},  Column: {i}, Value: {splits[i]}.");
+					throw new InvalidOperationException($"Unable to parse element. " +
+						$"Line: {lineNumber},  Column: {i}, Value: {splits[i]}.");
+				}
+
+				if (float.IsNaN(value)) {
+					throw new InvalidOperationException($"Unable to parse element, NaN is not supported. " +
+						$"Line: {lineNumber},  Column: {i}, Value: {splits[i]}.");
+				}
+
+				if (float.IsInfinity(value)) {
+					throw new InvalidOperationException($"Unable to parse element, infinities are not supported. " +
+						$"Line: {lineNumber},  Column: {i}, Value: {splits[i]}.");
 				}
 
 				matrix.Set(
