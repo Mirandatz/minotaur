@@ -30,7 +30,7 @@ namespace Minotaur.Theseus {
 			var instanceCount = _dataset.InstanceCount;
 			var instaceIsCovered = new bool[instanceCount];
 
-			for (int i = 0; i < instanceCount; i++) {
+			for (int i = 0; i < instaceIsCovered.Length; i++) {
 				var instanceData = _dataset.GetInstanceData(i);
 				instaceIsCovered[i] = rule.Covers(instanceData);
 			}

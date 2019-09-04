@@ -4,7 +4,6 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
-	using Minotaur.Math.Dimensions;
 	using Random = Minotaur.Random.ThreadStaticRandom;
 
 	public sealed class SeedSelector {
@@ -56,7 +55,7 @@ namespace Minotaur.Theseus {
 				coverages[i] = _ruleCoverageComputer.ComputeRuleCoverage(existingRules[i]);
 			});
 
-			var totalCoverage = RuleCoverage.Or(coverages);
+			var totalCoverage = RuleCoverage.CombineCoveragesBinaryOr(coverages);
 			return totalCoverage;
 		}
 	}

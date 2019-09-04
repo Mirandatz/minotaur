@@ -45,9 +45,9 @@ namespace Minotaur.Theseus {
 
 			var hyperRectangles = CreateHyperRectangles(existingRules: existingRules);
 
-			var secureRectangle = EnlargeRectangle(
+			var secureRectangle = CreateConsistentRectangle(
 				seed: seed,
-				hyperRectangles: hyperRectangles);
+				existingRectangles: hyperRectangles);
 
 			var tests = CreateTests(secureRectangle);
 			var labels = Random.Bools(count: Dataset.ClassCount);
@@ -69,14 +69,14 @@ namespace Minotaur.Theseus {
 			return tests;
 		}
 
-		private HyperRectangle EnlargeRectangle(Array<float> seed, HyperRectangle[] hyperRectangles) {
+		private HyperRectangle CreateConsistentRectangle(Array<float> seed, HyperRectangle[] existingRectangles) {
 			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
 							inclusiveStart: 0,
 							exclusiveEnd: Dataset.FeatureCount);
 
 			return _hyperRectangleExpander.Enlarge(
 				seed: seed,
-				others: hyperRectangles,
+				others: existingRectangles,
 				dimensionExpansionOrder: dimensionExpansionOrder);
 		}
 

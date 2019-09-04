@@ -32,7 +32,7 @@ namespace Minotaur.Theseus {
 			IndicesOfUncoveredInstances = uncovered.ToArray();
 		}
 
-		public static RuleCoverage Or(Array<RuleCoverage> coverages) {
+		public static RuleCoverage CombineCoveragesBinaryOr(Array<RuleCoverage> coverages) {
 			if (coverages == null)
 				throw new ArgumentNullException(nameof(coverages));
 			if (coverages.ContainsNulls())
@@ -49,15 +49,15 @@ namespace Minotaur.Theseus {
 			var finalCoverage = new bool[datasetInstaceCount];
 
 			for (int i = 0; i < coverages.Length; i++)
-				Or(finalCoverage, coverages[i]);
-
+				BinaryOr(finalCoverage, coverages[i]);
+			
 			return new RuleCoverage(
 				dataset: coverages[0].Dataset,
 				instancesCovered: finalCoverage);
 
 		}
 
-		private static void Or(bool[] finalCoverage, RuleCoverage ruleCoverage) {
+		private static void BinaryOr(bool[] finalCoverage, RuleCoverage ruleCoverage) {
 			var lhs = finalCoverage;
 			var rhs = ruleCoverage.InstancesCovered;
 
