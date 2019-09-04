@@ -7,16 +7,15 @@ namespace Minotaur.Theseus {
 	public sealed class IndividualCreator {
 		public readonly Dataset Dataset;
 		private readonly int _maximumInitialRuleCount;
-
 		private readonly RuleCreator _ruleCreator;
 
-		public IndividualCreator(Dataset dataset, RuleCreator ruleCreator, int maximumInitialRuleCount) {
+		public IndividualCreator(RuleCreator ruleCreator, int maximumInitialRuleCount) {
 			if (maximumInitialRuleCount <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumInitialRuleCount) + " must be >= 1.");
 
-			Dataset = dataset;
 			_maximumInitialRuleCount = maximumInitialRuleCount;
 			_ruleCreator = ruleCreator ?? throw new ArgumentNullException(nameof(ruleCreator));
+			Dataset = ruleCreator.Dataset;
 		}
 
 		public Individual Create() {

@@ -83,8 +83,6 @@ namespace Minotaur {
 				dimensionIntervalCreator: dimensionIntervalCreator,
 				cache: hyperRectangleCreatorCache);
 
-			var hyperRectangleEnlarger = new HyperRectangleEnlarger(dataset: trainDataset);
-
 			var seedSelector = new SeedSelector(
 				dataset: trainDataset,
 				featureSpaceRegionCreator: hyperRectangleCreator,
@@ -93,14 +91,11 @@ namespace Minotaur {
 			var testCreator = new TestCreator(dataset: trainDataset);
 
 			var ruleCreator = new RuleCreator(
-				dataset: trainDataset,
 				seedSelector: seedSelector,
 				testCreator: testCreator,
-				hyperRectangleCreator: hyperRectangleCreator,
-				hyperRectangleEnlarger: hyperRectangleEnlarger);
+				hyperRectangleCreator: hyperRectangleCreator);
 
 			var individualCreator = new IndividualCreator(
-				dataset: trainDataset,
 				ruleCreator: ruleCreator,
 				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
 

@@ -13,21 +13,18 @@ namespace Minotaur.Theseus {
 		public readonly Dataset Dataset;
 		private readonly SeedSelector _seedSelector;
 		private readonly HyperRectangleCreator _hyperRectangleCreator;
-		private readonly HyperRectangleEnlarger _hyperRectangleExpander;
 		private readonly TestCreator _testCreator;
 
 		public RuleCreator(
-			Dataset dataset,
 			SeedSelector seedSelector,
 			TestCreator testCreator,
-			HyperRectangleCreator hyperRectangleCreator,
-			HyperRectangleEnlarger hyperRectangleEnlarger
+			HyperRectangleCreator hyperRectangleCreator
 			) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_seedSelector = seedSelector ?? throw new ArgumentNullException(nameof(seedSelector));
 			_testCreator = testCreator ?? throw new ArgumentNullException(nameof(testCreator));
 			_hyperRectangleCreator = hyperRectangleCreator ?? throw new ArgumentNullException(nameof(hyperRectangleCreator));
-			_hyperRectangleExpander = hyperRectangleEnlarger ?? throw new ArgumentNullException(nameof(hyperRectangleEnlarger));
+
+			Dataset = testCreator.Dataset;
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, out Rule rule) {
@@ -45,7 +42,7 @@ namespace Minotaur.Theseus {
 
 			var hyperRectangles = CreateHyperRectangles(existingRules: existingRules);
 
-			var secureRectangle = CreateConsistentRectangle(
+			var secureRectangle = CreateLargestNonIntersectingHyperRectangle(
 				seed: seed,
 				existingRectangles: hyperRectangles);
 
@@ -59,27 +56,6 @@ namespace Minotaur.Theseus {
 			return true;
 		}
 
-		private IFeatureTest[] CreateTests(HyperRectangle secureRectangle) {
-			var dimension = secureRectangle.Dimensions;
-			var tests = new IFeatureTest[dimension.Length];
-
-			for (int i = 0; i < tests.Length; i++)
-				tests[i] = _testCreator.FromDimensionInterval(dimension[i]);
-
-			return tests;
-		}
-
-		private HyperRectangle CreateConsistentRectangle(Array<float> seed, HyperRectangle[] existingRectangles) {
-			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
-							inclusiveStart: 0,
-							exclusiveEnd: Dataset.FeatureCount);
-
-			return _hyperRectangleExpander.Enlarge(
-				seed: seed,
-				others: existingRectangles,
-				dimensionExpansionOrder: dimensionExpansionOrder);
-		}
-
 		private HyperRectangle[] CreateHyperRectangles(Array<Rule> existingRules) {
 			var hyperRectangles = new HyperRectangle[existingRules.Length];
 
@@ -90,6 +66,27 @@ namespace Minotaur.Theseus {
 			});
 
 			return hyperRectangles;
+		}
+
+		private HyperRectangle CreateLargestNonIntersectingHyperRectangle(Array<float> seed, HyperRectangle[] existingRectangles) {
+			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
+							inclusiveStart: 0,
+							exclusiveEnd: Dataset.FeatureCount);
+
+			return _hyperRectangleCreator.CreateLargestNonIntersectingHyperRectangle(
+				seed: seed,
+				existingRectangles: existingRectangles,
+				dimensionExpansionOrder: dimensionExpansionOrder);
+		}
+
+		private IFeatureTest[] CreateTests(HyperRectangle secureRectangle) {
+			var dimension = secureRectangle.Dimensions;
+			var tests = new IFeatureTest[dimension.Length];
+
+			for (int i = 0; i < tests.Length; i++)
+				tests[i] = _testCreator.FromDimensionInterval(dimension[i]);
+
+			return tests;
 		}
 	}
 }

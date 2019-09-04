@@ -10,45 +10,7 @@ namespace Minotaur.Theseus {
 		public DimensionIntervalCreator(Dataset dataset) {
 			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 		}
-
-		public IDimensionInterval FromDatasetInstance(int datasetInstanceIndex, int dimensionIndex) {
-			if (!Dataset.IsInstanceIndexValid(datasetInstanceIndex))
-				throw new ArgumentOutOfRangeException(nameof(datasetInstanceIndex));
-			if (!Dataset.IsFeatureIndexValid(dimensionIndex))
-				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
-
-			switch (Dataset.GetFeatureType(featureIndex: dimensionIndex)) {
-
-			case FeatureType.Categorical: {
-				var value = Dataset.GetDatum(
-					instanceIndex: datasetInstanceIndex,
-					featureIndex: dimensionIndex);
-
-				return new CategoricalDimensionInterval(
-					dimensionIndex: dimensionIndex,
-					values: new float[] { value });
-			}
-
-			case FeatureType.Continuous: {
-				var value = Dataset.GetDatum(
-					instanceIndex: datasetInstanceIndex,
-					featureIndex: dimensionIndex);
-
-				var bound = new DimensionBound(
-					value: value,
-					isInclusive: true);
-
-				return new ContinuousDimensionInterval(
-					dimensionIndex: dimensionIndex,
-					start: bound,
-					end: bound);
-			}
-
-			default:
-			throw new InvalidOperationException($"Unknown value of {nameof(FeatureType)}.");
-			}
-		}
-
+	
 		public IDimensionInterval FromFeatureTest(IFeatureTest test) {
 			if (test is null)
 				throw new ArgumentNullException(nameof(test));

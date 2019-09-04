@@ -13,12 +13,11 @@ namespace Minotaur.Theseus {
 		private readonly RuleCreator _ruleCreator;
 
 		public IndividualMutator(
-			Dataset dataset,
 			BiasedOptionChooser<IndividualMutationType> mutationChooser,
 			RuleCreator ruleCreator) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
 			_mutationChooser = mutationChooser ?? throw new ArgumentNullException(nameof(mutationChooser));
 			_ruleCreator = ruleCreator ?? throw new ArgumentNullException(nameof(ruleCreator));
+			Dataset = _ruleCreator.Dataset;
 		}
 
 		public bool TryMutate(Individual original, out Individual mutated) {

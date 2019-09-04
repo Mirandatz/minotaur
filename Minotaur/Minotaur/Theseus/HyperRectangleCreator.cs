@@ -3,6 +3,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class HyperRectangleCreator {
@@ -20,21 +21,13 @@ namespace Minotaur.Theseus {
 			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		}
 
-		public HyperRectangle FromDatasetInstance(int datasetInstanceIndex) {
-			// @Improve exception message 
-			if (!_dataset.IsInstanceIndexValid(datasetInstanceIndex))
-				throw new ArgumentException(nameof(datasetInstanceIndex));
+		public HyperRectangle CreateLargestNonIntersectingHyperRectangle(
+			Array<float> seed,
+			Array<HyperRectangle> existingRectangles,
+			NaturalRange dimensionExpansionOrder
+			) {
 
-			var dimensionCount = _dataset.FeatureCount;
-			var dimensions = new IDimensionInterval[dimensionCount];
-
-			for (int i = 0; i < dimensions.Length; i++) {
-				dimensions[i] = _dimensionIntervalCreator.FromDatasetInstance(
-					datasetInstanceIndex: datasetInstanceIndex,
-					dimensionIndex: i);
-			}
-
-			return new HyperRectangle(dimensions);
+			throw new NotImplementedException();
 		}
 
 		public HyperRectangle FromRule(Rule rule) {
