@@ -56,7 +56,7 @@ namespace Minotaur {
 
 		public static int Run(ProgramSettings settings) {
 			(var trainDataset, var testDataset) = LoadDatasets(settings);
-			
+
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
 			IConcurrentCache<Rule, HyperRectangle> hyperRectangleCreatorCache;
@@ -79,13 +79,11 @@ namespace Minotaur {
 				cache: ruleCoverageCache);
 
 			var hyperRectangleCreator = new HyperRectangleCreator(
-				dataset: trainDataset,
 				dimensionIntervalCreator: dimensionIntervalCreator,
 				cache: hyperRectangleCreatorCache);
 
 			var seedSelector = new SeedSelector(
-				dataset: trainDataset,
-				featureSpaceRegionCreator: hyperRectangleCreator,
+				hyperRectangleCreator: hyperRectangleCreator,
 				ruleCoverageComputer: ruleCoverageComputer);
 
 			var testCreator = new TestCreator(dataset: trainDataset);

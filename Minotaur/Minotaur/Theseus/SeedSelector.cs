@@ -12,13 +12,13 @@ namespace Minotaur.Theseus {
 		private readonly RuleCoverageComputer _ruleCoverageComputer;
 
 		public SeedSelector(
-			Dataset dataset,
-			HyperRectangleCreator featureSpaceRegionCreator,
+			HyperRectangleCreator hyperRectangleCreator,
 			RuleCoverageComputer ruleCoverageComputer
 			) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
-			_featureSpaceRegionCreator = featureSpaceRegionCreator ?? throw new ArgumentNullException(nameof(featureSpaceRegionCreator));
+			_featureSpaceRegionCreator = hyperRectangleCreator ?? throw new ArgumentNullException(nameof(hyperRectangleCreator));
 			_ruleCoverageComputer = ruleCoverageComputer ?? throw new ArgumentNullException(nameof(ruleCoverageComputer));
+
+			Dataset = hyperRectangleCreator.Dataset;
 		}
 
 		public bool TryFindSeed(Array<Rule> existingRules, out Array<float> seed) {
