@@ -17,12 +17,14 @@ namespace Minotaur.Theseus {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
 
+#if Debug
 			if (!target.IsCompatibleWith(other)) {
 				throw new ArgumentException(
 					$"{nameof(target)} " +
 					$"must be compatible (i.e. same number and types of dimensions) " +
 					$"with {nameof(other)}.");
 			}
+#endif
 
 			var dimensionCount = target.DimensionCount;
 			for (int i = 0; i < dimensionCount; i++) {
@@ -43,7 +45,6 @@ namespace Minotaur.Theseus {
 			var rhsCat = rhs as CategoricalDimensionInterval;
 			if (!(lhsCat is null))
 				return IntersectsCategorical(lhsCat, rhsCat);
-
 
 			var lhsCont = lhs as ContinuousDimensionInterval;
 			var rhsCont = rhs as ContinuousDimensionInterval;

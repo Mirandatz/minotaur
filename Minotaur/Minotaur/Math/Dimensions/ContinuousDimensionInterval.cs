@@ -15,7 +15,7 @@ namespace Minotaur.Math.Dimensions {
 			) {
 			if (dimensionIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex) + " must be >= 0.");
-
+			
 			if (start.Value > end.Value)
 				throw new ArgumentException(nameof(start) + " must be <= " + nameof(end));
 
@@ -38,6 +38,21 @@ namespace Minotaur.Math.Dimensions {
 			DimensionIndex = dimensionIndex;
 			Start = start;
 			End = end;
+		}
+
+		public static ContinuousDimensionInterval FromSingleValue(int dimensionIndex, float value) {
+			if (dimensionIndex < 0)
+				throw new ArgumentOutOfRangeException(nameof(dimensionIndex) + " must be >= 0.");
+
+			if (float.IsNaN(value))
+				throw new ArgumentOutOfRangeException(nameof(value) + " can't be NaN.");
+
+			var bound = new DimensionBound(value: value, isInclusive: true);
+
+			return new ContinuousDimensionInterval(
+				dimensionIndex: dimensionIndex,
+				start: bound,
+				end: bound);
 		}
 
 		public bool Contains(float value) {

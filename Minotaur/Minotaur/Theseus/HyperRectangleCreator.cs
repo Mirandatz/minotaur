@@ -47,7 +47,9 @@ namespace Minotaur.Theseus {
 				return new HyperRectangle(dimensions);
 			}
 
-			var mutable = MutableHyperRectangle.FromDatasetInstance(seed);
+			var mutable = MutableHyperRectangle.FromDatasetInstance(
+				seed: seed,
+				featureTypes: Dataset.FeatureTypes);
 
 			for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
 				var dimensionIndex = dimensionExpansionOrder[i];
@@ -102,17 +104,25 @@ namespace Minotaur.Theseus {
 				.ToHashSet();
 
 			for (int i = 0; i < existingRectangles.Length; i++) {
-				var other = existingRectangles[i];
+				var otherRectangle = existingRectangles[i];
+
+				// In the lords name, the most basic of sanity checks
+				//if (otherRectangle.Contains(seed))
+				//	throw new InvalidOperationException();
 
 				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
 					target: mutable,
-					other: other,
+					other: otherRectangle,
 					dimensionToSkip: dimensionIndex);
 
-				var otherDimension = (CategoricalDimensionInterval) other.GetDimensionInterval(dimensionIndex);
+				var otherDimension = (CategoricalDimensionInterval) otherRectangle.GetDimensionInterval(dimensionIndex);
 
 				if (intersects)
 					possibleValues.ExceptWith(otherDimension.SortedValues);
+
+				// It's not possible to enlarge the dimension
+				if (possibleValues.Count == 0)
+					return;
 			}
 
 			var sortedPossibleValues = possibleValues
@@ -139,19 +149,31 @@ namespace Minotaur.Theseus {
 			var max = float.PositiveInfinity;
 
 			for (int i = 0; i < existingRectangles.Length; i++) {
-				var other = existingRectangles[i];
+				var otherRectangle = existingRectangles[i];
+
+				// In the lords name, the most basic of sanity checks
+				if (otherRectangle.Contains(seed))
+					throw new InvalidOperationException();
+
 				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
 					target: mutable,
-					other: other,
+					other: otherRectangle,
 					dimensionToSkip: dimensionIndex);
 
 				if (!intersects)
 					continue;
+				
+				var otherDimension = (ContinuousDimensionInterval) otherRectangle.Dimensions[dimensionIndex];
 
-				var otherDimension = (ContinuousDimensionInterval) other.Dimensions[dimensionIndex];
+				// This is a sanity check
+				var pivot = seed[dimensionIndex];
+				var otherMin = otherDimension.Start.Value;
+				var otherMax = otherDimension.End.Value;
+
 				if (seed[dimensionIndex] > otherDimension.End.Value)
 					min = Math.Max(min, otherDimension.End.Value);
-				else
+
+				if (seed[dimensionIndex] < otherDimension.Start.Value)
 					max = Math.Min(max, otherDimension.Start.Value);
 			}
 

@@ -35,11 +35,62 @@ namespace Minotaur.Math.Dimensions {
 			_dimensionIntervals[index] = dimensionInterval;
 		}
 
-		public static MutableHyperRectangle FromDatasetInstance(Array<float> seed) {
+		public static MutableHyperRectangle FromDatasetInstance(Array<float> seed, Array<FeatureType> featureTypes) {
 			if (seed is null)
 				throw new ArgumentNullException(nameof(seed));
+			if (featureTypes is null)
+				throw new ArgumentNullException(nameof(featureTypes));
+			if (seed.Length != featureTypes.Length)
+				throw new ArgumentException($"{nameof(seed)} and {nameof(featureTypes)} must have the same length.");
 
-			throw new NotImplementedException();
+			var dimensions = new IDimensionInterval[seed.Length];
+
+			for (int i = 0; i < dimensions.Length; i++) {
+
+				switch (featureTypes[i]) {
+
+				case FeatureType.Categorical: {
+					var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
+						dimensionIndex: i,
+						value: seed[i]);
+
+					dimensions[i] = dimensionInterval;
+					break;
+				}
+
+				case FeatureType.CategoricalButTriviallyValued: {
+					var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
+						dimensionIndex: i,
+						value: seed[i]);
+
+					dimensions[i] = dimensionInterval;
+					break;
+				}
+
+				case FeatureType.Continuous: {
+					var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
+						dimensionIndex: i,
+						value: seed[i]);
+
+					dimensions[i] = dimensionInterval;
+					break;
+				}
+
+				case FeatureType.ContinuousButTriviallyValued: {
+					var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
+						dimensionIndex: i,
+						value: seed[i]);
+
+					dimensions[i] = dimensionInterval;
+					break;
+				}
+
+				default:
+				throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
+				}
+			}
+
+			return new MutableHyperRectangle(dimensions);
 		}
 
 		public static MutableHyperRectangle FromHyperRectangle(HyperRectangle rect) {

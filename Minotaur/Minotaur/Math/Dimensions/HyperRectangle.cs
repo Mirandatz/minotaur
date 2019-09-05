@@ -30,6 +30,24 @@ namespace Minotaur.Math.Dimensions {
 			}
 		}
 
+		public bool Contains(Array<float> point) {
+			if (point is null)
+				throw new ArgumentNullException(nameof(point));
+
+			if (point.Length != DimensionCount) {
+				throw new ArgumentException(
+					nameof(point) + " must contain the same number of dimensions as this " +
+					nameof(HyperRectangle));
+			}
+
+			for (int i = 0; i < DimensionCount; i++) {
+				if (!Dimensions[i].Contains(point[i]))
+					return false;
+			}
+
+			return true;
+		}
+
 		public IDimensionInterval GetDimensionInterval(int dimensionIndex) {
 			if (dimensionIndex < 0 || dimensionIndex >= Dimensions.Length)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));

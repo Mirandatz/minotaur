@@ -199,12 +199,13 @@ namespace Minotaur {
 		}
 
 		private static Individual[] CreateInitialPopulation(IndividualCreator individualCreator, ProgramSettings settings) {
-			Console.Write("Creating initial population...");
+			Console.Write("Creating initial population");
 
 			var population = new Individual[settings.PopulationSize];
 
 			Parallel.For(0, population.Length, i => {
 				population[i] = individualCreator.Create();
+				Console.Write(".");
 			});
 
 			Console.WriteLine(" Done.");
