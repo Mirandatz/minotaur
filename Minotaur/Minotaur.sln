@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minotaur", "Minotaur\Minotaur.csproj", "{366E61B0-564B-4360-A4AF-A4186F66811C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minotaur.Tests", "Minotaur.Tests\Minotaur.Tests.csproj", "{A757F076-EA41-4968-800A-1C1F72F8ACA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{366E61B0-564B-4360-A4AF-A4186F66811C}.Debug|x64.Build.0 = Debug|x64
 		{366E61B0-564B-4360-A4AF-A4186F66811C}.Release|x64.ActiveCfg = Release|x64
 		{366E61B0-564B-4360-A4AF-A4186F66811C}.Release|x64.Build.0 = Release|x64
+		{A757F076-EA41-4968-800A-1C1F72F8ACA9}.Debug|x64.ActiveCfg = Debug|x64
+		{A757F076-EA41-4968-800A-1C1F72F8ACA9}.Debug|x64.Build.0 = Debug|x64
+		{A757F076-EA41-4968-800A-1C1F72F8ACA9}.Release|x64.ActiveCfg = Release|x64
+		{A757F076-EA41-4968-800A-1C1F72F8ACA9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
