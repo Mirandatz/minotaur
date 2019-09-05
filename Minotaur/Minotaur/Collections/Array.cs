@@ -169,8 +169,25 @@ namespace Minotaur.Collections {
 			return builder.ToString();
 		}
 
+		public static int LinearProbeFirstOccurence(this Array<float> self, float value) {
+			for (int i = 0; i < self.Length; i++)
+				if (self[i] == value)
+					return i;
+
+			throw new InvalidOperationException();
+		}
+
+		public static int LinearProbeLastOccurence(this Array<float> self, float value) {
+			for (int i = self.Length - 1; i >= 0; i--)
+				if (self[i] == value)
+					return i;
+
+			throw new InvalidOperationException();
+		}
+
 		// <returns>
-		// The index of the specified value in the specified array, if value is found; otherwise,
+		// The index of the first occurence of the specified value in the specified array,
+		// if value is found; otherwise,
 		// a negative number. If value is not found and value is less than one or more elements
 		// in array, the negative number returned is the bitwise complement of the index
 		// of the first element that is larger than value. If value is not found and value
@@ -180,23 +197,40 @@ namespace Minotaur.Collections {
 		// could be returned, even if value is present in array.
 		/// </returns>
 		public static int BinarySearchFirstOccurence(this Array<float> self, float value) {
-			var slice = self.AsSpan();
-			var index = slice.BinarySearch(value);
+			throw new NotImplementedException();
 
-			if (index <= 0)
-				return index;
+			//var slice = self.AsSpan();
+			//var index = slice.BinarySearch(value);
 
-			int lastIndex = index;
-			while (index >= 0) {
-				lastIndex = index;
+			//if (index <= 0)
+			//	return index;
 
-				slice = slice.Slice(
-					start: 0,
-					length: index);
-				index = slice.BinarySearch(value);
-			}
+			//int lastIndex = index;
+			//while (index >= 0) {
+			//	lastIndex = index;
 
-			return lastIndex;
+			//	slice = slice.Slice(
+			//		start: 0,
+			//		length: index);
+			//	index = slice.BinarySearch(value);
+			//}
+
+			//return lastIndex;
+		}
+
+		// <returns>
+		// The index of the last occurence of the specified value in the specified array,
+		// if value is found; otherwise,
+		// a negative number. If value is not found and value is less than one or more elements
+		// in array, the negative number returned is the bitwise complement of the index
+		// of the first element that is larger than value. If value is not found and value
+		// is greater than all elements in array, the negative number returned is the bitwise
+		// complement of (the index of the last element plus 1). If this method is called
+		// with a non-sorted array, the return value can be incorrect and a negative number
+		// could be returned, even if value is present in array.
+		/// </returns>
+		public static int BinarySearchLastOccurence(this Array<float> self, float value) {
+			throw new NotImplementedException();
 		}
 	}
 

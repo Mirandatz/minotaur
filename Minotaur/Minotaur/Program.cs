@@ -10,6 +10,7 @@ namespace Minotaur {
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
+	using Newtonsoft.Json;
 
 	public static class Program {
 
@@ -35,8 +36,8 @@ namespace Minotaur {
 				"--max-generations=2000",
 				"--max-failed-mutations-per-generation=500",
 
-				"--population-size=200",
-				"--maximum-initial-rule-count=200",
+				"--population-size=50",
+				"--maximum-initial-rule-count=50",
 
 				"--hyperrectangle-cache-size=50000",
 				"--rule-coverage-cache-size=50000",
@@ -52,56 +53,6 @@ namespace Minotaur {
 				"--modify-rule-probability=0.8",
 				"--remove-rule-probability=0.1"
 			};
-		}
-
-		public static int Run(ProgramSettings settings) {
-			(var trainDataset, var testDataset) = LoadDatasets(settings);
-
-			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
-
-			IConcurrentCache<Rule, HyperRectangle> hyperRectangleCreatorCache;
-			if (settings.HyperRectangleCacheSize == 0) {
-				hyperRectangleCreatorCache = new NullCache<Rule, HyperRectangle>();
-			} else {
-				hyperRectangleCreatorCache = new ConcurrentLruCache<Rule, HyperRectangle>(
-					capacity: settings.HyperRectangleCacheSize);
-			}
-
-			IConcurrentCache<Rule, RuleCoverage> ruleCoverageCache;
-			if (settings.RuleCoverageCacheSize == 0) {
-				ruleCoverageCache = new NullCache<Rule, RuleCoverage>();
-			} else {
-				ruleCoverageCache = new ConcurrentLruCache<Rule, RuleCoverage>(capacity: settings.RuleCoverageCacheSize);
-			}
-
-			var ruleCoverageComputer = new RuleCoverageComputer(
-				dataset: trainDataset,
-				cache: ruleCoverageCache);
-
-			var hyperRectangleCreator = new HyperRectangleCreator(
-				dimensionIntervalCreator: dimensionIntervalCreator,
-				cache: hyperRectangleCreatorCache);
-
-			var seedSelector = new SeedSelector(
-				hyperRectangleCreator: hyperRectangleCreator,
-				ruleCoverageComputer: ruleCoverageComputer);
-
-			var testCreator = new TestCreator(dataset: trainDataset);
-
-			var ruleCreator = new RuleCreator(
-				seedSelector: seedSelector,
-				testCreator: testCreator,
-				hyperRectangleCreator: hyperRectangleCreator);
-
-			var individualCreator = new IndividualCreator(
-				ruleCreator: ruleCreator,
-				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
-
-			var initialPopulation = CreateInitialPopulation(
-				individualCreator: individualCreator,
-				settings: settings);
-
-			throw new NotImplementedException();
 		}
 
 		private static (Dataset TrainDataset, Dataset TestDataset) LoadDatasets(ProgramSettings settings) {
@@ -211,6 +162,65 @@ namespace Minotaur {
 			Console.WriteLine(" Done.");
 
 			return population;
+		}
+
+		private static void PrintSettings(ProgramSettings settings) {
+			Console.WriteLine("Settings:");
+			var serialized = JsonConvert.SerializeObject(settings, Formatting.Indented);
+			Console.WriteLine(serialized);
+			Console.WriteLine();
+		}
+
+		public static int Run(ProgramSettings settings) {
+			PrintSettings(settings);
+
+			(var trainDataset, var testDataset) = LoadDatasets(settings);
+
+			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
+
+			IConcurrentCache<Rule, HyperRectangle> hyperRectangleCreatorCache;
+			if (settings.HyperRectangleCacheSize == 0) {
+				hyperRectangleCreatorCache = new NullCache<Rule, HyperRectangle>();
+			} else {
+				hyperRectangleCreatorCache = new ConcurrentLruCache<Rule, HyperRectangle>(
+					capacity: settings.HyperRectangleCacheSize);
+			}
+
+			IConcurrentCache<Rule, RuleCoverage> ruleCoverageCache;
+			if (settings.RuleCoverageCacheSize == 0) {
+				ruleCoverageCache = new NullCache<Rule, RuleCoverage>();
+			} else {
+				ruleCoverageCache = new ConcurrentLruCache<Rule, RuleCoverage>(capacity: settings.RuleCoverageCacheSize);
+			}
+
+			var ruleCoverageComputer = new RuleCoverageComputer(
+				dataset: trainDataset,
+				cache: ruleCoverageCache);
+
+			var hyperRectangleCreator = new HyperRectangleCreator(
+				dimensionIntervalCreator: dimensionIntervalCreator,
+				cache: hyperRectangleCreatorCache);
+
+			var seedSelector = new SeedSelector(
+				hyperRectangleCreator: hyperRectangleCreator,
+				ruleCoverageComputer: ruleCoverageComputer);
+
+			var testCreator = new TestCreator(dataset: trainDataset);
+
+			var ruleCreator = new RuleCreator(
+				seedSelector: seedSelector,
+				testCreator: testCreator,
+				hyperRectangleCreator: hyperRectangleCreator);
+
+			var individualCreator = new IndividualCreator(
+				ruleCreator: ruleCreator,
+				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
+
+			var initialPopulation = CreateInitialPopulation(
+				individualCreator: individualCreator,
+				settings: settings);
+
+			throw new NotImplementedException();
 		}
 	}
 }

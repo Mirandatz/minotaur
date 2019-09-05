@@ -32,7 +32,7 @@ namespace Minotaur.Theseus {
 			return FromCategorical(cat);
 
 			case ContinuousDimensionInterval cont:
-			return FromContinuousFast(cont);
+			return FromContinuous(cont);
 
 			default:
 			throw new InvalidOperationException(
@@ -141,9 +141,21 @@ namespace Minotaur.Theseus {
 			var dimensionIndex = cont.DimensionIndex;
 			var startValue = cont.Start.Value;
 			var endValue = cont.End.Value;
-
 			var possibleValues = Dataset.GetFeatureValues(dimensionIndex);
-			var featureValuesStartIndex = possibleValues.BinarySearchFirstOccurence(startValue);
+
+			var startIndex = float.IsNegativeInfinity(startValue)
+				? 0
+				: possibleValues.LinearProbeFirstOccurence(startValue);
+
+			var stopIndex = float.IsPositiveInfinity(endValue)
+				? possibleValues.Length - 1
+				: possibleValues.LinearProbeLastOccurence(endValue);
+
+			var firstBoundIndex = Random.Int(
+				inclusiveMin: startIndex,
+				exclusiveMax: stopIndex + 1);
+
+			var firstBoundValue = possibleValues[firstBoundIndex];
 
 			throw new NotImplementedException();
 		}
