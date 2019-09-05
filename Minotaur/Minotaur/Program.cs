@@ -32,6 +32,7 @@ namespace Minotaur {
 				"--output-directory=C:/Source/minotaur/temp/",
 
 				"--fitness-metrics=fscore",
+				"--fitness-metrics=model-size",
 
 				"--max-generations=2000",
 				"--max-failed-mutations-per-generation=500",
@@ -150,13 +151,25 @@ namespace Minotaur {
 		}
 
 		private static Individual[] CreateInitialPopulation(IndividualCreator individualCreator, ProgramSettings settings) {
-			Console.Write("Creating initial population");
+
+			var statusReportPrefix = "Creating initial population: ";
+			var statusReport = $"" +
+				$"{statusReportPrefix} " +
+				$"0 / {settings.PopulationSize}";
+
+			Console.Write(statusReport);
 
 			var population = new Individual[settings.PopulationSize];
+			var created = 0L;
 
 			Parallel.For(0, population.Length, i => {
 				population[i] = individualCreator.Create();
-				Console.Write(".");
+
+				statusReport = $"" +
+				$"\r{statusReportPrefix} " +
+				$"{Interlocked.Increment(ref created)} / {settings.PopulationSize}";
+
+				Console.Write(statusReport);
 			});
 
 			Console.WriteLine(" Done.");
@@ -165,7 +178,7 @@ namespace Minotaur {
 		}
 
 		private static void PrintSettings(ProgramSettings settings) {
-			Console.WriteLine("Settings:");
+			Console.WriteLine("Running MINOTAUR with settings:");
 			var serialized = JsonConvert.SerializeObject(settings, Formatting.Indented);
 			Console.WriteLine(serialized);
 			Console.WriteLine();

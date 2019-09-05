@@ -6,8 +6,8 @@ namespace Minotaur.GeneticAlgorithms {
 	using Minotaur.Collections;
 	using Minotaur.ExtensionMethods.Span;
 	using Minotaur.ExtensionMethods.SystemArray;
+	using Minotaur.GeneticAlgorithms.Metrics;
 	using Minotaur.GeneticAlgorithms.Population;
-	using Minotaur.Math.Metrics;
 
 	public sealed class FitnessEvaluator {
 		public readonly Array<IMetric> Metrics;

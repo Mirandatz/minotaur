@@ -135,7 +135,7 @@ namespace Minotaur {
 			"The metrics to use as fitness during the training phase."
 			)]
 		[AllowedValues(
-			"fscore", " model-size"
+			"fscore", "model-size"
 			//"avg-rule-size", "useless-rules-ratio", "inconsistent-rules-ratio",
 			//"prediction-explanation-size", "prediction-ratio"
 			)]

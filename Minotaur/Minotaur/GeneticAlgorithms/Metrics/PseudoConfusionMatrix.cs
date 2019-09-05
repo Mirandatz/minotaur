@@ -1,4 +1,4 @@
-namespace Minotaur.Math.Metrics {
+namespace Minotaur.GeneticAlgorithms.Metrics {
 	using System;
 	using Minotaur.Collections;
 

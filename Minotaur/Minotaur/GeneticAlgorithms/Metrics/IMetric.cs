@@ -1,4 +1,4 @@
-namespace Minotaur.Math.Metrics {
+namespace Minotaur.GeneticAlgorithms.Metrics {
 	using Minotaur.GeneticAlgorithms.Population;
 
 	public interface IMetric {
