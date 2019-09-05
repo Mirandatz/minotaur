@@ -38,7 +38,7 @@ namespace Minotaur.GeneticAlgorithms {
 			var fitnesses = new Fitness[population.Length];
 
 			Parallel.For(0, fitnesses.Length, i => {
-				var individual = population.Span[i];
+				var individual = population.AsSpan()[i];
 
 				var isCached = _cache.TryGet(key: individual, out var fitness);
 				if (!isCached) {
@@ -67,13 +67,13 @@ namespace Minotaur.GeneticAlgorithms {
 				throw new ArgumentNullException(nameof(population));
 			if (population.IsEmpty)
 				throw new ArgumentException(nameof(population) + " can't be empty.");
-			if (population.Span.ContainsNulls())
+			if (population.AsSpan().ContainsNulls())
 				throw new ArgumentException(population + " can't contain nulls.");
 
 			var fitnesses = new Fitness[population.Length];
 
 			Parallel.For(0, fitnesses.Length, i => {
-				var individual = population.Span[i];
+				var individual = population.AsSpan()[i];
 
 				var isCached = _cache.TryGet(key: individual, out var fitness);
 				if (!isCached) {

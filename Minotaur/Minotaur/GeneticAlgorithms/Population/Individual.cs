@@ -71,7 +71,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			for (int i = 0; i < instanceCount; i++) {
 				var prediction = Predict(dataset.GetInstanceData(i));
 				var row = allPredictions.GetRow(i);
-				prediction.Span.CopyTo(row);
+				prediction.AsSpan().CopyTo(row);
 			}
 
 			return allPredictions.ToMatrix();

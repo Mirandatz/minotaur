@@ -46,21 +46,7 @@ namespace Minotaur.Collections {
 
 		// Below  here there are just some convenience methods
 
-		public ReadOnlySpan<T> Span => new ReadOnlySpan<T>(_items);
-
-		// <returns>
-		// The index of the specified value in the specified array, if value is found; otherwise,
-		// a negative number. If value is not found and value is less than one or more elements
-		// in array, the negative number returned is the bitwise complement of the index
-		// of the first element that is larger than value. If value is not found and value
-		// is greater than all elements in array, the negative number returned is the bitwise
-		// complement of (the index of the last element plus 1). If this method is called
-		// with a non-sorted array, the return value can be incorrect and a negative number
-		// could be returned, even if value is present in array.
-		/// </returns>
-		public int BinarySearch(T value) {
-			return Array.BinarySearch(_items, value);
-		}
+		public ReadOnlySpan<T> AsSpan() => new ReadOnlySpan<T>(_items);
 
 		public Array<T> Clone() {
 
@@ -145,6 +131,23 @@ namespace Minotaur.Collections {
 		}
 	}
 
+	public static class IComparableExtensions {
+
+		// <returns>
+		// The index of the specified value in the specified array, if value is found; otherwise,
+		// a negative number. If value is not found and value is less than one or more elements
+		// in array, the negative number returned is the bitwise complement of the index
+		// of the first element that is larger than value. If value is not found and value
+		// is greater than all elements in array, the negative number returned is the bitwise
+		// complement of (the index of the last element plus 1). If this method is called
+		// with a non-sorted array, the return value can be incorrect and a negative number
+		// could be returned, even if value is present in array.
+		/// </returns>
+		public static int BinarySearch<T>(this Array<T> self, T value) where T : IComparable<T> {
+			return self.AsSpan().BinarySearch(value);
+		}
+	}
+
 	public static class FloatArrayExtensions {
 
 		public static bool ContainsNaNs(this Array<float> readOnlyArray) {
@@ -164,6 +167,36 @@ namespace Minotaur.Collections {
 			}
 
 			return builder.ToString();
+		}
+
+		// <returns>
+		// The index of the specified value in the specified array, if value is found; otherwise,
+		// a negative number. If value is not found and value is less than one or more elements
+		// in array, the negative number returned is the bitwise complement of the index
+		// of the first element that is larger than value. If value is not found and value
+		// is greater than all elements in array, the negative number returned is the bitwise
+		// complement of (the index of the last element plus 1). If this method is called
+		// with a non-sorted array, the return value can be incorrect and a negative number
+		// could be returned, even if value is present in array.
+		/// </returns>
+		public static int BinarySearchFirstOccurence(this Array<float> self, float value) {
+			var slice = self.AsSpan();
+			var index = slice.BinarySearch(value);
+
+			if (index <= 0)
+				return index;
+
+			int lastIndex = index;
+			while (index >= 0) {
+				lastIndex = index;
+
+				slice = slice.Slice(
+					start: 0,
+					length: index);
+				index = slice.BinarySearch(value);
+			}
+
+			return lastIndex;
 		}
 	}
 

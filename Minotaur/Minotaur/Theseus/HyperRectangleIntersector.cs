@@ -55,8 +55,8 @@ namespace Minotaur.Theseus {
 		}
 
 		private static bool IntersectsCategorical(CategoricalDimensionInterval lhsCat, CategoricalDimensionInterval rhsCat) {
-			var lhsValues = lhsCat.SortedValues.Span;
-			var rhsValues = rhsCat.SortedValues.Span;
+			var lhsValues = lhsCat.SortedValues.AsSpan();
+			var rhsValues = rhsCat.SortedValues.AsSpan();
 
 			if (lhsValues.IsEmpty || rhsValues.IsEmpty)
 				return false;

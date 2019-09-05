@@ -1,6 +1,7 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Collections.Generic;
+	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
@@ -31,7 +32,7 @@ namespace Minotaur.Theseus {
 			return FromCategorical(cat);
 
 			case ContinuousDimensionInterval cont:
-			return FromContinuous(cont);
+			return FromContinuousFast(cont);
 
 			default:
 			throw new InvalidOperationException(
@@ -131,5 +132,21 @@ namespace Minotaur.Theseus {
 				firstBound: firstBound,
 				secondBound: secondBound);
 		}
+
+		// @Remarks: Any ContinuousFeatureTest created by this method
+		// will use feature values _from the dataset_ as bounds.
+		// That means that values that appear more often in the dataset
+		// have a higher chance	of being used as a bound.
+		private ContinuousFeatureTest FromContinuousFast(ContinuousDimensionInterval cont) {
+			var dimensionIndex = cont.DimensionIndex;
+			var startValue = cont.Start.Value;
+			var endValue = cont.End.Value;
+
+			var possibleValues = Dataset.GetFeatureValues(dimensionIndex);
+			var featureValuesStartIndex = possibleValues.BinarySearchFirstOccurence(startValue);
+
+			throw new NotImplementedException();
+		}
+
 	}
 }

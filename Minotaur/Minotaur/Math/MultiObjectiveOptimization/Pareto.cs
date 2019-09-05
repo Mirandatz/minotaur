@@ -11,7 +11,7 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 	public static class Pareto {
 
 		public static int[] ComputeDominatedByCounts(Array<Fitness> fitnesses) {
-			if (fitnesses.Span.ContainsNulls())
+			if (fitnesses.AsSpan().ContainsNulls())
 				throw new ArgumentException(nameof(fitnesses) + " can't contain nulls");
 
 			if (fitnesses.IsEmpty)
