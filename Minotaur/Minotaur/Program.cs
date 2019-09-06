@@ -1,12 +1,15 @@
 namespace Minotaur {
 	using System;
-	using System.Linq;
+	using System.Collections.Generic;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using McMaster.Extensions.CommandLineUtils;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
+	using Minotaur.GeneticAlgorithms;
+	using Minotaur.GeneticAlgorithms.Metrics;
 	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.GeneticAlgorithms.Selection;
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
@@ -50,10 +53,113 @@ namespace Minotaur {
 				"--rule-mutation-modify-test-probability=0.80",
 				"--rule-mutation-modify-consequent-probability=0.08",
 
-				"--add-rule-probability=0.1",
-				"--modify-rule-probability=0.8",
-				"--remove-rule-probability=0.1"
+				"--individual-mutation-add-rule-weight=15",
+				"--individual-mutation-modify-rule-weight=80",
+				"--individual-mutation-remove-rule-weight=5",
 			};
+		}
+
+		public static int Run(ProgramSettings settings) {
+			PrintSettings(settings);
+
+			(var trainDataset, var testDataset) = LoadDatasets(settings);
+
+			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
+
+			IConcurrentCache<Rule, RuleCoverage> ruleCoverageCache;
+			if (settings.RuleCoverageCacheSize == 0) {
+				ruleCoverageCache = new NullCache<Rule, RuleCoverage>();
+			} else {
+				ruleCoverageCache = new ConcurrentLruCache<Rule, RuleCoverage>(capacity: settings.RuleCoverageCacheSize);
+			}
+
+			var ruleCoverageComputer = new RuleCoverageComputer(
+				dataset: trainDataset,
+				cache: ruleCoverageCache);
+
+			IConcurrentCache<Rule, HyperRectangle> hyperRectangleCreatorCache;
+			if (settings.HyperRectangleCacheSize == 0) {
+				hyperRectangleCreatorCache = new NullCache<Rule, HyperRectangle>();
+			} else {
+				hyperRectangleCreatorCache = new ConcurrentLruCache<Rule, HyperRectangle>(
+					capacity: settings.HyperRectangleCacheSize);
+			}
+
+			var hyperRectangleCreator = new HyperRectangleCreator(
+				dimensionIntervalCreator: dimensionIntervalCreator,
+				cache: hyperRectangleCreatorCache);
+
+			var seedSelector = new SeedSelector(
+				hyperRectangleCreator: hyperRectangleCreator,
+				ruleCoverageComputer: ruleCoverageComputer);
+
+			var testCreator = new TestCreator(dataset: trainDataset);
+
+			var ruleCreator = new RuleCreator(
+				seedSelector: seedSelector,
+				testCreator: testCreator,
+				hyperRectangleCreator: hyperRectangleCreator);
+
+			var individualCreator = new IndividualCreator(
+				ruleCreator: ruleCreator,
+				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
+
+			var initialPopulation = CreateInitialPopulation(
+				individualCreator: individualCreator,
+				settings: settings);
+
+			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
+				new Dictionary<IndividualMutationType, int>() {
+					[IndividualMutationType.AddRule] = settings.IndividualMutationAddRuleWeight,
+					[IndividualMutationType.ModifyRule] = settings.IndividualMutationModifyRuleWeight,
+					[IndividualMutationType.RemoveRule] = settings.IndividualMutationRemoveRuleWeight
+				});
+
+			var individualMutator = new IndividualMutator(
+				mutationChooser: individualMutationChooser,
+				ruleCreator: ruleCreator);
+
+			var populationMutator = new PopulationMutator(
+				individualMutator: individualMutator,
+				mutantsPerGeneration: settings.MutantsPerGeneration,
+				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
+
+			var metrics = CreateMetrics(
+				trainDataset: trainDataset,
+				settings: settings);
+
+			IConcurrentCache<Individual, Fitness> fitnessCache;
+			if (settings.FitnessCacheSize == 0) {
+				fitnessCache = new NullCache<Individual, Fitness>();
+			} else {
+				fitnessCache = new ConcurrentLruCache<Individual, Fitness>(capacity: settings.FitnessCacheSize);
+			}
+
+			var fitnessEvaluator = new FitnessEvaluator(
+				metrics: metrics,
+				cache: fitnessCache);
+
+			var fittestSelector = CreateFittestSelector(
+				fitnessEvaluator: fitnessEvaluator,
+				settings: settings);
+
+			var evolutionEngine = new EvolutionEngine(
+				populationMutator: populationMutator,
+				fittestSelector: fittestSelector,
+				maximumGenerations: settings.MaximumGenerations);
+
+			var evolutionReport = evolutionEngine.Run(initialPopulation);
+
+			PrintEvolutionReport(evolutionReport);
+
+			return 0;
+		}
+
+		private static void PrintSettings(ProgramSettings settings) {
+			Console.WriteLine("Running MINOTAUR with settings:");
+			var serialized = JsonConvert.SerializeObject(settings, Formatting.Indented);
+			Console.WriteLine(serialized);
+			Console.WriteLine();
 		}
 
 		private static (Dataset TrainDataset, Dataset TestDataset) LoadDatasets(ProgramSettings settings) {
@@ -177,62 +283,44 @@ namespace Minotaur {
 			return population;
 		}
 
-		private static void PrintSettings(ProgramSettings settings) {
-			Console.WriteLine("Running MINOTAUR with settings:");
-			var serialized = JsonConvert.SerializeObject(settings, Formatting.Indented);
-			Console.WriteLine(serialized);
-			Console.WriteLine();
+		private static IEnumerable<IMetric> CreateMetrics(Dataset trainDataset, ProgramSettings settings) {
+			var metrics = new List<IMetric>();
+
+			foreach (var metric in settings.MetricNames) {
+				switch (metric) {
+
+				case "fscore":
+				metrics.Add(new FScore(trainDataset));
+				break;
+
+				case "model-size":
+				metrics.Add(new ModelSize());
+				break;
+
+				default:
+				throw new ArgumentException($"Unsupported metric: {metric}");
+				}
+			}
+
+			return metrics;
 		}
 
-		public static int Run(ProgramSettings settings) {
-			PrintSettings(settings);
+		private static IFittestSelector CreateFittestSelector(FitnessEvaluator fitnessEvaluator, ProgramSettings settings) {
+			switch (settings.SelectionAlgorithm) {
+			case "nsga2":
+			return new NSGA2(
+				fitnessEvaluator: fitnessEvaluator,
+				fittestCount: settings.PopulationSize);
 
-			(var trainDataset, var testDataset) = LoadDatasets(settings);
+			case "lexicographic":
+			throw new NotImplementedException();
 
-			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
-
-			IConcurrentCache<Rule, HyperRectangle> hyperRectangleCreatorCache;
-			if (settings.HyperRectangleCacheSize == 0) {
-				hyperRectangleCreatorCache = new NullCache<Rule, HyperRectangle>();
-			} else {
-				hyperRectangleCreatorCache = new ConcurrentLruCache<Rule, HyperRectangle>(
-					capacity: settings.HyperRectangleCacheSize);
+			default:
+			throw new ArgumentException($"Unknown selection algorithm: {settings.SelectionAlgorithm}");
 			}
+		}
 
-			IConcurrentCache<Rule, RuleCoverage> ruleCoverageCache;
-			if (settings.RuleCoverageCacheSize == 0) {
-				ruleCoverageCache = new NullCache<Rule, RuleCoverage>();
-			} else {
-				ruleCoverageCache = new ConcurrentLruCache<Rule, RuleCoverage>(capacity: settings.RuleCoverageCacheSize);
-			}
-
-			var ruleCoverageComputer = new RuleCoverageComputer(
-				dataset: trainDataset,
-				cache: ruleCoverageCache);
-
-			var hyperRectangleCreator = new HyperRectangleCreator(
-				dimensionIntervalCreator: dimensionIntervalCreator,
-				cache: hyperRectangleCreatorCache);
-
-			var seedSelector = new SeedSelector(
-				hyperRectangleCreator: hyperRectangleCreator,
-				ruleCoverageComputer: ruleCoverageComputer);
-
-			var testCreator = new TestCreator(dataset: trainDataset);
-
-			var ruleCreator = new RuleCreator(
-				seedSelector: seedSelector,
-				testCreator: testCreator,
-				hyperRectangleCreator: hyperRectangleCreator);
-
-			var individualCreator = new IndividualCreator(
-				ruleCreator: ruleCreator,
-				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
-
-			var initialPopulation = CreateInitialPopulation(
-				individualCreator: individualCreator,
-				settings: settings);
-
+		private static void PrintEvolutionReport(EvolutionReport evolutionReport) {
 			throw new NotImplementedException();
 		}
 	}

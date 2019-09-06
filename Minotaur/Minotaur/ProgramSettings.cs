@@ -97,6 +97,17 @@ namespace Minotaur {
 		[Range(0, int.MaxValue)]
 		public int RuleCoverageCacheSize { get; }
 
+		[Required]
+		[Option(ShortName = "",
+			LongName = "individual-fitness-cache-size",
+			Description =
+			"The maximum number of entries in the cache of individual fitness . " +
+			"If set to 0, effectively disables caching."
+			)]
+		[Range(0, int.MaxValue)]
+		public int FitnessCacheSize { get; }
+
+
 		//[Required]
 		//[Option(ShortName = "", LongName = "maximum-plateau-length",
 		//	Description =
@@ -178,28 +189,28 @@ namespace Minotaur {
 		public float RuleMutationModifyConsequentProbability { get; }
 
 		[Required]
-		[Option(ShortName = "", LongName = "add-rule-probability",
+		[Option(ShortName = "", LongName = "individual-mutation-add-rule-weight",
 			Description =
 			"The probability, when mutating a individual, of adding a new rule to it."
 			)]
-		[Range(0f, 1f)]
-		public float AddRuleProbability { get; }
+		[Range(0, int.MaxValue)]
+		public int IndividualMutationAddRuleWeight { get; }
 
 		[Required]
-		[Option(ShortName = "", LongName = "modify-rule-probability",
+		[Option(ShortName = "", LongName = "individual-mutation-modify-rule-weight",
 			Description =
 			"The probability, when mutating a individual, of modifying a rule that it contains."
 			)]
-		[Range(0f, 1f)]
-		public float ModifyRuleProbability { get; }
+		[Range(0, int.MaxValue)]
+		public int IndividualMutationModifyRuleWeight { get; }
 
 		[Required]
-		[Option(ShortName = "", LongName = "remove-rule-probability",
+		[Option(ShortName = "", LongName = "individual-mutation-remove-rule-weight",
 			Description =
 			"The probability, when mutating a individual, of removing a rule that it contains."
 			)]
-		[Range(0f, 1f)]
-		public float RemoveRuleProbability { get; }
+		[Range(0, int.MaxValue)]
+		public int IndividualMutationRemoveRuleWeight { get; }
 
 		[Required]
 		[Option(ShortName = "", LongName = "max-failed-mutations-per-generation",
@@ -208,7 +219,7 @@ namespace Minotaur {
 			"If this number is reached, the evolutionary process stops."
 			)]
 		[Range(0, int.MaxValue)]
-		public int MaximumMutationFailedAttemptsPerGeneration { get; }
+		public int MaximumFailedMutationAttemptsPerGeneration { get; }
 
 		//[Required]
 		//[Option(CommandOptionType.MultipleValue, ShortName = "", LongName = "test-metrics",

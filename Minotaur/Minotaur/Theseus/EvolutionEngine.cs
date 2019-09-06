@@ -1,26 +1,33 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
 	using System.Linq;
-	using Minotaur.Collections;
-	using Minotaur.Collections.Dataset;
 	using Minotaur.ExtensionMethods.SystemArray;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
 
 	public sealed class EvolutionEngine {
 
-		public readonly Dataset Dataset;
 		public readonly PopulationMutator PopulationMutator;
 		public readonly IFittestSelector FittestSelector;
 
-		public readonly int MutantsPerGeneration;
-
-		public readonly int MaximumFailedMutationPerGeneration;
 		public readonly int MaximumGenerations;
 
-		public (int GenerationsRan, Array<Individual> FinalPopulation)
+		public EvolutionEngine(
+			PopulationMutator populationMutator,
+			IFittestSelector fittestSelector,
+			int maximumGenerations
+			) {
+			PopulationMutator = populationMutator ?? throw new ArgumentNullException(nameof(populationMutator));
+			FittestSelector = fittestSelector ?? throw new ArgumentNullException(nameof(fittestSelector));
+
+			if (maximumGenerations <= 0)
+				throw new ArgumentOutOfRangeException(nameof(maximumGenerations));
+
+			MaximumGenerations = maximumGenerations;
+		}
+
+		public EvolutionReport
 			Run(IEnumerable<Individual> initialPopulation
 			) {
 			if (initialPopulation is null)
@@ -28,8 +35,6 @@ namespace Minotaur.Theseus {
 
 			// @Improve performance
 			var population = initialPopulation.ToArray();
-			var stopWatch = new Stopwatch();
-			stopWatch.Start();
 
 			var generationsRan = 0;
 			for (generationsRan = 0; generationsRan < MaximumGenerations; generationsRan++) {
@@ -40,18 +45,22 @@ namespace Minotaur.Theseus {
 					population: population,
 					out var mutants);
 
-				if (!success)
-					break;
+				if (!success) {
+					return new EvolutionReport(
+						generationsRan: generationsRan,
+						reasonForStoppingEvolution: "reached maximum number of failed mutation attempts for a single generation",
+						finalPopulation: population);
+				}
 
 				var populationWithMutants = population.Concatenate(mutants);
 				var fittest = FittestSelector.SelectFittest(populationWithMutants);
 				population = fittest;
 			}
-			stopWatch.Stop();
 
-			Console.WriteLine($"Average generation time: {stopWatch.ElapsedMilliseconds / (double) generationsRan}");
-
-			return (GenerationsRan: generationsRan, FinalPopulation: population);
+			return new EvolutionReport(
+				generationsRan: generationsRan,
+				reasonForStoppingEvolution: "reached maximum number of generations",
+				finalPopulation: population);
 		}
 	}
 }
