@@ -167,23 +167,7 @@ namespace Minotaur.Collections {
 			}
 
 			return builder.ToString();
-		}
-
-		public static int LinearProbeFirstOccurence(this Array<float> self, float value) {
-			for (int i = 0; i < self.Length; i++)
-				if (self[i] == value)
-					return i;
-
-			throw new InvalidOperationException();
-		}
-
-		public static int LinearProbeLastOccurence(this Array<float> self, float value) {
-			for (int i = self.Length - 1; i >= 0; i--)
-				if (self[i] == value)
-					return i;
-
-			throw new InvalidOperationException();
-		}
+		}		
 
 		// <returns>
 		// The index of the first occurence of the specified value in the specified array,
@@ -197,25 +181,24 @@ namespace Minotaur.Collections {
 		// could be returned, even if value is present in array.
 		/// </returns>
 		public static int BinarySearchFirstOccurence(this Array<float> self, float value) {
-			throw new NotImplementedException();
+			var span = self.AsSpan();
+			var binarySearchIndex = span.BinarySearch(value);
 
-			//var slice = self.AsSpan();
-			//var index = slice.BinarySearch(value);
+			if (binarySearchIndex <= 0)
+				return binarySearchIndex;
 
-			//if (index <= 0)
-			//	return index;
+			var lastIndex = binarySearchIndex;
+			for (int linearProbeIndex = binarySearchIndex - 1;
+				linearProbeIndex >= 0;
+				linearProbeIndex--
+				) {
+				if (span[linearProbeIndex] == value)
+					lastIndex = linearProbeIndex;
+				else
+					break;
+			}
 
-			//int lastIndex = index;
-			//while (index >= 0) {
-			//	lastIndex = index;
-
-			//	slice = slice.Slice(
-			//		start: 0,
-			//		length: index);
-			//	index = slice.BinarySearch(value);
-			//}
-
-			//return lastIndex;
+			return lastIndex;
 		}
 
 		// <returns>
@@ -230,7 +213,25 @@ namespace Minotaur.Collections {
 		// could be returned, even if value is present in array.
 		/// </returns>
 		public static int BinarySearchLastOccurence(this Array<float> self, float value) {
-			throw new NotImplementedException();
+			var span = self.AsSpan();
+			var binarySearchIndex = span.BinarySearch(value);
+
+			if (binarySearchIndex < 0)
+				return binarySearchIndex;
+
+			var lastIndex = binarySearchIndex;
+
+			for (int linearProbeIndex = binarySearchIndex + 1;
+				linearProbeIndex < span.Length;
+				linearProbeIndex++
+				) {
+				if (span[linearProbeIndex] == value)
+					lastIndex = linearProbeIndex;
+				else
+					break;
+			}
+
+			return lastIndex;
 		}
 	}
 

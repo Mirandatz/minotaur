@@ -145,11 +145,17 @@ namespace Minotaur.Theseus {
 
 			var startIndex = float.IsNegativeInfinity(startValue)
 				? 0
-				: possibleValues.LinearProbeFirstOccurence(startValue);
+				: possibleValues.BinarySearchFirstOccurence(startValue);
+
+			if (startIndex < 0)
+				throw new InvalidOperationException();
 
 			var stopIndex = float.IsPositiveInfinity(endValue)
 				? possibleValues.Length - 1
-				: possibleValues.LinearProbeLastOccurence(endValue);
+				: possibleValues.BinarySearchLastOccurence(endValue);
+
+			if (stopIndex < 0)
+				throw new InvalidOperationException();
 
 			var firstBoundIndex = Random.Int(
 				inclusiveMin: startIndex,
