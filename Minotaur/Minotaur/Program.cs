@@ -45,6 +45,7 @@ namespace Minotaur {
 
 				"--hyperrectangle-cache-size=50000",
 				"--rule-coverage-cache-size=50000",
+				"--individual-fitness-cache-size=1000",
 
 				"--fittest-selection=nsga2",
 				"--mutation-probability=1.0",
@@ -125,7 +126,7 @@ namespace Minotaur {
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
 
 			var metrics = CreateMetrics(
-				trainDataset: trainDataset,
+				dataset: trainDataset,
 				settings: settings);
 
 			IConcurrentCache<Individual, Fitness> fitnessCache;
@@ -149,8 +150,6 @@ namespace Minotaur {
 				maximumGenerations: settings.MaximumGenerations);
 
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
-
-			PrintEvolutionReport(evolutionReport);
 
 			return 0;
 		}
@@ -283,14 +282,14 @@ namespace Minotaur {
 			return population;
 		}
 
-		private static IEnumerable<IMetric> CreateMetrics(Dataset trainDataset, ProgramSettings settings) {
+		private static IEnumerable<IMetric> CreateMetrics(Dataset dataset, ProgramSettings settings) {
 			var metrics = new List<IMetric>();
 
 			foreach (var metric in settings.MetricNames) {
 				switch (metric) {
 
 				case "fscore":
-				metrics.Add(new FScore(trainDataset));
+				metrics.Add(new FScore(dataset));
 				break;
 
 				case "model-size":
@@ -320,7 +319,18 @@ namespace Minotaur {
 			}
 		}
 
-		private static void PrintEvolutionReport(EvolutionReport evolutionReport) {
+		private static void PrintFinalReport(
+			FitnessEvaluator trainDatasetFitnessEvaluator,
+			Dataset testDataset,
+			IEnumerable<IMetric> metrics,
+			ProgramSettings settings,
+			EvolutionReport report
+			) {
+
+			Console.WriteLine($"Evolution Engine stoped. Reason: {report.ReasonForStoppingEvolution}.");
+			Console.WriteLine("Computing metrics of final population on train dataset...");
+
+			var trainFitnesses = trainDatasetFitnessEvaluator.Evaluate(report.FinalPopulation);
 			throw new NotImplementedException();
 		}
 	}
