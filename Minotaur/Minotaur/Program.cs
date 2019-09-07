@@ -74,28 +74,19 @@ namespace Minotaur {
 
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
-			IConcurrentCache<Rule, RuleCoverage> ruleCoverageCache;
-			if (settings.RuleCoverageCacheSize == 0) {
-				ruleCoverageCache = new NullCache<Rule, RuleCoverage>();
-			} else {
-				ruleCoverageCache = new ConcurrentLruCache<Rule, RuleCoverage>(capacity: settings.RuleCoverageCacheSize);
-			}
+			var ruleCoverageCache = IConcurrentCacheCreator.Create<Rule, RuleCoverage>(
+				capacity: settings.RuleCoverageCacheSize);
 
 			var ruleCoverageComputer = new RuleCoverageComputer(
 				dataset: trainDataset,
 				cache: ruleCoverageCache);
 
-			IConcurrentCache<Rule, HyperRectangle> hyperRectangleCreatorCache;
-			if (settings.HyperRectangleCacheSize == 0) {
-				hyperRectangleCreatorCache = new NullCache<Rule, HyperRectangle>();
-			} else {
-				hyperRectangleCreatorCache = new ConcurrentLruCache<Rule, HyperRectangle>(
-					capacity: settings.HyperRectangleCacheSize);
-			}
+			var hyperRectangleCreatorCache = IConcurrentCacheCreator.Create<Rule, HyperRectangle>(
+				capacity: settings.HyperRectangleCacheSize);
 
 			var hyperRectangleCreator = new HyperRectangleCreator(
-				dimensionIntervalCreator: dimensionIntervalCreator,
-				cache: hyperRectangleCreatorCache);
+			  dimensionIntervalCreator: dimensionIntervalCreator,
+			  cache: hyperRectangleCreatorCache);
 
 			var seedSelector = new SeedSelector(
 				hyperRectangleCreator: hyperRectangleCreator,
@@ -136,16 +127,12 @@ namespace Minotaur {
 				dataset: trainDataset,
 				metricsNames: settings.MetricNames);
 
-			IConcurrentCache<Individual, Fitness> fitnessCache;
-			if (settings.FitnessCacheSize == 0) {
-				fitnessCache = new NullCache<Individual, Fitness>();
-			} else {
-				fitnessCache = new ConcurrentLruCache<Individual, Fitness>(capacity: settings.FitnessCacheSize);
-			}
+			var fitnessCache = IConcurrentCacheCreator.Create<Individual, Fitness>(
+				capacity: settings.FitnessCacheSize);
 
 			var fitnessEvaluator = new FitnessEvaluator(
-				metrics: metrics,
-				cache: fitnessCache);
+			  metrics: metrics,
+			  cache: fitnessCache);
 
 			var fittestSelector = CreateFittestSelector(
 				fitnessEvaluator: fitnessEvaluator,
