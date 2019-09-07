@@ -134,9 +134,10 @@ namespace Minotaur {
 			  metrics: metrics,
 			  cache: fitnessCache);
 
-			var fittestSelector = CreateFittestSelector(
-				fitnessEvaluator: fitnessEvaluator,
-				settings: settings);
+			var fittestSelector = IFittestSelectorCreator.Create(
+				fittestSelectorName: settings.SelectionAlgorithm,
+				fittestCount: settings.PopulationSize,
+				fitnessEvaluator: fitnessEvaluator);
 
 			var evolutionEngine = new EvolutionEngine(
 				populationMutator: populationMutator,
@@ -144,6 +145,7 @@ namespace Minotaur {
 				maximumGenerations: settings.MaximumGenerations);
 
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
+
 			PrintFinalReport(
 				trainDatasetFitnessEvaluator: fitnessEvaluator,
 				testDataset: testDataset,
@@ -185,21 +187,6 @@ namespace Minotaur {
 			Console.WriteLine(" Done.");
 
 			return population;
-		}
-
-		private static IFittestSelector CreateFittestSelector(FitnessEvaluator fitnessEvaluator, ProgramSettings settings) {
-			switch (settings.SelectionAlgorithm) {
-			case "nsga2":
-			return new NSGA2(
-				fitnessEvaluator: fitnessEvaluator,
-				fittestCount: settings.PopulationSize);
-
-			case "lexicographic":
-			throw new NotImplementedException();
-
-			default:
-			throw new ArgumentException($"Unknown selection algorithm: {settings.SelectionAlgorithm}");
-			}
 		}
 
 		private static void PrintFinalReport(
