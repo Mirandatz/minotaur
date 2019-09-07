@@ -8,31 +8,28 @@ namespace Minotaur.Theseus {
 
 	public sealed class SeedSelector {
 		public readonly Dataset Dataset;
-		private readonly HyperRectangleCreator _featureSpaceRegionCreator;
 		private readonly RuleCoverageComputer _ruleCoverageComputer;
 
 		public SeedSelector(
 			HyperRectangleCreator hyperRectangleCreator,
 			RuleCoverageComputer ruleCoverageComputer
 			) {
-			_featureSpaceRegionCreator = hyperRectangleCreator ?? throw new ArgumentNullException(nameof(hyperRectangleCreator));
 			_ruleCoverageComputer = ruleCoverageComputer ?? throw new ArgumentNullException(nameof(ruleCoverageComputer));
 
 			Dataset = hyperRectangleCreator.Dataset;
 		}
 
-		public bool TryFindSeed(Array<Rule> existingRules, out Array<float> seed) {
+		public bool TryFindSeed(Array<Rule> existingRules, out int datasetInstanceIndex) {
 			if (existingRules == null)
 				throw new ArgumentNullException(nameof(existingRules));
 			if (existingRules.ContainsNulls())
 				throw new ArgumentException(nameof(existingRules) + " can't contain nulls.");
 
 			if (existingRules.IsEmpty) {
-				var datasetInstanceIndex = Random.Int(
+				datasetInstanceIndex = Random.Int(
 					inclusiveMin: 0,
 					exclusiveMax: Dataset.InstanceCount);
 
-				seed = Dataset.GetInstanceData(datasetInstanceIndex);
 				return true;
 			}
 
@@ -40,11 +37,10 @@ namespace Minotaur.Theseus {
 			var potentialSeeds = totalCoverage.IndicesOfUncoveredInstances;
 
 			if (potentialSeeds.Length == 0) {
-				seed = null;
+				datasetInstanceIndex = default;
 				return false;
 			} else {
-				var datasetInstanceIndex = Random.Choice(potentialSeeds);
-				seed = Dataset.GetInstanceData(datasetInstanceIndex);
+				datasetInstanceIndex = Random.Choice(potentialSeeds);
 				return true;
 			}
 		}

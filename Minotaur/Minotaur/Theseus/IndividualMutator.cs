@@ -10,11 +10,11 @@ namespace Minotaur.Theseus {
 
 		public readonly Dataset Dataset;
 		private readonly BiasedOptionChooser<IndividualMutationType> _mutationChooser;
-		private readonly RuleCreator _ruleCreator;
+		private readonly IRuleCreator _ruleCreator;
 
 		public IndividualMutator(
 			BiasedOptionChooser<IndividualMutationType> mutationChooser,
-			RuleCreator ruleCreator) {
+			IRuleCreator ruleCreator) {
 			_mutationChooser = mutationChooser ?? throw new ArgumentNullException(nameof(mutationChooser));
 			_ruleCreator = ruleCreator ?? throw new ArgumentNullException(nameof(ruleCreator));
 			Dataset = _ruleCreator.Dataset;
@@ -51,7 +51,7 @@ namespace Minotaur.Theseus {
 
 			var createdNewRule = _ruleCreator.TryCreateRule(
 				existingRules: oldRules,
-				rule: out var newRule);
+				newRule: out var newRule);
 
 			if (!createdNewRule) {
 				mutated = null;
@@ -105,7 +105,7 @@ namespace Minotaur.Theseus {
 			// there's something wrong somewhere
 			var canCreate = _ruleCreator.TryCreateRule(
 				existingRules: withoutCandidate,
-				rule: out var newRule);
+				newRule: out var newRule);
 
 			if (!canCreate)
 				throw new InvalidOperationException("This should, like... Never happen.");

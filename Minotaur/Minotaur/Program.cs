@@ -94,12 +94,12 @@ namespace Minotaur {
 
 			var testCreator = new TestCreator(dataset: trainDataset);
 
-			var ruleCreator = new RuleCreator(
+			var ruleCreator = new OverfittingRuleCreator(
 				seedSelector: seedSelector,
 				testCreator: testCreator,
 				hyperRectangleCreator: hyperRectangleCreator);
 
-			var individualCreator = new IndividualCreator(
+			var individualCreator = new OverfittingIndividualCreator(
 				ruleCreator: ruleCreator,
 				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
 
@@ -163,7 +163,7 @@ namespace Minotaur {
 			Console.WriteLine();
 		}
 
-		private static Individual[] CreateInitialPopulation(IndividualCreator individualCreator, ProgramSettings settings) {
+		private static Individual[] CreateInitialPopulation(OverfittingIndividualCreator individualCreator, ProgramSettings settings) {
 
 			var statusReportPrefix = "Creating initial population: ";
 			var statusReport = $"" +
