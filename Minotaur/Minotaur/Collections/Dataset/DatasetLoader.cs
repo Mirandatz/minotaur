@@ -1,10 +1,11 @@
 namespace Minotaur.Collections.Dataset {
 	using System;
 	using System.IO;
+	using System.Threading.Tasks;
 
 	public static class DatasetLoader {
 
-		public static MutableMatrix<float> LoadData(string filename) {
+		private static MutableMatrix<float> LoadData(string filename) {
 			if (filename == null)
 				throw new ArgumentNullException(nameof(filename));
 
@@ -12,7 +13,7 @@ namespace Minotaur.Collections.Dataset {
 			return CsvParser.ParseCsv(csv);
 		}
 
-		public static MutableMatrix<bool> LoadLabels(string filename) {
+		private static MutableMatrix<bool> LoadLabels(string filename) {
 			if (filename == null)
 				throw new ArgumentNullException(nameof(filename));
 
@@ -29,7 +30,7 @@ namespace Minotaur.Collections.Dataset {
 			return labels;
 		}
 
-		public static FeatureType[] LoadFeatureTypes(string filename) {
+		private static FeatureType[] LoadFeatureTypes(string filename) {
 			if (filename == null)
 				throw new ArgumentNullException(nameof(filename));
 
@@ -58,6 +59,116 @@ namespace Minotaur.Collections.Dataset {
 			default:
 			throw new InvalidOperationException($"Error on line {i}: unable to parse {originalText}");
 			}
+		}
+
+		public static (Dataset TrainDataset, Dataset TestDataset) LoadDatasets(
+			string trainDataFilename,
+			string trainLabelsFilename,
+			string testDataFilename,
+			string testLabelsFilename,
+			string featureTypesFilename
+			) {
+			if (trainDataFilename is null)
+				throw new ArgumentNullException(nameof(trainDataFilename));
+			if (trainLabelsFilename is null)
+				throw new ArgumentNullException(nameof(trainLabelsFilename));
+			if (testDataFilename is null)
+				throw new ArgumentNullException(nameof(testDataFilename));
+			if (testLabelsFilename is null)
+				throw new ArgumentNullException(nameof(testLabelsFilename));
+			if (featureTypesFilename is null)
+				throw new ArgumentNullException(nameof(featureTypesFilename));
+
+			Console.Write("Started loading datasets...");
+
+			var trainData = Task.Run(() => DatasetLoader.LoadData(trainDataFilename));
+			var trainLabels = Task.Run(() => DatasetLoader.LoadLabels(trainLabelsFilename));
+
+			var testData = Task.Run(() => DatasetLoader.LoadData(testDataFilename));
+			var testLabels = Task.Run(() => DatasetLoader.LoadLabels(testLabelsFilename));
+
+			var featureTypes = Task.Run(() => DatasetLoader.LoadFeatureTypes(featureTypesFilename));
+
+			Task.WaitAll(
+				trainData,
+				trainLabels,
+				testData,
+				testLabels,
+				featureTypes);
+
+			Console.WriteLine(" Done.");
+
+			var trainDataset = Dataset.CreateFromMutableObjects(
+				mutableFeatureTypes: featureTypes.Result,
+				mutableData: trainData.Result,
+				mutableLabels: trainLabels.Result);
+
+			var testDataset = Dataset.CreateFromMutableObjects(
+				mutableFeatureTypes: featureTypes.Result,
+				mutableData: testData.Result,
+				mutableLabels: testLabels.Result);
+
+			Console.Write("Checking if TrainDataset and TestDataset are compatible...");
+
+			if (trainDataset.FeatureCount != testDataset.FeatureCount)
+				throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same feature count");
+			if (trainDataset.ClassCount != testDataset.ClassCount)
+				throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same class count");
+
+			for (int i = 0; i < trainDataset.FeatureCount; i++) {
+				var trainFeatureType = trainDataset.GetFeatureType(i);
+				var testFeatureType = testDataset.GetFeatureType(i);
+
+				switch (trainFeatureType) {
+
+				case FeatureType.Categorical:
+				if (testFeatureType == FeatureType.Categorical ||
+					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+				case FeatureType.Continuous:
+				if (testFeatureType == FeatureType.Continuous ||
+					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+				case FeatureType.CategoricalButTriviallyValued:
+				if (testFeatureType == FeatureType.Categorical ||
+					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+				case FeatureType.ContinuousButTriviallyValued:
+				if (testFeatureType == FeatureType.Continuous ||
+					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
+					continue;
+				} else {
+					throw new InvalidOperationException(
+						nameof(trainDataset) + " and " +
+						nameof(testDataset) + " must have the same feature types.");
+				}
+
+				default:
+				throw new InvalidOperationException("Unknown / unsupported value for {nameof(FeatureType)}.");
+				}
+			}
+
+			Console.WriteLine(" Ok.");
+
+			return (TrainDataset: trainDataset, TestDataset: testDataset);
 		}
 	}
 }

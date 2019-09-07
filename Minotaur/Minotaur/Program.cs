@@ -65,7 +65,12 @@ namespace Minotaur {
 		public static int Run(ProgramSettings settings) {
 			PrintSettings(settings);
 
-			(var trainDataset, var testDataset) = LoadDatasets(settings);
+			(var trainDataset, var testDataset) = DatasetLoader.LoadDatasets(
+				trainDataFilename: settings.TrainDataFilename,
+				trainLabelsFilename: settings.TrainLabelsFilename,
+				testDataFilename: settings.TestDataFilename,
+				testLabelsFilename: settings.TestLabelsFilename,
+				featureTypesFilename: settings.FeatureTypesFilename);
 
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
@@ -166,99 +171,6 @@ namespace Minotaur {
 			var serialized = JsonConvert.SerializeObject(settings, Formatting.Indented);
 			Console.WriteLine(serialized);
 			Console.WriteLine();
-		}
-
-		private static (Dataset TrainDataset, Dataset TestDataset) LoadDatasets(ProgramSettings settings) {
-			Console.Write("Started loading datasets...");
-
-			var trainData = Task.Run(() => DatasetLoader.LoadData(settings.TrainDataFilename));
-			var trainLabels = Task.Run(() => DatasetLoader.LoadLabels(settings.TrainLabelsFilename));
-
-			var testData = Task.Run(() => DatasetLoader.LoadData(settings.TestDataFilename));
-			var testLabels = Task.Run(() => DatasetLoader.LoadLabels(settings.TestLabelsFilename));
-
-			var featureTypes = Task.Run(() => DatasetLoader.LoadFeatureTypes(settings.FeatureTypesFilename));
-
-			Task.WaitAll(
-				trainData,
-				trainLabels,
-				testData,
-				testLabels,
-				featureTypes);
-
-			Console.WriteLine(" Done.");
-
-			var trainDataset = Dataset.CreateFromMutableObjects(
-				mutableFeatureTypes: featureTypes.Result,
-				mutableData: trainData.Result,
-				mutableLabels: trainLabels.Result);
-
-			var testDataset = Dataset.CreateFromMutableObjects(
-				mutableFeatureTypes: featureTypes.Result,
-				mutableData: testData.Result,
-				mutableLabels: testLabels.Result);
-
-			Console.Write("Checking if TrainDataset and TestDataset are compatible...");
-
-			if (trainDataset.FeatureCount != testDataset.FeatureCount)
-				throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same feature count");
-			if (trainDataset.ClassCount != testDataset.ClassCount)
-				throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same class count");
-
-			for (int i = 0; i < trainDataset.FeatureCount; i++) {
-				var trainFeatureType = trainDataset.GetFeatureType(i);
-				var testFeatureType = testDataset.GetFeatureType(i);
-
-				switch (trainFeatureType) {
-
-				case FeatureType.Categorical:
-				if (testFeatureType == FeatureType.Categorical ||
-					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
-					continue;
-				} else {
-					throw new InvalidOperationException(
-						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				case FeatureType.Continuous:
-				if (testFeatureType == FeatureType.Continuous ||
-					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
-					continue;
-				} else {
-					throw new InvalidOperationException(
-						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				case FeatureType.CategoricalButTriviallyValued:
-				if (testFeatureType == FeatureType.Categorical ||
-					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
-					continue;
-				} else {
-					throw new InvalidOperationException(
-						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				case FeatureType.ContinuousButTriviallyValued:
-				if (testFeatureType == FeatureType.Continuous ||
-					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
-					continue;
-				} else {
-					throw new InvalidOperationException(
-						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				default:
-				throw new InvalidOperationException("Unknown / unsupported value for {nameof(FeatureType)}.");
-				}
-			}
-
-			Console.WriteLine(" Ok.");
-
-			return (TrainDataset: trainDataset, TestDataset: testDataset);
 		}
 
 		private static Individual[] CreateInitialPopulation(IndividualCreator individualCreator, ProgramSettings settings) {
