@@ -3,6 +3,7 @@ namespace Minotaur.Theseus {
 	using System.Collections.Generic;
 	using System.Linq;
 	using Minotaur.ExtensionMethods.SystemArray;
+	using Minotaur.GeneticAlgorithms;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
 
@@ -15,10 +16,12 @@ namespace Minotaur.Theseus {
 
 		public EvolutionEngine(
 			PopulationMutator populationMutator,
+			FitnessEvaluator fitnessEvaluator,
 			IFittestSelector fittestSelector,
 			int maximumGenerations
 			) {
 			PopulationMutator = populationMutator ?? throw new ArgumentNullException(nameof(populationMutator));
+			FitnessEvaluator = fitnessEvaluator ?? throw new ArgumentNullException(nameof(fitnessEvaluator));
 			FittestSelector = fittestSelector ?? throw new ArgumentNullException(nameof(fittestSelector));
 
 			if (maximumGenerations <= 0)
@@ -26,6 +29,8 @@ namespace Minotaur.Theseus {
 
 			MaximumGenerations = maximumGenerations;
 		}
+
+		public FitnessEvaluator FitnessEvaluator { get; }
 
 		public EvolutionReport
 			Run(IEnumerable<Individual> initialPopulation
@@ -50,6 +55,12 @@ namespace Minotaur.Theseus {
 						"reached maximum number of failed mutation attempts " +
 						"for a single generation";
 					break;
+				}
+
+				if (generationsRan % 5 == 0) {
+					var fitnesses = FitnessEvaluator.EvaluateToHumanReadable(population);
+					Console.WriteLine();
+					Console.WriteLine(FitnessReportMaker.MakeReport(fitnesses));
 				}
 
 				var populationWithMutants = population.Concatenate(mutants);

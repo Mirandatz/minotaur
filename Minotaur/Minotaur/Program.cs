@@ -43,9 +43,9 @@ namespace Minotaur {
 				"--population-size=50",
 				"--maximum-initial-rule-count=50",
 
-				"--hyperrectangle-cache-size=50000",
-				"--rule-coverage-cache-size=50000",
-				"--individual-fitness-cache-size=1000",
+				"--hyperrectangle-cache-size=0",
+				"--rule-coverage-cache-size=0",
+				"--individual-fitness-cache-size=0",
 
 				"--fittest-selection=nsga2",
 
@@ -141,6 +141,7 @@ namespace Minotaur {
 
 			var evolutionEngine = new EvolutionEngine(
 				populationMutator: populationMutator,
+				fitnessEvaluator: fitnessEvaluator,
 				fittestSelector: fittestSelector,
 				maximumGenerations: settings.MaximumGenerations);
 
@@ -198,7 +199,7 @@ namespace Minotaur {
 
 			Console.WriteLine($"Evolution Engine stoped. Reason: {report.ReasonForStoppingEvolution}.");
 			Console.WriteLine("Computing metrics of final population on train dataset...");
-			var trainFitnesses = trainDatasetFitnessEvaluator.Evaluate(report.FinalPopulation);
+			var trainFitnesses = trainDatasetFitnessEvaluator.EvaluateToHumanReadable(report.FinalPopulation);
 			Console.WriteLine(FitnessReportMaker.MakeReport(trainFitnesses));
 
 			var testsMetrics = MetricsCreator.CreateFromMetricNames(
@@ -210,7 +211,7 @@ namespace Minotaur {
 				cache: new NullCache<Individual, Fitness>());
 
 			Console.WriteLine("Computing metrics of final population on test dataset...");
-			var testFitnesses = testFitnessEvaluator.Evaluate(report.FinalPopulation);
+			var testFitnesses = testFitnessEvaluator.EvaluateToHumanReadable(report.FinalPopulation);
 			Console.WriteLine(FitnessReportMaker.MakeReport(testFitnesses));
 		}
 	}

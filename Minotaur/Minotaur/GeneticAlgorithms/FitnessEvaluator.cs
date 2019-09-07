@@ -27,7 +27,7 @@ namespace Minotaur.GeneticAlgorithms {
 				throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
 		}
 
-		public Fitness[] Evaluate(Array<Individual> population) {
+		public Fitness[] EvaluateToHumanReadable(Array<Individual> population) {
 			if (population is null)
 				throw new ArgumentNullException(nameof(population));
 			if (population.IsEmpty)
