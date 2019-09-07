@@ -37,7 +37,7 @@ namespace Minotaur {
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
 
-				"--max-generations=2000",
+				"--max-generations=500",
 				"--max-failed-mutations-per-generation=500",
 
 				"--population-size=50",
@@ -48,11 +48,13 @@ namespace Minotaur {
 				"--individual-fitness-cache-size=1000",
 
 				"--fittest-selection=nsga2",
+
 				"--mutation-probability=1.0",
 
-				"--rule-mutation-remove-test-probability=0.12",
-				"--rule-mutation-modify-test-probability=0.80",
-				"--rule-mutation-modify-consequent-probability=0.08",
+				//"--rule-mutation-add-test-weight=10",
+				//"--rule-mutation-remove-test-weight=0.5",
+				//"--rule-mutation-modify-test-weight=80",
+				//"--rule-mutation-modify-consequent-weight=20",
 
 				"--individual-mutation-add-rule-weight=15",
 				"--individual-mutation-modify-rule-weight=80",
@@ -125,9 +127,9 @@ namespace Minotaur {
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
 
-			var metrics = CreateMetrics(
+			var metrics = MetricsCreator.CreateFromMetricNames(
 				dataset: trainDataset,
-				settings: settings);
+				metricsNames: settings.MetricNames);
 
 			IConcurrentCache<Individual, Fitness> fitnessCache;
 			if (settings.FitnessCacheSize == 0) {
@@ -150,6 +152,11 @@ namespace Minotaur {
 				maximumGenerations: settings.MaximumGenerations);
 
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
+			PrintFinalReport(
+				trainDatasetFitnessEvaluator: fitnessEvaluator,
+				testDataset: testDataset,
+				settings: settings,
+				report: evolutionReport);
 
 			return 0;
 		}
@@ -224,7 +231,6 @@ namespace Minotaur {
 						nameof(testDataset) + " must have the same feature types.");
 				}
 
-
 				case FeatureType.CategoricalButTriviallyValued:
 				if (testFeatureType == FeatureType.Categorical ||
 					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
@@ -282,28 +288,6 @@ namespace Minotaur {
 			return population;
 		}
 
-		private static IEnumerable<IMetric> CreateMetrics(Dataset dataset, ProgramSettings settings) {
-			var metrics = new List<IMetric>();
-
-			foreach (var metric in settings.MetricNames) {
-				switch (metric) {
-
-				case "fscore":
-				metrics.Add(new FScore(dataset));
-				break;
-
-				case "model-size":
-				metrics.Add(new ModelSize());
-				break;
-
-				default:
-				throw new ArgumentException($"Unsupported metric: {metric}");
-				}
-			}
-
-			return metrics;
-		}
-
 		private static IFittestSelector CreateFittestSelector(FitnessEvaluator fitnessEvaluator, ProgramSettings settings) {
 			switch (settings.SelectionAlgorithm) {
 			case "nsga2":
@@ -322,16 +306,26 @@ namespace Minotaur {
 		private static void PrintFinalReport(
 			FitnessEvaluator trainDatasetFitnessEvaluator,
 			Dataset testDataset,
-			IEnumerable<IMetric> metrics,
 			ProgramSettings settings,
 			EvolutionReport report
 			) {
 
 			Console.WriteLine($"Evolution Engine stoped. Reason: {report.ReasonForStoppingEvolution}.");
 			Console.WriteLine("Computing metrics of final population on train dataset...");
-
 			var trainFitnesses = trainDatasetFitnessEvaluator.Evaluate(report.FinalPopulation);
-			throw new NotImplementedException();
+			Console.WriteLine(FitnessReportMaker.MakeReport(trainFitnesses));
+
+			var testsMetrics = MetricsCreator.CreateFromMetricNames(
+				dataset: testDataset,
+				metricsNames: settings.MetricNames);
+
+			var testFitnessEvaluator = new FitnessEvaluator(
+				metrics: testsMetrics,
+				cache: new NullCache<Individual, Fitness>());
+
+			Console.WriteLine("Computing metrics of final population on test dataset...");
+			var testFitnesses = testFitnessEvaluator.Evaluate(report.FinalPopulation);
+			Console.WriteLine(FitnessReportMaker.MakeReport(testFitnesses));
 		}
 	}
 }

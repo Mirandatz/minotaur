@@ -107,7 +107,6 @@ namespace Minotaur {
 		[Range(0, int.MaxValue)]
 		public int FitnessCacheSize { get; }
 
-
 		//[Required]
 		//[Option(ShortName = "", LongName = "maximum-plateau-length",
 		//	Description =
@@ -145,11 +144,7 @@ namespace Minotaur {
 			Description =
 			"The metrics to use as fitness during the training phase."
 			)]
-		[AllowedValues(
-			"fscore", "model-size"
-			//"avg-rule-size", "useless-rules-ratio", "inconsistent-rules-ratio",
-			//"prediction-explanation-size", "prediction-ratio"
-			)]
+		[AllowedValues("fscore", "model-size")]
 		public string[] MetricNames { get; }
 
 		[Required]
@@ -162,31 +157,7 @@ namespace Minotaur {
 			Description = "The maximum number of rules a individual can have during creation."
 			)]
 		[Range(1, int.MaxValue)]
-		public int MaximumInitialRuleCount { get; }
-
-		[Required]
-		[Option(ShortName = "", LongName = "rule-mutation-remove-test-probability",
-			Description =
-			"The probability, when mutating a rule, of adding a new test to it."
-			)]
-		[Range(0f, 1f)]
-		public float RuleMutationRemoveTestProbability { get; }
-
-		[Required]
-		[Option(ShortName = "", LongName = "rule-mutation-modify-test-probability",
-			Description =
-			"The probability, when mutating a rule, of modifying a test that it contains."
-			)]
-		[Range(0f, 1f)]
-		public float RuleMutationModifyTestProbability { get; }
-
-		[Required]
-		[Option(ShortName = "", LongName = "rule-mutation-modify-consequent-probability",
-			Description =
-			"The probability, when mutating a rule, of modifying it's consequent (the labels it predicts)."
-			)]
-		[Range(0f, 1f)]
-		public float RuleMutationModifyConsequentProbability { get; }
+		public int MaximumInitialRuleCount { get; }		
 
 		[Required]
 		[Option(ShortName = "", LongName = "individual-mutation-add-rule-weight",
@@ -220,6 +191,30 @@ namespace Minotaur {
 			)]
 		[Range(0, int.MaxValue)]
 		public int MaximumFailedMutationAttemptsPerGeneration { get; }
+
+		//[Required]
+		//[Option(ShortName = "", LongName = "rule-mutation-remove-test-probability",
+		//	Description =
+		//	"The probability, when mutating a rule, of adding a new test to it."
+		//	)]
+		//[Range(0f, 1f)]
+		//public float RuleMutationRemoveTestProbability { get; }
+
+		//[Required]
+		//[Option(ShortName = "", LongName = "rule-mutation-modify-test-probability",
+		//	Description =
+		//	"The probability, when mutating a rule, of modifying a test that it contains."
+		//	)]
+		//[Range(0f, 1f)]
+		//public float RuleMutationModifyTestProbability { get; }
+
+		//[Required]
+		//[Option(ShortName = "", LongName = "rule-mutation-modify-consequent-probability",
+		//	Description =
+		//	"The probability, when mutating a rule, of modifying it's consequent (the labels it predicts)."
+		//	)]
+		//[Range(0f, 1f)]
+		//public float RuleMutationModifyConsequentProbability { get; }
 
 		//[Required]
 		//[Option(CommandOptionType.MultipleValue, ShortName = "", LongName = "test-metrics",

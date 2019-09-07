@@ -35,21 +35,21 @@ namespace Minotaur.Theseus {
 
 			// @Improve performance
 			var population = initialPopulation.ToArray();
+			var reasonForStoppingEvolution = string.Empty;
 
-			var generationsRan = 0;
+			int generationsRan;
 			for (generationsRan = 0; generationsRan < MaximumGenerations; generationsRan++) {
-
-				Console.WriteLine($"Running generation {generationsRan}/{generationsRan}");
+				Console.Write($"\rRunning generation {generationsRan}/{MaximumGenerations}");
 
 				var success = PopulationMutator.TryMutate(
 					population: population,
 					out var mutants);
 
 				if (!success) {
-					return new EvolutionReport(
-						generationsRan: generationsRan,
-						reasonForStoppingEvolution: "reached maximum number of failed mutation attempts for a single generation",
-						finalPopulation: population);
+					reasonForStoppingEvolution = "" +
+						"reached maximum number of failed mutation attempts " +
+						"for a single generation";
+					break;
 				}
 
 				var populationWithMutants = population.Concatenate(mutants);
@@ -57,9 +57,16 @@ namespace Minotaur.Theseus {
 				population = fittest;
 			}
 
+			// Since during the loop we were "\r"-ing,
+			// after we finish the lone we oughta WriteLine
+			Console.WriteLine();
+
+			if (generationsRan == MaximumGenerations)
+				reasonForStoppingEvolution = "reached maximum number of generations";
+
 			return new EvolutionReport(
 				generationsRan: generationsRan,
-				reasonForStoppingEvolution: "reached maximum number of generations",
+				reasonForStoppingEvolution: reasonForStoppingEvolution,
 				finalPopulation: population);
 		}
 	}
