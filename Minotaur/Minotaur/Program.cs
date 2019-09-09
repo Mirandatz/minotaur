@@ -26,13 +26,13 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/birds/birds-fold-0-train-data.csv",
-				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/birds/birds-fold-0-train-labels.csv",
-				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/birds/birds-fold-0-test-data.csv",
-				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/birds/birds-fold-0-test-labels.csv",
-				"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/birds/birds-feature-types.csv",
+				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
+				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
+				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
+				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
+				"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
 
-				"--output-directory=C:/Source/minotaur/temp/",
+				//"--output-directory=C:/Source/minotaur/temp/",
 
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
@@ -40,7 +40,7 @@ namespace Minotaur {
 				"--max-generations=500",
 				"--max-failed-mutations-per-generation=500",
 
-				"--population-size=50",
+				"--population-size=4",
 				"--maximum-initial-rule-count=50",
 
 				"--hyperrectangle-cache-size=0",
@@ -49,7 +49,7 @@ namespace Minotaur {
 
 				"--fittest-selection=nsga2",
 
-				"--mutation-probability=1.0",
+				"--mutation-probability=3.0",
 
 				//"--rule-mutation-add-test-weight=10",
 				//"--rule-mutation-remove-test-weight=0.5",
@@ -92,7 +92,7 @@ namespace Minotaur {
 				hyperRectangleCreator: hyperRectangleCreator,
 				ruleCoverageComputer: ruleCoverageComputer);
 
-			var testCreator = new TestCreator(dataset: trainDataset);
+			var testCreator = new OverfittingTestCreator(dataset: trainDataset);
 
 			var ruleCreator = new OverfittingRuleCreator(
 				seedSelector: seedSelector,

@@ -59,13 +59,13 @@ namespace Minotaur {
 			)]
 		public string FeatureTypesFilename { get; }
 
-		[Required]
-		[Option(ShortName = "",
-			LongName = "output-directory",
-			Description = "Directory to write the output files."
-			)]
-		[DirectoryExists]
-		public string OutputDirectory { get; }
+		//[Required]
+		//[Option(ShortName = "",
+		//	LongName = "output-directory",
+		//	Description = "Directory to write the output files."
+		//	)]
+		//[DirectoryExists]
+		//public string OutputDirectory { get; }
 
 		[Required]
 		[Option(ShortName = "",

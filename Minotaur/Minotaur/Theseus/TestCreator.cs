@@ -1,6 +1,7 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -8,9 +9,9 @@ namespace Minotaur.Theseus {
 	using Minotaur.Random;
 	using Random = Random.ThreadStaticRandom;
 
-	public sealed class TestCreator {
+	public sealed class TestCreator : ITestCreator {
 
-		public readonly Dataset Dataset;
+		public Dataset Dataset { get; }
 
 		public TestCreator(Dataset dataset) {
 			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
@@ -32,7 +33,7 @@ namespace Minotaur.Theseus {
 			return FromCategorical(cat);
 
 			case ContinuousDimensionInterval cont:
-			return FromContinuous(cont);
+			return FromContinuousNasty(cont);
 
 			default:
 			throw new InvalidOperationException(
@@ -69,13 +70,30 @@ namespace Minotaur.Theseus {
 				value: value);
 		}
 
+		private ContinuousFeatureTest FromContinuousNasty(ContinuousDimensionInterval cont) {
+			var dimensionIndex = cont.DimensionIndex;
+			var startValue = cont.Start.Value;
+			var endValue = cont.End.Value;
 
-		// @Improve performance
-		// @Remarks: Any ContinuousFeatureTest created by this method
-		// will use feature values _from the dataset_ as bounds.
-		// That means that values that appear more often in the dataset
-		// have a higher chance	of being used as a bound.
-		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cont) {
+			var featureValues = Dataset.GetSortedUniqueFeatureValues(dimensionIndex);
+			var possibleValues = featureValues
+				.Where(v => v >= startValue && v <= endValue)
+				.ToArray();
+
+			var firstBound = Random.Choice(possibleValues);
+
+			possibleValues = possibleValues.Where(v => v != firstBound).ToArray();
+
+			var secondBound = Random.Choice(possibleValues);
+
+			return ContinuousFeatureTest.FromUnsortedBounds(
+				featureIndex: dimensionIndex,
+				firstBound: firstBound,
+				secondBound: secondBound);
+		}
+
+		// @Improve performance & fix
+		private ContinuousFeatureTest FromContinuousBroken(ContinuousDimensionInterval cont) {
 			var dimensionIndex = cont.DimensionIndex;
 			var startValue = cont.Start.Value;
 			var endValue = cont.End.Value;
@@ -133,6 +151,7 @@ namespace Minotaur.Theseus {
 				secondBound: secondBound);
 		}
 
+		// Finish the implementation
 		// @Remarks: Any ContinuousFeatureTest created by this method
 		// will use feature values _from the dataset_ as bounds.
 		// That means that values that appear more often in the dataset
@@ -141,18 +160,18 @@ namespace Minotaur.Theseus {
 			var dimensionIndex = cont.DimensionIndex;
 			var startValue = cont.Start.Value;
 			var endValue = cont.End.Value;
-			var possibleValues = Dataset.GetFeatureValues(dimensionIndex);
+			var featureValues = Dataset.GetFeatureValues(dimensionIndex);
 
 			var startIndex = float.IsNegativeInfinity(startValue)
 				? 0
-				: possibleValues.BinarySearchFirstOccurence(startValue);
+				: featureValues.BinarySearchFirstOccurence(startValue);
 
 			if (startIndex < 0)
 				throw new InvalidOperationException();
 
 			var stopIndex = float.IsPositiveInfinity(endValue)
-				? possibleValues.Length - 1
-				: possibleValues.BinarySearchLastOccurence(endValue);
+				? featureValues.Length - 1
+				: featureValues.BinarySearchLastOccurence(endValue);
 
 			if (stopIndex < 0)
 				throw new InvalidOperationException();
@@ -161,10 +180,60 @@ namespace Minotaur.Theseus {
 				inclusiveMin: startIndex,
 				exclusiveMax: stopIndex + 1);
 
-			var firstBoundValue = possibleValues[firstBoundIndex];
+			var firstBoundValue = featureValues[firstBoundIndex];
+			var firstBoundFirstOccurenceIndex = featureValues.BinarySearchFirstOccurence(firstBoundValue);
+			var firstBoundIsSmallestValue = firstBoundFirstOccurenceIndex == 0;
+			if (firstBoundIsSmallestValue)
+				return FirstBoundIsSmallestValue(dimensionIndex, featureValues, stopIndex, firstBoundIndex);
+
+			var firstBoundLastOccurenceIndex = featureValues.BinarySearchLastOccurence(firstBoundValue);
+			var firstBoundIsLargestValue = firstBoundLastOccurenceIndex == featureValues.Length - 1;
+			if (firstBoundIsLargestValue)
+				return FirstBoundIsLargestValue(dimensionIndex, featureValues, startIndex, firstBoundIndex);
 
 			throw new NotImplementedException();
 		}
 
+		private static ContinuousFeatureTest FirstBoundIsLargestValue(
+			int dimensionIndex,
+			Array<float> featureValues,
+			int startIndex,
+			int firstBoundIndex
+			) {
+			var firstBoundValue = featureValues[firstBoundIndex];
+			var firstOccurence = featureValues.BinarySearchFirstOccurence(firstBoundValue);
+
+			var secondBoundIndex = Random.Int(
+				inclusiveMin: startIndex,
+				exclusiveMax: firstOccurence);
+
+			var secondBoundValue = featureValues[secondBoundIndex];
+
+			return ContinuousFeatureTest.FromUnsortedBounds(
+				featureIndex: dimensionIndex,
+				firstBound: firstBoundValue,
+				secondBound: secondBoundValue);
+		}
+
+		private static ContinuousFeatureTest FirstBoundIsSmallestValue(
+			int dimensionIndex,
+			Array<float> featureValues,
+			int stopIndex,
+			int firstBoundIndex
+			) {
+			var firstBoundValue = featureValues[firstBoundIndex];
+			var lastOccurence = featureValues.BinarySearchLastOccurence(firstBoundValue);
+
+			var secondBoundIndex = Random.Int(
+				inclusiveMin: lastOccurence + 1,
+				exclusiveMax: stopIndex + 1);
+
+			var secondBoundValue = featureValues[secondBoundIndex];
+
+			return ContinuousFeatureTest.FromUnsortedBounds(
+				featureIndex: dimensionIndex,
+				firstBound: firstBoundValue,
+				secondBound: secondBoundValue);
+		}
 	}
 }
