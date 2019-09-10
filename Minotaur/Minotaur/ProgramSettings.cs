@@ -123,21 +123,14 @@ namespace Minotaur {
 		[Range(1, int.MaxValue)]
 		public int PopulationSize { get; }
 
-		[Required]
-		[Option(ShortName = "", LongName = "mutation-probability",
-			Description =
-			"This value is the ratio of the population that will be mutated." +
-			"If the population size is 100 and this value is 0.5, then 50 mutants will" +
-			"be generated."
-			)]
-		[Range(0, float.MaxValue)]
-		public float MutationProbability { get; }
 
-		public int MutantsPerGeneration {
-			get {
-				return (int) System.Math.Ceiling(PopulationSize * MutationProbability);
-			}
-		}
+		[Required]
+		[Option(ShortName = "", LongName = "mutants-per-generation",
+			Description =
+			"How many mutants should be generated each generation."
+			)]
+		[Range(1, int.MaxValue)]
+		public int MutantsPerGeneration { get; }
 
 		[Required]
 		[Option(CommandOptionType.MultipleValue, ShortName = "", LongName = "fitness-metrics",
@@ -157,7 +150,7 @@ namespace Minotaur {
 			Description = "The maximum number of rules a individual can have during creation."
 			)]
 		[Range(1, int.MaxValue)]
-		public int MaximumInitialRuleCount { get; }		
+		public int MaximumInitialRuleCount { get; }
 
 		[Required]
 		[Option(ShortName = "", LongName = "individual-mutation-add-rule-weight",

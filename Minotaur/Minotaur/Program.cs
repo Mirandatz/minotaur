@@ -40,7 +40,7 @@ namespace Minotaur {
 				"--max-generations=500",
 				"--max-failed-mutations-per-generation=500",
 
-				"--population-size=4",
+				"--population-size=50",
 				"--maximum-initial-rule-count=50",
 
 				"--hyperrectangle-cache-size=0",
@@ -49,7 +49,7 @@ namespace Minotaur {
 
 				"--fittest-selection=nsga2",
 
-				"--mutation-probability=3.0",
+				"--mutants-per-generation=30",
 
 				//"--rule-mutation-add-test-weight=10",
 				//"--rule-mutation-remove-test-weight=0.5",

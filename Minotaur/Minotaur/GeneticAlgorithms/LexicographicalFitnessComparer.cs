@@ -10,7 +10,7 @@ namespace Minotaur.GeneticAlgorithms {
 			if (rhs is null)
 				throw new ArgumentNullException(nameof(rhs));
 			if (lhs.Count != rhs.Count)
-				throw new ArgumentException(nameof(lhs) + " and " + nameof(rhs) + " must have the same length");
+				throw new ArgumentException(nameof(lhs) + " and " + nameof(rhs) + " must have the same length.");
 
 			for (int i = 0; i < lhs.Count; i++) {
 				if (lhs[i] < rhs[i])

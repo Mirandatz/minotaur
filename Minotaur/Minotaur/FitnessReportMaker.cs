@@ -14,10 +14,8 @@ namespace Minotaur {
 				throw new ArgumentException(nameof(fitnesses) + " must contain at least 3 elements.");
 
 			var sortedFitnesses = fitnesses.ToArray();
-
 			Array.Sort(
-				keys: sortedFitnesses,
-				items: sortedFitnesses,
+				array: sortedFitnesses,
 				comparer: new LexicographicalFitnessComparer());
 
 			var builder = new StringBuilder();
