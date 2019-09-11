@@ -26,42 +26,7 @@ namespace Minotaur.GeneticAlgorithms {
 			if (Metrics.ContainsNulls())
 				throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
 		}
-
-		public Fitness[] EvaluateToHumanReadable(Array<Individual> population) {
-			if (population is null)
-				throw new ArgumentNullException(nameof(population));
-			if (population.IsEmpty)
-				throw new ArgumentException(nameof(population) + " can't be empty.");
-			if (population.ContainsNulls())
-				throw new ArgumentException(population + " can't contain nulls.");
-
-			var fitnesses = new Fitness[population.Length];
-
-			Parallel.For(0, fitnesses.Length, i => {
-				var individual = population.AsSpan()[i];
-
-				var isCached = _cache.TryGet(key: individual, out var fitness);
-				if (!isCached) {
-					fitness = Evaluate(individual);
-					_cache.Add(key: individual, value: fitness);
-				}
-
-				fitnesses[i] = fitness;
-			});
-
-			return fitnesses;
-		}
-
-		private Fitness Evaluate(Individual individual) {
-			var fitnesses = new float[Metrics.Length];
-
-			Parallel.For(0, fitnesses.Length, i => {
-				fitnesses[i] = Metrics[i].Evaluate(individual);
-			});
-
-			return Fitness.Wrap(fitnesses);
-		}
-
+		
 		public Fitness[] EvaluateAsMaximizationTask(Array<Individual> population) {
 			if (population is null)
 				throw new ArgumentNullException(nameof(population));

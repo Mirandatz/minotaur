@@ -57,8 +57,8 @@ namespace Minotaur.Theseus {
 					break;
 				}
 
-				if (generationsRan % 5 == 0) {
-					var fitnesses = FitnessEvaluator.EvaluateToHumanReadable(population);
+				if (generationsRan % 10 == 0) {
+					var fitnesses = FitnessEvaluator.EvaluateAsMaximizationTask(population);
 					Console.WriteLine();
 					Console.WriteLine(FitnessReportMaker.MakeReport(fitnesses));
 				}
