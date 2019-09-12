@@ -37,15 +37,15 @@ namespace Minotaur {
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
 
-				"--max-generations=500",
+				"--max-generations=10",
 				"--max-failed-mutations-per-generation=500",
 
-				"--population-size=50",
+				"--population-size=200",
 				"--maximum-initial-rule-count=50",
 
-				"--hyperrectangle-cache-size=0",
-				"--rule-coverage-cache-size=0",
-				"--individual-fitness-cache-size=500",
+				"--hyperrectangle-cache-size=1000",
+				"--rule-coverage-cache-size=1000",
+				"--individual-fitness-cache-size=1000",
 
 				"--fittest-selection=nsga2",
 
@@ -92,20 +92,12 @@ namespace Minotaur {
 				hyperRectangleCreator: hyperRectangleCreator,
 				ruleCoverageComputer: ruleCoverageComputer);
 
-			var testCreator = new OverfittingTestCreator(dataset: trainDataset);
+			var testCreator = new TestCreator(dataset: trainDataset);
 
-			var ruleCreator = new OverfittingRuleCreator(
+			var ruleCreator = new RuleCreator(
 				seedSelector: seedSelector,
 				testCreator: testCreator,
 				hyperRectangleCreator: hyperRectangleCreator);
-
-			var individualCreator = new OverfittingIndividualCreator(
-				ruleCreator: ruleCreator,
-				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
-
-			var initialPopulation = CreateInitialPopulation(
-				individualCreator: individualCreator,
-				settings: settings);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {
@@ -145,6 +137,24 @@ namespace Minotaur {
 				fittestSelector: fittestSelector,
 				maximumGenerations: settings.MaximumGenerations);
 
+			var individualCreator = new IndividualCreator(
+				ruleCreator: ruleCreator,
+				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
+
+			var initialPopulation = CreateInitialPopulation(
+				individualCreator: individualCreator,
+				settings: settings);
+
+			//Console.WriteLine($"Train dataset volume: {VolumeComputer.ComputeDatasetVolume(trainDataset)}");
+			//var maximumRules = 1000;
+			//var usefulRules = 0;
+			//for (int i = 0; i < maximumRules; i++) {
+			//	ruleCreator.TryCreateRule(new Rule[] { }, out var rule);
+			//	Console.WriteLine($"Rule volume: {VolumeComputer.ComputeRuleVolume(trainDataset, rule)}");
+			//}
+
+			//Console.WriteLine(usefulRules);
+
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 
 			PrintFinalReport(
@@ -163,7 +173,7 @@ namespace Minotaur {
 			Console.WriteLine();
 		}
 
-		private static Individual[] CreateInitialPopulation(OverfittingIndividualCreator individualCreator, ProgramSettings settings) {
+		private static Individual[] CreateInitialPopulation(IIndividualCreator individualCreator, ProgramSettings settings) {
 
 			var statusReportPrefix = "Creating initial population: ";
 			var statusReport = $"" +

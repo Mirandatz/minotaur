@@ -46,6 +46,9 @@ namespace Minotaur.Theseus {
 				seed: seed,
 				existingRectangles: hyperRectangles);
 
+			if (!secureRectangle.Contains(seed))
+				throw new InvalidOperationException();
+
 			var tests = CreateTests(secureRectangle);
 			var labels = Random.Bools(count: Dataset.ClassCount);
 
