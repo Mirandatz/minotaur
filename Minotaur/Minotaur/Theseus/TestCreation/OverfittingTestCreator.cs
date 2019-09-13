@@ -1,11 +1,8 @@
-namespace Minotaur.Theseus {
+namespace Minotaur.Theseus.TestCreation {
 	using System;
-	using System.Linq;
-	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
-	using Random = Random.ThreadStaticRandom;
 
 	public sealed class OverfittingTestCreator: ITestCreator {
 

@@ -50,7 +50,7 @@ namespace Minotaur.Theseus {
 
 			for (int i = 0; i < coverages.Length; i++)
 				BinaryOr(finalCoverage, coverages[i]);
-			
+
 			return new RuleCoverage(
 				dataset: coverages[0].Dataset,
 				instancesCovered: finalCoverage);

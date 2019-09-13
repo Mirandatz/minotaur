@@ -1,4 +1,4 @@
-namespace Minotaur.Theseus {
+namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;

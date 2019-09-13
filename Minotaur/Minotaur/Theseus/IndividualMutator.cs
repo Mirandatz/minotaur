@@ -3,6 +3,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Random;
+	using Minotaur.Theseus.RuleCreation;
 	using Random = Random.ThreadStaticRandom;
 
 	// @Assumption: all individuals have the sa\me default predictions

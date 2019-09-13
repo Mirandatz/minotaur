@@ -162,7 +162,7 @@ namespace Minotaur.Theseus {
 
 				if (!intersects)
 					continue;
-				
+
 				var otherDimension = (ContinuousDimensionInterval) otherRectangle.Dimensions[dimensionIndex];
 
 				// This is a sanity check

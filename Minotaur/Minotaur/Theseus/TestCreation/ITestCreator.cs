@@ -1,4 +1,4 @@
-namespace Minotaur.Theseus {
+namespace Minotaur.Theseus.TestCreation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;

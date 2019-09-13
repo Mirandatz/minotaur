@@ -13,6 +13,9 @@ namespace Minotaur {
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
+	using Minotaur.Theseus.IndividualCreation;
+	using Minotaur.Theseus.RuleCreation;
+	using Minotaur.Theseus.TestCreation;
 	using Newtonsoft.Json;
 
 	public static class Program {
@@ -137,7 +140,7 @@ namespace Minotaur {
 				fittestSelector: fittestSelector,
 				maximumGenerations: settings.MaximumGenerations);
 
-			var individualCreator = new IndividualCreator(
+			var individualCreator = new UnbiasedIndividualCreator(
 				ruleCreator: ruleCreator,
 				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
 

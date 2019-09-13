@@ -1,15 +1,16 @@
-namespace Minotaur.Theseus {
+namespace Minotaur.Theseus.IndividualCreation {
 	using System;
 	using System.Collections.Generic;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.Theseus.RuleCreation;
 
-	public sealed class OverfittingIndividualCreator: IIndividualCreator {
+	public sealed class UnbiasedIndividualCreator: IIndividualCreator {
 		public Dataset Dataset { get; }
 		private readonly int _maximumInitialRuleCount;
-		private readonly OverfittingRuleCreator _ruleCreator;
+		private readonly RuleCreator _ruleCreator;
 
-		public OverfittingIndividualCreator(OverfittingRuleCreator ruleCreator, int maximumInitialRuleCount) {
+		public UnbiasedIndividualCreator(RuleCreator ruleCreator, int maximumInitialRuleCount) {
 			if (maximumInitialRuleCount <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumInitialRuleCount) + " must be >= 1.");
 

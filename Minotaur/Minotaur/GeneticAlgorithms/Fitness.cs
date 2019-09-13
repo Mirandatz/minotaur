@@ -47,7 +47,7 @@ namespace Minotaur.GeneticAlgorithms {
 		public float this[int index] => _objectives[index];
 
 		public int Count { get; }
-		
+
 		public override string ToString() => "[" + string.Join(", ", _objectives) + "]";
 
 		public override int GetHashCode() => _precomputedHashCode;

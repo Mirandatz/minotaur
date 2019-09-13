@@ -167,7 +167,7 @@ namespace Minotaur.Collections {
 			}
 
 			return builder.ToString();
-		}		
+		}
 
 		// <returns>
 		// The index of the first occurence of the specified value in the specified array,

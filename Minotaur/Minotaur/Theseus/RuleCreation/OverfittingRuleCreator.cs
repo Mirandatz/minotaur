@@ -1,4 +1,4 @@
-namespace Minotaur.Theseus {
+namespace Minotaur.Theseus.RuleCreation {
 	using System;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
@@ -6,18 +6,17 @@ namespace Minotaur.Theseus {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
-	using Random = Random.ThreadStaticRandom;
+	using Minotaur.Theseus.TestCreation;
 
-	public sealed class RuleCreator: IRuleCreator {
-
+	public sealed class OverfittingRuleCreator: IRuleCreator {
 		public Dataset Dataset { get; }
 		private readonly SeedSelector _seedSelector;
 		private readonly HyperRectangleCreator _hyperRectangleCreator;
-		private readonly TestCreator _testCreator;
+		private readonly OverfittingTestCreator _testCreator;
 
-		public RuleCreator(
+		public OverfittingRuleCreator(
 			SeedSelector seedSelector,
-			TestCreator testCreator,
+			OverfittingTestCreator testCreator,
 			HyperRectangleCreator hyperRectangleCreator
 			) {
 			_seedSelector = seedSelector ?? throw new ArgumentNullException(nameof(seedSelector));
@@ -42,6 +41,7 @@ namespace Minotaur.Theseus {
 
 			var seed = Dataset.GetInstanceData(seedIndex);
 			var hyperRectangles = CreateHyperRectangles(existingRules: existingRules);
+
 			var secureRectangle = CreateLargestNonIntersectingHyperRectangle(
 				seed: seed,
 				existingRectangles: hyperRectangles);
@@ -50,11 +50,14 @@ namespace Minotaur.Theseus {
 				throw new InvalidOperationException();
 
 			var tests = CreateTests(secureRectangle);
-			var labels = Random.Bools(count: Dataset.ClassCount);
+			var labels = Dataset.GetInstanceLabels(seedIndex);
 
 			rule = new Rule(
 				tests: tests,
 				predictedLabels: labels);
+
+			if (!rule.Covers(seed))
+				throw new InvalidOperationException();
 
 			return true;
 		}

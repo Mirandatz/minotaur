@@ -19,7 +19,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		[JsonProperty] public int FeatureIndex { get; }
 
 		public bool Matches(Array<float> instance) => true;
-		
+
 		public override int GetHashCode() => FeatureIndex;
 
 		public override bool Equals(object obj) => Equals(obj as NullFeatureTest);

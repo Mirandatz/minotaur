@@ -1,6 +1,5 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
-	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.ExtensionMethods.Float;
 

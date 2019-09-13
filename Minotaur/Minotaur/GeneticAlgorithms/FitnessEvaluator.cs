@@ -26,7 +26,7 @@ namespace Minotaur.GeneticAlgorithms {
 			if (Metrics.ContainsNulls())
 				throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
 		}
-		
+
 		public Fitness[] EvaluateAsMaximizationTask(Array<Individual> population) {
 			if (population is null)
 				throw new ArgumentNullException(nameof(population));

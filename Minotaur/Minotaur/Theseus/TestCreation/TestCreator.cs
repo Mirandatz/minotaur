@@ -1,6 +1,5 @@
-namespace Minotaur.Theseus {
+namespace Minotaur.Theseus.TestCreation {
 	using System;
-	using System.Collections.Generic;
 	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
@@ -9,7 +8,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Random;
 	using Random = Random.ThreadStaticRandom;
 
-	public sealed class TestCreator : ITestCreator {
+	public sealed class TestCreator: ITestCreator {
 
 		public Dataset Dataset { get; }
 
@@ -91,7 +90,7 @@ namespace Minotaur.Theseus {
 				firstBound: firstBound,
 				secondBound: secondBound);
 		}
-		
+
 		private static ContinuousFeatureTest FirstBoundIsLargestValue(
 			int dimensionIndex,
 			Array<float> featureValues,
