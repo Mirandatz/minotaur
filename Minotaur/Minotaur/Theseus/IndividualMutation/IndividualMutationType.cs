@@ -1,4 +1,4 @@
-namespace Minotaur.Theseus {
+namespace Minotaur.Theseus.IndividualMutation {
 
 	public enum IndividualMutationType {
 		AddRule,

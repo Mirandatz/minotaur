@@ -14,6 +14,7 @@ namespace Minotaur {
 	using Minotaur.Random;
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.IndividualCreation;
+	using Minotaur.Theseus.IndividualMutation;
 	using Minotaur.Theseus.RuleCreation;
 	using Minotaur.Theseus.TestCreation;
 	using Newtonsoft.Json;
