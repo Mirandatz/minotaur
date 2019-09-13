@@ -1,6 +1,7 @@
 namespace Minotaur.Collections.Dataset {
 	using System;
 	using System.IO;
+	using System.Linq;
 	using System.Threading.Tasks;
 
 	public static class DatasetLoader {
@@ -79,7 +80,7 @@ namespace Minotaur.Collections.Dataset {
 			if (featureTypesFilename is null)
 				throw new ArgumentNullException(nameof(featureTypesFilename));
 
-			Console.Write("Started loading datasets...");
+			Console.Write("Loading datasets... ");
 
 			var trainData = Task.Run(() => DatasetLoader.LoadData(trainDataFilename));
 			var trainLabels = Task.Run(() => DatasetLoader.LoadLabels(trainLabelsFilename));
@@ -96,7 +97,7 @@ namespace Minotaur.Collections.Dataset {
 				testLabels,
 				featureTypes);
 
-			Console.WriteLine(" Done.");
+			Console.WriteLine("Done.");
 
 			var trainDataset = Dataset.CreateFromMutableObjects(
 				mutableFeatureTypes: featureTypes.Result,
@@ -108,8 +109,21 @@ namespace Minotaur.Collections.Dataset {
 				mutableData: testData.Result,
 				mutableLabels: testLabels.Result);
 
-			Console.Write("Checking if TrainDataset and TestDataset are compatible...");
+			Console.Write("Checking if (TrainDataset) is usable... ");
+			{
+				var trainFeatureTypes = trainDataset.FeatureTypes;
+				for (int i = 0; i < trainFeatureTypes.Length; i++) {
+					if (trainFeatureTypes[i] == FeatureType.ContinuousButTriviallyValued) {
+						throw new InvalidOperationException(
+							"The train dataset cannot contain continuous features" +
+							" which all instances have the same value.");
+					}
+				}
+			}
+			Console.WriteLine("Yep, it is.");
 
+
+			Console.Write("Checking if TrainDataset and TestDataset are compatible... ");
 			if (trainDataset.FeatureCount != testDataset.FeatureCount)
 				throw new InvalidOperationException(nameof(trainDataset) + " and " + nameof(testDataset) + " must have the same feature count");
 			if (trainDataset.ClassCount != testDataset.ClassCount)
@@ -166,7 +180,7 @@ namespace Minotaur.Collections.Dataset {
 				}
 			}
 
-			Console.WriteLine(" Ok.");
+			Console.WriteLine("Yep, they are.");
 
 			return (TrainDataset: trainDataset, TestDataset: testDataset);
 		}
