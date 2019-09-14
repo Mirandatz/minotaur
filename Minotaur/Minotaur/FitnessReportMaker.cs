@@ -20,13 +20,13 @@ namespace Minotaur {
 			var builder = new StringBuilder();
 
 			builder.Append("Best individual: ");
-			builder.AppendLine(sortedFitnesses[0].ToString());
+			builder.AppendLine(sortedFitnesses[sortedFitnesses.Length - 1].ToString());
 
 			builder.Append("Best individual: ");
 			builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
 
 			builder.Append("Worst individual: ");
-			builder.AppendLine(sortedFitnesses[sortedFitnesses.Length - 1].ToString());
+			builder.AppendLine(sortedFitnesses[0].ToString());
 
 			return builder.ToString();
 		}

@@ -9,6 +9,10 @@ namespace Minotaur.Theseus.TestCreation {
 
 		public readonly Dataset Dataset;
 
+		public CerriTestCreator(Dataset dataset) {
+			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+		}
+
 		public IFeatureTest Create(
 			int featureIndex,
 			int datasetSeedInstanceIndex,
@@ -26,10 +30,16 @@ namespace Minotaur.Theseus.TestCreation {
 			switch (Dataset.GetFeatureType(featureIndex)) {
 
 			case FeatureType.Categorical:
-			throw new NotImplementedException();
+			return FromCategorical(
+			featureIndex: featureIndex,
+			datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			boundingBox: boundingBox);
 
 			case FeatureType.CategoricalButTriviallyValued:
-			throw new NotImplementedException();
+			return FromCategorical(
+			featureIndex: featureIndex,
+			datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			boundingBox: boundingBox);
 
 			case FeatureType.Continuous:
 			return FromContinuous(
@@ -37,19 +47,31 @@ namespace Minotaur.Theseus.TestCreation {
 				datasetSeedInstanceIndex: datasetSeedInstanceIndex,
 				boundingBox: boundingBox);
 
-			case FeatureType.ContinuousButTriviallyValued:
-			throw new NotImplementedException();
-
 			default:
 			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
 			}
 		}
 
-		private IFeatureTest FromContinuous(
+		private CategoricalFeatureTest FromCategorical(
 			int featureIndex,
 			int datasetSeedInstanceIndex,
 			HyperRectangle boundingBox
 			) {
+			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
+
+			if (!boundingBox.Contains(seed))
+				throw new InvalidOperationException();
+
+			return new CategoricalFeatureTest(
+				featureIndex: featureIndex,
+				value: seed[featureIndex]);
+		}
+
+		private ContinuousFeatureTest FromContinuous(
+		int featureIndex,
+		int datasetSeedInstanceIndex,
+		HyperRectangle boundingBox
+		) {
 			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
 
 			if (!boundingBox.Contains(seed))

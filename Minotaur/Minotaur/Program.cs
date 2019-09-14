@@ -41,10 +41,11 @@ namespace Minotaur {
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
 
-				"--max-generations=10",
-				"--max-failed-mutations-per-generation=500",
+				"--max-generations=2000",
+				"--max-failed-mutations-per-generation=2000",
 
-				"--population-size=200",
+				"--population-size=50",
+				"--mutants-per-generation=100",
 				"--maximum-initial-rule-count=50",
 
 				"--hyperrectangle-cache-size=1000",
@@ -52,8 +53,6 @@ namespace Minotaur {
 				"--individual-fitness-cache-size=1000",
 
 				"--fittest-selection=nsga2",
-
-				"--mutants-per-generation=30",
 
 				//"--rule-mutation-add-test-weight=10",
 				//"--rule-mutation-remove-test-weight=0.5",
@@ -96,9 +95,9 @@ namespace Minotaur {
 				hyperRectangleCreator: hyperRectangleCreator,
 				ruleCoverageComputer: ruleCoverageComputer);
 
-			var testCreator = new TestCreator(dataset: trainDataset);
+			var testCreator = new CerriTestCreator(dataset: trainDataset);
 
-			var ruleCreator = new RuleCreator(
+			var ruleCreator = new CerriRuleCreator(
 				seedSelector: seedSelector,
 				testCreator: testCreator,
 				hyperRectangleCreator: hyperRectangleCreator);
@@ -141,7 +140,7 @@ namespace Minotaur {
 				fittestSelector: fittestSelector,
 				maximumGenerations: settings.MaximumGenerations);
 
-			var individualCreator = new UnbiasedIndividualCreator(
+			var individualCreator = new CerriIndividualCreator(
 				ruleCreator: ruleCreator,
 				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
 

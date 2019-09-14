@@ -1,6 +1,7 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -200,6 +201,21 @@ namespace Minotaur.Theseus {
 			}
 
 			return hyperRectangle;
+		}
+
+		public HyperRectangle[] FromRules(Array<Rule> rules) {
+			if (rules is null)
+				throw new ArgumentNullException(nameof(rules));
+
+			var hyperRectangles = new HyperRectangle[rules.Length];
+
+			Parallel.For(0, hyperRectangles.Length, i => {
+				var currentRule = rules[i];
+				var hyperRectangle = FromRule(currentRule);
+				hyperRectangles[i] = hyperRectangle;
+			});
+
+			return hyperRectangles;
 		}
 
 		private HyperRectangle UnchachedFromRule(Rule rule) {
