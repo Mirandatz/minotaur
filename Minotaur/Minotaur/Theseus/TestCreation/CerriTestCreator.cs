@@ -67,7 +67,7 @@ namespace Minotaur.Theseus.TestCreation {
 				value: seed[featureIndex]);
 		}
 
-		private ContinuousFeatureTest FromContinuous(
+		private IFeatureTest FromContinuous(
 		int featureIndex,
 		int datasetSeedInstanceIndex,
 		HyperRectangle boundingBox

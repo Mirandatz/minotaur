@@ -4,6 +4,29 @@ namespace Minotaur.Theseus {
 
 	public static class HyperRectangleIntersector {
 
+		public static bool Intersects(HyperRectangle lhs, HyperRectangle rhs) {
+			if (lhs is null)
+				throw new ArgumentNullException(nameof(lhs));
+			if (rhs is null)
+				throw new ArgumentNullException(nameof(rhs));
+			if (lhs.DimensionCount != rhs.DimensionCount)
+				throw new ArgumentException();
+
+			var dimensionCount = lhs.DimensionCount;
+
+			for (int i = 0; i < dimensionCount; i++) {
+
+				var intersects = DimensionIntersects(
+					lhs: lhs.GetDimensionInterval(i),
+					rhs: rhs.GetDimensionInterval(i));
+
+				if (intersects)
+					return true;
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// This one really needs documentation
 		/// </summary>

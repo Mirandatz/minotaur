@@ -42,7 +42,7 @@ namespace Minotaur {
 				"--fitness-metrics=model-size",
 				"--fitness-metrics=average-rule-volume",
 
-				"--max-generations=20000",
+				"--max-generations=2000",
 				"--max-failed-mutations-per-generation=2000",
 
 				"--population-size=50",
@@ -60,9 +60,9 @@ namespace Minotaur {
 				//"--rule-mutation-modify-test-weight=80",
 				//"--rule-mutation-modify-consequent-weight=20",
 
-				"--individual-mutation-add-rule-weight=15",
-				"--individual-mutation-modify-rule-weight=80",
-				"--individual-mutation-remove-rule-weight=5",
+				"--individual-mutation-add-rule-weight=10",
+				"--individual-mutation-modify-rule-weight=10",
+				"--individual-mutation-remove-rule-weight=10",
 			};
 		}
 
