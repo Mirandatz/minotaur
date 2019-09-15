@@ -12,17 +12,18 @@ namespace Minotaur.Theseus {
 
 		public readonly PopulationMutator PopulationMutator;
 		public readonly IFittestSelector FittestSelector;
+		public readonly FitnessReportMaker FitnessReportMaker;
 
 		public readonly int MaximumGenerations;
 
 		public EvolutionEngine(
 			PopulationMutator populationMutator,
-			FitnessEvaluator fitnessEvaluator,
+			FitnessReportMaker fitnessReportMaker,
 			IFittestSelector fittestSelector,
 			int maximumGenerations
 			) {
 			PopulationMutator = populationMutator ?? throw new ArgumentNullException(nameof(populationMutator));
-			FitnessEvaluator = fitnessEvaluator ?? throw new ArgumentNullException(nameof(fitnessEvaluator));
+			FitnessReportMaker = fitnessReportMaker ?? throw new ArgumentNullException(nameof(fitnessReportMaker));
 			FittestSelector = fittestSelector ?? throw new ArgumentNullException(nameof(fittestSelector));
 
 			if (maximumGenerations <= 0)
@@ -59,9 +60,8 @@ namespace Minotaur.Theseus {
 				}
 
 				if (generationsRan % 10 == 0) {
-					var fitnesses = FitnessEvaluator.EvaluateAsMaximizationTask(population);
 					Console.WriteLine();
-					Console.WriteLine(FitnessReportMaker.MakeReport(fitnesses));
+					Console.WriteLine(FitnessReportMaker.MakeReport(population));
 				}
 
 				var populationWithMutants = population.Concatenate(mutants);

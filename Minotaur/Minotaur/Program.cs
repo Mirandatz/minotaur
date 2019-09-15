@@ -40,8 +40,9 @@ namespace Minotaur {
 
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
+				"--fitness-metrics=average-rule-volume",
 
-				"--max-generations=2000",
+				"--max-generations=20000",
 				"--max-failed-mutations-per-generation=2000",
 
 				"--population-size=50",
@@ -118,25 +119,40 @@ namespace Minotaur {
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
 
-			var metrics = MetricsCreator.CreateFromMetricNames(
+			var trainMetrics = MetricsSelector.SelectMetrics(
 				dataset: trainDataset,
 				metricsNames: settings.MetricNames);
 
-			var fitnessCache = IConcurrentCacheCreator.Create<Individual, Fitness>(
+			var trainFitnessCache = IConcurrentCacheCreator.Create<Individual, Fitness>(
 				capacity: settings.FitnessCacheSize);
 
-			var fitnessEvaluator = new FitnessEvaluator(
-			  metrics: metrics,
-			  cache: fitnessCache);
+			var trainFitnessEvaluator = new FitnessEvaluator(
+			  metrics: trainMetrics,
+			  cache: trainFitnessCache);
+
+			var testMetrics = MetricsSelector.SelectMetrics(
+				dataset: testDataset,
+				metricsNames: settings.MetricNames);
+
+			var testFitnessCache = IConcurrentCacheCreator.Create<Individual, Fitness>(
+				capacity: settings.FitnessCacheSize);
+
+			var testFitnessEvaluator = new FitnessEvaluator(
+				metrics: testMetrics,
+				cache: testFitnessCache);
+
+			var fitnessReportMaker = new FitnessReportMaker(
+				trainDatasetFitnessEvaluator: trainFitnessEvaluator,
+				testDatasetFitnessEvaluator: testFitnessEvaluator);
 
 			var fittestSelector = IFittestSelectorCreator.Create(
 				fittestSelectorName: settings.SelectionAlgorithm,
 				fittestCount: settings.PopulationSize,
-				fitnessEvaluator: fitnessEvaluator);
+				fitnessEvaluator: trainFitnessEvaluator);
 
 			var evolutionEngine = new EvolutionEngine(
 				populationMutator: populationMutator,
-				fitnessEvaluator: fitnessEvaluator,
+				fitnessReportMaker: fitnessReportMaker,
 				fittestSelector: fittestSelector,
 				maximumGenerations: settings.MaximumGenerations);
 
@@ -148,20 +164,10 @@ namespace Minotaur {
 				individualCreator: individualCreator,
 				settings: settings);
 
-			//Console.WriteLine($"Train dataset volume: {VolumeComputer.ComputeDatasetVolume(trainDataset)}");
-			//var maximumRules = 1000;
-			//var usefulRules = 0;
-			//for (int i = 0; i < maximumRules; i++) {
-			//	ruleCreator.TryCreateRule(new Rule[] { }, out var rule);
-			//	Console.WriteLine($"Rule volume: {VolumeComputer.ComputeRuleVolume(trainDataset, rule)}");
-			//}
-
-			//Console.WriteLine(usefulRules);
-
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 
 			PrintFinalReport(
-				trainDatasetFitnessEvaluator: fitnessEvaluator,
+				trainDatasetFitnessEvaluator: trainFitnessEvaluator,
 				testDataset: testDataset,
 				settings: settings,
 				report: evolutionReport);
@@ -210,22 +216,22 @@ namespace Minotaur {
 			EvolutionReport report
 			) {
 
-			Console.WriteLine($"Evolution Engine stoped. Reason: {report.ReasonForStoppingEvolution}.");
-			Console.WriteLine("Computing metrics of final population on train dataset...");
-			var trainFitnesses = trainDatasetFitnessEvaluator.EvaluateAsMaximizationTask(report.FinalPopulation);
-			Console.WriteLine(FitnessReportMaker.MakeReport(trainFitnesses));
+			//Console.WriteLine($"Evolution Engine stoped. Reason: {report.ReasonForStoppingEvolution}.");
+			//Console.WriteLine("Computing metrics of final population on train dataset...");
+			//var trainFitnesses = trainDatasetFitnessEvaluator.EvaluateAsMaximizationTask(report.FinalPopulation);
+			//Console.WriteLine(FitnessReportMaker.MakeReport(trainFitnesses));
 
-			var testsMetrics = MetricsCreator.CreateFromMetricNames(
-				dataset: testDataset,
-				metricsNames: settings.MetricNames);
+			//var testsMetrics = MetricsSelector.SelectMetrics(
+			//	dataset: testDataset,
+			//	metricsNames: settings.MetricNames);
 
-			var testFitnessEvaluator = new FitnessEvaluator(
-				metrics: testsMetrics,
-				cache: new NullCache<Individual, Fitness>());
+			//var testFitnessEvaluator = new FitnessEvaluator(
+			//	metrics: testsMetrics,
+			//	cache: new NullCache<Individual, Fitness>());
 
-			Console.WriteLine("Computing metrics of final population on test dataset...");
-			var testFitnesses = testFitnessEvaluator.EvaluateAsMaximizationTask(report.FinalPopulation);
-			Console.WriteLine(FitnessReportMaker.MakeReport(testFitnesses));
+			//Console.WriteLine("Computing metrics of final population on test dataset...");
+			//var testFitnesses = testFitnessEvaluator.EvaluateAsMaximizationTask(report.FinalPopulation);
+			//Console.WriteLine(FitnessReportMaker.MakeReport(testFitnesses));
 		}
 	}
 }

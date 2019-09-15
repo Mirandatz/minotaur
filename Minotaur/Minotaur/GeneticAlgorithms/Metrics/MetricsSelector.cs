@@ -3,9 +3,9 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 
-	public static class MetricsCreator {
+	public static class MetricsSelector {
 
-		public static IMetric[] CreateFromMetricNames(
+		public static IMetric[] SelectMetrics(
 			Dataset dataset,
 			Array<string> metricsNames
 			) {
@@ -28,6 +28,10 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 
 				case "model-size":
 				metrics[i] = new ModelSize();
+				break;
+
+				case "average-rule-volume":
+				metrics[i] = new AverageRuleVolume(dataset);
 				break;
 
 				default:

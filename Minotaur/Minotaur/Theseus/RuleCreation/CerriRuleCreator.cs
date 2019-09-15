@@ -43,9 +43,15 @@ namespace Minotaur.Theseus.RuleCreation {
 			var seed = Dataset.GetInstanceData(seedIndex);
 
 			var hyperRectangles = _hyperRectangleCreator.FromRules(rules: existingRules);
-			var secureRectangle = CreateLargestNonIntersectingHyperRectangle(
+
+			var dimensionOrder = NaturalRange.CreateShuffled(
+							inclusiveStart: 0,
+							exclusiveEnd: Dataset.FeatureCount);
+
+			var secureRectangle = _hyperRectangleCreator.CreateLargestNonIntersectingHyperRectangle(
 				seed: seed,
-				existingRectangles: hyperRectangles);
+				existingRectangles: hyperRectangles,
+				dimensionExpansionOrder: dimensionOrder);
 
 			if (!secureRectangle.Contains(seed))
 				throw new InvalidOperationException();
@@ -61,17 +67,6 @@ namespace Minotaur.Theseus.RuleCreation {
 				predictedLabels: labels);
 
 			return true;
-		}
-
-		private HyperRectangle CreateLargestNonIntersectingHyperRectangle(Array<float> seed, HyperRectangle[] existingRectangles) {
-			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
-							inclusiveStart: 0,
-							exclusiveEnd: Dataset.FeatureCount);
-
-			return _hyperRectangleCreator.CreateLargestNonIntersectingHyperRectangle(
-				seed: seed,
-				existingRectangles: existingRectangles,
-				dimensionExpansionOrder: dimensionExpansionOrder);
 		}
 
 		private IFeatureTest[] CreateTests(int datasetSeedIndex, HyperRectangle secureRectangle) {
