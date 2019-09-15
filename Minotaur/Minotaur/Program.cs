@@ -150,12 +150,6 @@ namespace Minotaur {
 				fittestCount: settings.PopulationSize,
 				fitnessEvaluator: trainFitnessEvaluator);
 
-			var evolutionEngine = new EvolutionEngine(
-				populationMutator: populationMutator,
-				fitnessReportMaker: fitnessReportMaker,
-				fittestSelector: fittestSelector,
-				maximumGenerations: settings.MaximumGenerations);
-
 			var individualCreator = new CerriIndividualCreator(
 				ruleCreator: ruleCreator,
 				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
@@ -167,6 +161,13 @@ namespace Minotaur {
 			var consistencyChecker = new RuleConsistencyChecker(hyperRectangleCreator);
 
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
+
+			var evolutionEngine = new EvolutionEngine(
+				populationMutator: populationMutator,
+				fitnessReportMaker: fitnessReportMaker,
+				fittestSelector: fittestSelector,
+				consistencyChecker: consistencyChecker,
+				maximumGenerations: settings.MaximumGenerations);
 
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 

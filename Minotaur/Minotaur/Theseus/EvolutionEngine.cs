@@ -2,6 +2,7 @@ namespace Minotaur.Theseus {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using Minotaur.ExtensionMethods.SystemArray;
 	using Minotaur.GeneticAlgorithms;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -13,6 +14,7 @@ namespace Minotaur.Theseus {
 		public readonly PopulationMutator PopulationMutator;
 		public readonly IFittestSelector FittestSelector;
 		public readonly FitnessReportMaker FitnessReportMaker;
+		public readonly RuleConsistencyChecker ConsistencyChecker;
 
 		public readonly int MaximumGenerations;
 
@@ -20,12 +22,13 @@ namespace Minotaur.Theseus {
 			PopulationMutator populationMutator,
 			FitnessReportMaker fitnessReportMaker,
 			IFittestSelector fittestSelector,
+			RuleConsistencyChecker consistencyChecker,
 			int maximumGenerations
 			) {
 			PopulationMutator = populationMutator ?? throw new ArgumentNullException(nameof(populationMutator));
 			FitnessReportMaker = fitnessReportMaker ?? throw new ArgumentNullException(nameof(fitnessReportMaker));
 			FittestSelector = fittestSelector ?? throw new ArgumentNullException(nameof(fittestSelector));
-
+			ConsistencyChecker = consistencyChecker ?? throw new ArgumentNullException(nameof(consistencyChecker));
 			if (maximumGenerations <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumGenerations));
 
@@ -58,6 +61,14 @@ namespace Minotaur.Theseus {
 						"for a single generation";
 					break;
 				}
+
+				Parallel.For(0, population.Length, i => {
+					var individual = mutants[i];
+					var isConsistent = ConsistencyChecker.IsConsistent(individual);
+					if (!isConsistent) {
+						throw new InvalidOperationException();
+					}
+				});
 
 				if (generationsRan % 10 == 0) {
 					Console.WriteLine();
