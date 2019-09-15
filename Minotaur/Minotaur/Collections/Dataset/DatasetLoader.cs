@@ -109,7 +109,7 @@ namespace Minotaur.Collections.Dataset {
 				mutableData: testData.Result,
 				mutableLabels: testLabels.Result);
 
-			Console.Write("Checking if (TrainDataset) is usable... ");
+			Console.Write("Checking if TrainDataset is usable... ");
 			{
 				var trainFeatureTypes = trainDataset.FeatureTypes;
 				for (int i = 0; i < trainFeatureTypes.Length; i++) {

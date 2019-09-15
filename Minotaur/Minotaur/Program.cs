@@ -164,6 +164,10 @@ namespace Minotaur {
 				individualCreator: individualCreator,
 				settings: settings);
 
+			var consistencyChecker = new RuleConsistencyChecker(hyperRectangleCreator);
+
+			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
+
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 
 			PrintFinalReport(
@@ -174,6 +178,7 @@ namespace Minotaur {
 
 			return 0;
 		}
+
 
 		private static void PrintSettings(ProgramSettings settings) {
 			Console.WriteLine("Running MINOTAUR with settings:");
@@ -209,6 +214,20 @@ namespace Minotaur {
 			return population;
 		}
 
+		private static void CheckInitialPopulationConsistency(RuleConsistencyChecker consistencyChecker, Individual[] population) {
+			Console.Write("Checking if the population is consistent... ");
+
+			Parallel.For(0, population.Length, i => {
+				var individual = population[i];
+				var isConsistent = consistencyChecker.IsConsistent(individual);
+				if (!isConsistent) {
+					throw new InvalidOperationException();
+				}
+			});
+
+			Console.WriteLine("Yep, it is.");
+
+		}
 		private static void PrintFinalReport(
 			FitnessEvaluator trainDatasetFitnessEvaluator,
 			Dataset testDataset,

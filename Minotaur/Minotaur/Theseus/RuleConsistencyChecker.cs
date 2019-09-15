@@ -20,7 +20,7 @@ namespace Minotaur.Theseus {
 			for (int i = 1; i < allRulesSpan.Length; i++) {
 				var previousRules = allRulesSpan.Slice(
 					start: 0,
-					length: i - 1);
+					length: i);
 
 				var currentRule = allRulesSpan[i];
 
@@ -49,8 +49,9 @@ namespace Minotaur.Theseus {
 
 			var lhsBox = HyperRectangleCreator.FromRule(lhs);
 			var rhsBox = HyperRectangleCreator.FromRule(rhs);
+			var boxesOverlap = HyperRectangleIntersector.IntersectsInAllDimensinos(lhsBox, rhsBox);
 
-			return !HyperRectangleIntersector.Intersects(lhsBox, rhsBox);
+			return !boxesOverlap;
 		}
 	}
 }

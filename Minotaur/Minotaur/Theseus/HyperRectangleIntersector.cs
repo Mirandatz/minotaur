@@ -4,7 +4,7 @@ namespace Minotaur.Theseus {
 
 	public static class HyperRectangleIntersector {
 
-		public static bool Intersects(HyperRectangle lhs, HyperRectangle rhs) {
+		public static bool IntersectsInAllDimensinos(HyperRectangle lhs, HyperRectangle rhs) {
 			if (lhs is null)
 				throw new ArgumentNullException(nameof(lhs));
 			if (rhs is null)
@@ -20,11 +20,11 @@ namespace Minotaur.Theseus {
 					lhs: lhs.GetDimensionInterval(i),
 					rhs: rhs.GetDimensionInterval(i));
 
-				if (intersects)
-					return true;
+				if (!intersects)
+					return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		/// <summary>
