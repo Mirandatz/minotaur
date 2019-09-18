@@ -60,9 +60,9 @@ namespace Minotaur {
 				//"--rule-mutation-modify-test-weight=80",
 				//"--rule-mutation-modify-consequent-weight=20",
 
-				"--individual-mutation-add-rule-weight=10",
-				"--individual-mutation-modify-rule-weight=10",
-				"--individual-mutation-remove-rule-weight=10",
+				"--individual-mutation-add-rule-weight=15",
+				"--individual-mutation-modify-rule-weight=80",
+				"--individual-mutation-remove-rule-weight=5",
 			};
 		}
 
@@ -110,12 +110,15 @@ namespace Minotaur {
 					[IndividualMutationType.RemoveRule] = settings.IndividualMutationRemoveRuleWeight
 				});
 
-			var individualMutator = new IndividualMutator(
+			var ruleSwappingindividualMutator = new RuleSwappingIndividualMutator(
 				mutationChooser: individualMutationChooser,
 				ruleCreator: ruleCreator);
 
+			var repeatingIndividualMutator = new RepeatingIndividualMutator(
+				individualMutator: ruleSwappingindividualMutator);
+
 			var populationMutator = new PopulationMutator(
-				individualMutator: individualMutator,
+				individualMutator: repeatingIndividualMutator,
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
 

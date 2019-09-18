@@ -7,13 +7,13 @@ namespace Minotaur.Theseus.IndividualMutation {
 	using Random = Random.ThreadStaticRandom;
 
 	// @Assumption: all individuals have the same default predictions
-	public sealed class IndividualMutator: IIndividualMutator {
+	public sealed class RuleSwappingIndividualMutator: IIndividualMutator {
 
 		public readonly Dataset Dataset;
 		private readonly BiasedOptionChooser<IndividualMutationType> _mutationChooser;
 		private readonly IRuleCreator _ruleCreator;
 
-		public IndividualMutator(
+		public RuleSwappingIndividualMutator(
 			BiasedOptionChooser<IndividualMutationType> mutationChooser,
 			IRuleCreator ruleCreator) {
 			_mutationChooser = mutationChooser ?? throw new ArgumentNullException(nameof(mutationChooser));

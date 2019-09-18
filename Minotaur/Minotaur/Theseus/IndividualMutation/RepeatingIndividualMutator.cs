@@ -4,10 +4,10 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 	public sealed class RepeatingIndividualMutator: IIndividualMutator {
 
-		private readonly IndividualMutator _individualMutator;
+		private readonly RuleSwappingIndividualMutator _individualMutator;
 		private const int MaximumMutationCycles = 5;
 
-		public RepeatingIndividualMutator(IndividualMutator individualMutator) {
+		public RepeatingIndividualMutator(RuleSwappingIndividualMutator individualMutator) {
 			_individualMutator = individualMutator ?? throw new ArgumentNullException(nameof(individualMutator));
 		}
 
