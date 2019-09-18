@@ -6,8 +6,8 @@ namespace Minotaur.Theseus.IndividualMutation {
 	using Minotaur.Theseus.RuleCreation;
 	using Random = Random.ThreadStaticRandom;
 
-	// @Assumption: all individuals have the sa\me default predictions
-	public sealed class IndividualMutator {
+	// @Assumption: all individuals have the same default predictions
+	public sealed class IndividualMutator: IIndividualMutator {
 
 		public readonly Dataset Dataset;
 		private readonly BiasedOptionChooser<IndividualMutationType> _mutationChooser;

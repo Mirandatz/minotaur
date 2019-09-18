@@ -7,12 +7,12 @@ namespace Minotaur.Theseus.IndividualMutation {
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class PopulationMutator {
-		public readonly IndividualMutator IndividualMutator;
+		public readonly IIndividualMutator IndividualMutator;
 		public readonly int MutantsPerGeneration;
 		public readonly int MaximumFailedAttemptsPerGeneration;
 
 		public PopulationMutator(
-			IndividualMutator individualMutator,
+			IIndividualMutator individualMutator,
 			int mutantsPerGeneration,
 			int maximumFailedAttemptsPerGeneration
 			) {
