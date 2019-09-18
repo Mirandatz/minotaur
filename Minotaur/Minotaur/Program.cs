@@ -47,7 +47,7 @@ namespace Minotaur {
 
 				"--population-size=50",
 				"--mutants-per-generation=100",
-				"--maximum-initial-rule-count=50",
+				"--maximum-initial-rule-count=1",
 
 				"--hyperrectangle-cache-size=1000",
 				"--rule-coverage-cache-size=1000",
@@ -152,7 +152,7 @@ namespace Minotaur {
 				fittestSelectorName: settings.SelectionAlgorithm,
 				fittestCount: settings.PopulationSize,
 				fitnessEvaluator: trainFitnessEvaluator);
-
+			
 			var individualCreator = new CerriIndividualCreator(
 				ruleCreator: ruleCreator,
 				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
