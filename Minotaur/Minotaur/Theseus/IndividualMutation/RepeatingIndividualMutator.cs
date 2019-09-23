@@ -12,30 +12,31 @@ namespace Minotaur.Theseus.IndividualMutation {
 		}
 
 		public bool TryMutate(Individual original,  out Individual mutated) {
+			throw new NotImplementedException();
 
-			var sucess = _individualMutator.TryMutate(original, out var temp);
-			if (!sucess) {
-				mutated = default;
-				return false;
-			}
+			//var sucess = _individualMutator.TryMutate(original, out var temp);
+			//if (!sucess) {
+			//	mutated = default;
+			//	return false;
+			//}
 
-			var previous = temp;
-			for (int i = 0; i < MaximumMutationCycles; i++) {
+			//var previous = temp;
+			//for (int i = 0; i < MaximumMutationCycles; i++) {
 
-				sucess = _individualMutator.TryMutate(
-					original: previous,
-					out var current);
+			//	sucess = _individualMutator.TryMutate(
+			//		original: previous,
+			//		out var current);
 
-				if (sucess) {
-					previous = current;
-				} else {
-					mutated = previous;
-					return true;
-				}
-			}
+			//	if (sucess) {
+			//		previous = current;
+			//	} else {
+			//		mutated = previous;
+			//		return true;
+			//	}
+			//}
 
-			mutated = previous;
-			return true;
+			//mutated = previous;
+			//return true;
 		}
 	}
 }

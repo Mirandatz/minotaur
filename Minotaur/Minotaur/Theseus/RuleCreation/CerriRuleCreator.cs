@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -20,23 +21,19 @@ namespace Minotaur.Theseus.RuleCreation {
 			CerriTestCreator testCreator,
 			HyperRectangleCreator hyperRectangleCreator
 			) {
-			_seedSelector = seedSelector ?? throw new ArgumentNullException(nameof(seedSelector));
-			_testCreator = testCreator ?? throw new ArgumentNullException(nameof(testCreator));
-			_hyperRectangleCreator = hyperRectangleCreator ?? throw new ArgumentNullException(nameof(hyperRectangleCreator));
-
+			_seedSelector = seedSelector;
+			_testCreator = testCreator;
+			_hyperRectangleCreator = hyperRectangleCreator;
 			Dataset = testCreator.Dataset;
 		}
 
-		public bool TryCreateRule(Array<Rule> existingRules, out Rule rule) {
-			if (existingRules is null)
-				throw new ArgumentNullException(nameof(existingRules));
-
+		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
 			var seedFound = _seedSelector.TryFindSeed(
 				existingRules: existingRules,
 				datasetInstanceIndex: out var seedIndex);
 
 			if (!seedFound) {
-				rule = null;
+				rule = null!;
 				return false;
 			}
 
@@ -45,14 +42,15 @@ namespace Minotaur.Theseus.RuleCreation {
 			var hyperRectangles = _hyperRectangleCreator.FromRules(rules: existingRules);
 
 			var dimensionOrder = NaturalRange.CreateShuffled(
-							inclusiveStart: 0,
-							exclusiveEnd: Dataset.FeatureCount);
+				inclusiveStart: 0,
+				exclusiveEnd: Dataset.FeatureCount);
 
 			var secureRectangle = _hyperRectangleCreator.CreateLargestNonIntersectingHyperRectangle(
 				seed: seed,
 				existingRectangles: hyperRectangles,
 				dimensionExpansionOrder: dimensionOrder);
 
+			// @Sanity check
 			if (!secureRectangle.Contains(seed))
 				throw new InvalidOperationException();
 

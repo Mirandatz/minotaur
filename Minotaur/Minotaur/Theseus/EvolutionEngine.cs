@@ -4,7 +4,6 @@ namespace Minotaur.Theseus {
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Minotaur.ExtensionMethods.SystemArray;
-	using Minotaur.GeneticAlgorithms;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
 	using Minotaur.Theseus.IndividualMutation;
@@ -35,7 +34,7 @@ namespace Minotaur.Theseus {
 
 			MaximumGenerations = maximumGenerations;
 		}
-		
+
 		public EvolutionReport
 			Run(IEnumerable<Individual> initialPopulation
 			) {
@@ -49,18 +48,15 @@ namespace Minotaur.Theseus {
 			int generationsRan;
 			for (generationsRan = 0; generationsRan < MaximumGenerations; generationsRan++) {
 				Console.Write($"\rRunning generation {generationsRan}/{MaximumGenerations}");
-
-				var success = PopulationMutator.TryMutate(
-					population: population,
-					out var mutants);
-
-				if (!success) {
+				
+				if (!PopulationMutator.TryMutate(population, out var mutants)) {
 					reasonForStoppingEvolution = "" +
 						"reached maximum number of failed mutation attempts " +
 						"for a single generation";
 					break;
 				}
 
+				// Saniy check
 				Parallel.For(0, population.Length, i => {
 					var individual = mutants[i];
 					var isConsistent = ConsistencyChecker.IsConsistent(individual);

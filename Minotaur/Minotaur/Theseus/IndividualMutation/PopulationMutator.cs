@@ -17,7 +17,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			int mutantsPerGeneration,
 			int maximumFailedAttemptsPerGeneration
 			) {
-			IndividualMutator = individualMutator ?? throw new ArgumentNullException(nameof(individualMutator));
+			IndividualMutator = individualMutator;
 
 			if (mutantsPerGeneration <= 0)
 				throw new ArgumentOutOfRangeException(nameof(mutantsPerGeneration) + " must be >= 1.");
@@ -29,8 +29,6 @@ namespace Minotaur.Theseus.IndividualMutation {
 		}
 
 		public bool TryMutate(Array<Individual> population, [MaybeNullWhen(false)] out Individual[] mutants) {
-			if (population is null)
-				throw new ArgumentNullException(nameof(population));
 			if (population.IsEmpty)
 				throw new ArgumentException(nameof(population) + " can't be empty.");
 
@@ -52,7 +50,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			// we may still have succeded.
 			for (int i = 0; i < possibleMutants.Length; i++) {
 				if (possibleMutants[i] is null) {
-					mutants = default;
+					mutants = default!;
 					return false;
 				}
 			}

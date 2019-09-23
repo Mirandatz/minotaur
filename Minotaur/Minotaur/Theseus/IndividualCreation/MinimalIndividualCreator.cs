@@ -9,20 +9,15 @@ namespace Minotaur.Theseus.IndividualCreation {
 		private readonly OverfittingRuleCreator _ruleCreator;
 
 		public MinimalIndividualCreator(OverfittingRuleCreator ruleCreator) {
-			_ruleCreator = ruleCreator ?? throw new ArgumentNullException(nameof(ruleCreator));
+			_ruleCreator = ruleCreator;
 			Dataset = ruleCreator.Dataset;
 		}
 
 		public Individual Create() {
-			var sucess = _ruleCreator.TryCreateRule(
-				existingRules: Array.Empty<Rule>(),
-				out var rule);
-
-			if (!sucess)
+			if (!_ruleCreator.TryCreateRule(existingRules: Array.Empty<Rule>(), out var rule))
 				throw new InvalidOperationException("This operation should never fail.");
 
 			var defaultLabels = new bool[Dataset.ClassCount];
-
 			return new Individual(
 				rules: new Rule[] { rule },
 				defaultLabels: defaultLabels);

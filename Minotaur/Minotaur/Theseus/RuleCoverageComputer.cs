@@ -1,5 +1,4 @@
 namespace Minotaur.Theseus {
-	using System;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -9,21 +8,18 @@ namespace Minotaur.Theseus {
 		private readonly IConcurrentCache<Rule, RuleCoverage> _cache;
 
 		public RuleCoverageComputer(Dataset dataset, IConcurrentCache<Rule, RuleCoverage> cache) {
-			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
-			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
+			_dataset = dataset;
+			_cache = cache;
 		}
 
 		public RuleCoverage ComputeRuleCoverage(Rule rule) {
-			if (rule is null)
-				throw new ArgumentNullException(nameof(rule));
-
-			var isCached = _cache.TryGet(key: rule, out var ruleCoverage);
-			if (!isCached) {
+			if (_cache.TryGet(rule, out var ruleCoverage)) {
+				return ruleCoverage;
+			} else {
 				ruleCoverage = UncachedComputeRuleCoverage(rule);
 				_cache.Add(key: rule, value: ruleCoverage);
+				return ruleCoverage;
 			}
-
-			return ruleCoverage;
 		}
 
 		private RuleCoverage UncachedComputeRuleCoverage(Rule rule) {

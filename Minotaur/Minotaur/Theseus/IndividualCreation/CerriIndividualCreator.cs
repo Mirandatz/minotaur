@@ -24,14 +24,11 @@ namespace Minotaur.Theseus.IndividualCreation {
 
 			// @Improve peformance
 			while (rules.Count < _maximumInitialRuleCount) {
-				var canCreateNewRule = _ruleCreator.TryCreateRule(
-					existingRules: rules.ToArray(),
-					out var newRule);
-
-				if (canCreateNewRule)
+				if (_ruleCreator.TryCreateRule(existingRules: rules.ToArray(), out var newRule)) {
 					rules.Add(newRule);
-				else
+				} else {
 					break;
+				}
 			}
 
 			var defaultLabels = new bool[Dataset.ClassCount];

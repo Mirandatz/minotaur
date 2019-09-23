@@ -17,7 +17,7 @@ namespace Minotaur.Collections {
 	public sealed class ConcurrentLruCache<TKey, TValue>:
 		IConcurrentCache<TKey, TValue>
 		where TKey : notnull
-		where TValue : class {
+		where TValue : notnull {
 
 		private readonly int _capacity;
 		private readonly Dictionary<TKey, LinkedListNode<LruCacheEntry>> _cacheMap;
@@ -87,9 +87,7 @@ namespace Minotaur.Collections {
 		/// <remarks>
 		/// This operation is atomic.
 		/// </remarks>
-		public bool TryGet(TKey key, [MaybeNullWhen(false)] out TValue? value) {
-			if (key == null)
-				throw new ArgumentNullException(nameof(key));
+		public bool TryGet(TKey key, [MaybeNullWhen(false)] out TValue value) {
 
 			lock (SyncRoot) {
 				if (_cacheMap.TryGetValue(key, out var lruNode)) {
@@ -97,7 +95,7 @@ namespace Minotaur.Collections {
 					value = lruNode.Value.Value;
 					return true;
 				} else {
-					value = default;
+					value = default!;
 					return false;
 				}
 			}
