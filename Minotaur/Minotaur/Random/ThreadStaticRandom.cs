@@ -10,7 +10,7 @@ namespace Minotaur.Random {
 		// ThreadStatic to make sure that each thread gets a Random for itself, preventing the corruption
 		// of the Random object
 		[ThreadStatic]
-		private static Random _instance;
+		private static Random? _instance;
 
 		// This wraps the _random variable to make sure each thread gets a Random for itself
 		private static Random Instance {

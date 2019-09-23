@@ -22,9 +22,6 @@ namespace Minotaur {
 	public static class Program {
 
 		public static int Main(string[] args) {
-			string lol = null;
-			Console.WriteLine(lol.Length);
-
 			if (args.Length == 1 && args[0] == "--lazy-dev-switch")
 				args = LazyDevArguments();
 

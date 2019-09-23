@@ -11,7 +11,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			_individualMutator = individualMutator ?? throw new ArgumentNullException(nameof(individualMutator));
 		}
 
-		public bool TryMutate(Individual original, out Individual mutated) {
+		public bool TryMutate(Individual original,  out Individual mutated) {
 
 			var sucess = _individualMutator.TryMutate(original, out var temp);
 			if (!sucess) {

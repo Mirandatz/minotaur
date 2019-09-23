@@ -38,8 +38,6 @@ namespace Minotaur.Random {
 		}
 
 		public static BiasedOptionChooser<T> Create(Dictionary<T, int> weightedOptions) {
-			if (weightedOptions is null)
-				throw new ArgumentNullException(nameof(weightedOptions));
 			if (weightedOptions.Count == 0)
 				throw new ArgumentException(nameof(weightedOptions) + " can't be empty.");
 

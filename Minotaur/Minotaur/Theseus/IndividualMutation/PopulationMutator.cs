@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus.IndividualMutation {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
@@ -27,7 +28,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			MaximumFailedAttemptsPerGeneration = maximumFailedAttemptsPerGeneration;
 		}
 
-		public bool TryMutate(Array<Individual> population, out Individual[] mutants) {
+		public bool TryMutate(Array<Individual> population, [MaybeNullWhen(false)] out Individual[] mutants) {
 			if (population is null)
 				throw new ArgumentNullException(nameof(population));
 			if (population.IsEmpty)
@@ -51,7 +52,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			// we may still have succeded.
 			for (int i = 0; i < possibleMutants.Length; i++) {
 				if (possibleMutants[i] is null) {
-					mutants = null;
+					mutants = default;
 					return false;
 				}
 			}

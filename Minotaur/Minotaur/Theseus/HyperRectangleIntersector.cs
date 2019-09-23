@@ -64,15 +64,21 @@ namespace Minotaur.Theseus {
 		}
 
 		private static bool DimensionIntersects(IDimensionInterval lhs, IDimensionInterval rhs) {
-			var lhsCat = lhs as CategoricalDimensionInterval;
-			var rhsCat = rhs as CategoricalDimensionInterval;
-			if (!(lhsCat is null))
-				return IntersectsCategorical(lhsCat, rhsCat);
+			// Creating them scopes just to make just I'm not using
+			// wrong variables... They have such similar names, nom saying?
+			{
+				var lhsCat = lhs as CategoricalDimensionInterval;
+				var rhsCat = rhs as CategoricalDimensionInterval;
+				if (!(lhsCat is null) && !(rhsCat is null))
+					return IntersectsCategorical(lhsCat, rhsCat);
+			}
 
-			var lhsCont = lhs as ContinuousDimensionInterval;
-			var rhsCont = rhs as ContinuousDimensionInterval;
-			if (!(lhsCont is null))
-				return IntersectsContinuous(lhsCont, rhsCont);
+			{
+				var lhsCont = lhs as ContinuousDimensionInterval;
+				var rhsCont = rhs as ContinuousDimensionInterval;
+				if (!(lhsCont is null) && !(rhsCont is null))
+					return IntersectsContinuous(lhsCont, rhsCont);
+			}
 
 			throw new InvalidOperationException("This line should never be reached.");
 		}

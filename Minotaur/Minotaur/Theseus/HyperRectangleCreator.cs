@@ -191,16 +191,13 @@ namespace Minotaur.Theseus {
 		}
 
 		public HyperRectangle FromRule(Rule rule) {
-			if (rule is null)
-				throw new ArgumentNullException(nameof(rule));
-
-			var isCached = _cache.TryGet(key: rule, out var hyperRectangle);
-			if (!isCached) {
+			if (_cache.TryGet(rule, out var hyperRectangle)) {
+				return hyperRectangle;
+			} else {
 				hyperRectangle = UnchachedFromRule(rule);
 				_cache.Add(key: rule, value: hyperRectangle);
+				return hyperRectangle;
 			}
-
-			return hyperRectangle;
 		}
 
 		public HyperRectangle[] FromRules(Array<Rule> rules) {

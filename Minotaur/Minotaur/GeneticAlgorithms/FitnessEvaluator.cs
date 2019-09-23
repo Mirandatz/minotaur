@@ -40,13 +40,13 @@ namespace Minotaur.GeneticAlgorithms {
 			Parallel.For(0, fitnesses.Length, i => {
 				var individual = population.AsSpan()[i];
 
-				var isCached = _cache.TryGet(key: individual, out var fitness);
-				if (!isCached) {
+				if (_cache.TryGet(key: individual, out var fitness)) {
+					fitnesses[i] = fitness;
+				} else {
 					fitness = EvaluateAsMaximizationTask(individual);
 					_cache.Add(key: individual, value: fitness);
+					fitnesses[i] = fitness;
 				}
-
-				fitnesses[i] = fitness;
 			});
 
 			return fitnesses;

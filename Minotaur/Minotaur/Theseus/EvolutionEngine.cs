@@ -25,18 +25,17 @@ namespace Minotaur.Theseus {
 			RuleConsistencyChecker consistencyChecker,
 			int maximumGenerations
 			) {
-			PopulationMutator = populationMutator ?? throw new ArgumentNullException(nameof(populationMutator));
-			FitnessReportMaker = fitnessReportMaker ?? throw new ArgumentNullException(nameof(fitnessReportMaker));
-			FittestSelector = fittestSelector ?? throw new ArgumentNullException(nameof(fittestSelector));
-			ConsistencyChecker = consistencyChecker ?? throw new ArgumentNullException(nameof(consistencyChecker));
+			PopulationMutator = populationMutator;
+			FitnessReportMaker = fitnessReportMaker;
+			FittestSelector = fittestSelector;
+			ConsistencyChecker = consistencyChecker;
+
 			if (maximumGenerations <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumGenerations));
 
 			MaximumGenerations = maximumGenerations;
 		}
-
-		public FitnessEvaluator FitnessEvaluator { get; }
-
+		
 		public EvolutionReport
 			Run(IEnumerable<Individual> initialPopulation
 			) {
