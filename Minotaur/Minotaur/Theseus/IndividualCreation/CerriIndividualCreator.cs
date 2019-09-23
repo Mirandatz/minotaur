@@ -15,7 +15,7 @@ namespace Minotaur.Theseus.IndividualCreation {
 				throw new ArgumentOutOfRangeException(nameof(maximumInitialRuleCount) + " must be >= 1.");
 
 			_maximumInitialRuleCount = maximumInitialRuleCount;
-			_ruleCreator = ruleCreator ?? throw new ArgumentNullException(nameof(ruleCreator));
+			_ruleCreator = ruleCreator;
 			Dataset = ruleCreator.Dataset;
 		}
 
