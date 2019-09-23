@@ -4,7 +4,8 @@ namespace Minotaur.Random {
 	using System.Linq;
 	using Minotaur.Collections;
 
-	public sealed class BiasedOptionChooser<T> {
+	public sealed class BiasedOptionChooser<T>
+		where T : notnull {
 		private readonly T[] _options;
 		private readonly int[] _weights;
 		private readonly int _sumOfWeights;
