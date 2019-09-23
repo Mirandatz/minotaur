@@ -37,12 +37,22 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public override int GetHashCode() => _precomputedHashCode;
 
-		public override bool Equals(object obj) => Equals(obj as CategoricalFeatureTest);
+		public override bool Equals(object? obj) {
+			if (obj is CategoricalFeatureTest other)
+				return Equals(other);
+			else
+				return false;
+		}
 
-		public bool Equals(IFeatureTest other) => Equals(other as CategoricalFeatureTest);
+		public bool Equals(IFeatureTest test) {
+			if (test is CategoricalFeatureTest other)
+				return Equals(other);
+			else
+				return false;
+		}
 
 		public bool Equals(CategoricalFeatureTest other) {
-			return other != null &&
+			return
 				other.FeatureIndex == FeatureIndex &&
 				other.Value == Value;
 		}

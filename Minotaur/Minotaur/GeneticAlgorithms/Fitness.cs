@@ -14,9 +14,6 @@ namespace Minotaur.GeneticAlgorithms {
 
 		[JsonConstructor]
 		private Fitness(float[] objectives) {
-			if (objectives == null)
-				throw new ArgumentNullException(nameof(objectives));
-
 			if (objectives.Length == 0)
 				throw new ArgumentException(nameof(objectives) + " can't be empty");
 
@@ -36,8 +33,6 @@ namespace Minotaur.GeneticAlgorithms {
 		}
 
 		public static Fitness Wrap(float[] objectives) {
-			if (objectives == null)
-				throw new ArgumentNullException(nameof(objectives));
 			if (objectives.Length == 0)
 				throw new ArgumentException(nameof(objectives) + " can't be empty");
 
@@ -52,13 +47,15 @@ namespace Minotaur.GeneticAlgorithms {
 
 		public override int GetHashCode() => _precomputedHashCode;
 
-		public override bool Equals(object obj) => Equals(obj as Fitness);
+		public override bool Equals(object? obj) {
+			if (obj is Fitness other)
+				return Equals(other);
+			else
+				return false;
+		}
 
 		public bool Equals(Fitness other) {
-			if (other == null)
-				return false;
-
-			if (object.ReferenceEquals(this, other))
+			if (ReferenceEquals(this, other))
 				return true;
 
 			// Again, fitnesses should all have the same length

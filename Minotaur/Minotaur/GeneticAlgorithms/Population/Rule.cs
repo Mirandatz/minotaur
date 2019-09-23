@@ -20,8 +20,8 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		[JsonConstructor]
 		public Rule(Array<IFeatureTest> tests, Array<bool> predictedLabels) {
-			Tests = tests ?? throw new ArgumentNullException(nameof(tests));
-			PredictedLabels = predictedLabels ?? throw new ArgumentNullException(nameof(predictedLabels));
+			Tests = tests;
+			PredictedLabels = predictedLabels;
 
 			NonNullTestCount = 0;
 			for (int i = 0; i < tests.Length; i++) {
@@ -69,18 +69,17 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public override int GetHashCode() => _precomputedHashCode;
 
-		public override bool Equals(object obj) => Equals(obj as Rule);
+		public override bool Equals(object? obj) {
+			if (obj is Rule other)
+				return Equals(other);
+			else
+				return false;
+		}
 
 		public bool Equals(Rule other) {
-			// We check ReferenceEquals before checking for nulls because we don't expect to
-			// compare to nulls (ever)
 			if (ReferenceEquals(this, other))
 				return true;
-			if (other == null)
-				return false;
 
-			// We don't check _predictedLabels's length coz they REALLY REALLY 
-			// should ALWAYS have the same size
 			return Tests.SequenceEquals(other.Tests) &&
 				PredictedLabels.SequenceEquals(other.PredictedLabels);
 		}

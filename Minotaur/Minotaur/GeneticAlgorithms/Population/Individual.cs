@@ -79,7 +79,12 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public override int GetHashCode() => HashCode;
 
-		public override bool Equals(object obj) => Equals(obj as Individual);
+		public override bool Equals(object? obj) {
+			if (obj is Individual other)
+				return Equals(other);
+			else
+				return false;
+		}
 
 		public bool Equals(Individual other) => ReferenceEquals(this, other);
 	}
