@@ -2,6 +2,7 @@ namespace Minotaur.Collections {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 
 	/// <summary>
@@ -13,7 +14,11 @@ namespace Minotaur.Collections {
 	/// This class is based on the following implementation https://stackoverflow.com/a/3719378/1642116
 	/// 
 	/// </remarks>
-	public sealed class ConcurrentLruCache<TKey, TValue>: IConcurrentCache<TKey, TValue> {
+	public sealed class ConcurrentLruCache<TKey, TValue>:
+		IConcurrentCache<TKey, TValue>
+		where TKey : notnull
+		where TValue : class {
+
 		private readonly int _capacity;
 		private readonly Dictionary<TKey, LinkedListNode<LruCacheEntry>> _cacheMap;
 		private readonly LinkedList<LruCacheEntry> _lruList = new LinkedList<LruCacheEntry>();
@@ -49,14 +54,11 @@ namespace Minotaur.Collections {
 			var newLruNode = new LinkedListNode<LruCacheEntry>(cacheItem);
 
 			lock (SyncRoot) {
-				var isCached = _cacheMap.TryGetValue(
-					key: key,
-					value: out var oldLruNode);
 
-				if (isCached) {
+				if (_cacheMap.TryGetValue(key, out var oldLruNode)) {
+
 					// Update key-value of cache
 					_cacheMap[key] = newLruNode;
-
 					// Update usage; not only the position in the lruList 
 					// but also the contents of the node, since the value
 					// in the cacheItem may have changed					
@@ -85,14 +87,12 @@ namespace Minotaur.Collections {
 		/// <remarks>
 		/// This operation is atomic.
 		/// </remarks>
-		public bool TryGet(TKey key, out TValue value) {
+		public bool TryGet(TKey key, [MaybeNullWhen(false)] out TValue? value) {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
 
 			lock (SyncRoot) {
-				var isCached = _cacheMap.TryGetValue(key, out var lruNode);
-
-				if (isCached) {
+				if (_cacheMap.TryGetValue(key, out var lruNode)) {
 					UpdateUsage(lruNode);
 					value = lruNode.Value.Value;
 					return true;
@@ -116,9 +116,14 @@ namespace Minotaur.Collections {
 			if (_cacheMap.Count < _capacity)
 				return;
 
+			// I could add a null check here,
+			// but since I totally know node
+			// will _never_ be null, imma
+			// use the ! operator for perfermence reesens
+
 			var node = _lruList.First;
 			_lruList.RemoveFirst();
-			_cacheMap.Remove(node.Value.Key);
+			_cacheMap.Remove(node!.Value.Key);
 		}
 
 		private sealed class LruCacheEntry {

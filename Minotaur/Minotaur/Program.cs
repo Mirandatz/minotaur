@@ -81,14 +81,14 @@ namespace Minotaur {
 
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
-			var ruleCoverageCache = IConcurrentCacheCreator.Create<Rule, RuleCoverage>(
+			var ruleCoverageCache = IConcurrentCacheSelector.Create<Rule, RuleCoverage>(
 				capacity: settings.RuleCoverageCacheSize);
 
 			var ruleCoverageComputer = new RuleCoverageComputer(
 				dataset: trainDataset,
 				cache: ruleCoverageCache);
 
-			var hyperRectangleCreatorCache = IConcurrentCacheCreator.Create<Rule, HyperRectangle>(
+			var hyperRectangleCreatorCache = IConcurrentCacheSelector.Create<Rule, HyperRectangle>(
 				capacity: settings.HyperRectangleCacheSize);
 
 			var hyperRectangleCreator = new HyperRectangleCreator(
@@ -129,7 +129,7 @@ namespace Minotaur {
 				dataset: trainDataset,
 				metricsNames: settings.MetricNames);
 
-			var trainFitnessCache = IConcurrentCacheCreator.Create<Individual, Fitness>(
+			var trainFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
 				capacity: settings.FitnessCacheSize);
 
 			var trainFitnessEvaluator = new FitnessEvaluator(
@@ -140,7 +140,7 @@ namespace Minotaur {
 				dataset: testDataset,
 				metricsNames: settings.MetricNames);
 
-			var testFitnessCache = IConcurrentCacheCreator.Create<Individual, Fitness>(
+			var testFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
 				capacity: settings.FitnessCacheSize);
 
 			var testFitnessEvaluator = new FitnessEvaluator(

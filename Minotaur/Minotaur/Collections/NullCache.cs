@@ -1,11 +1,15 @@
 namespace Minotaur.Collections {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
 	/// This class is used to effectively disable caching
 	/// in place where a ICache can be used.
 	/// </summary>
-	public sealed class NullCache<TKey, TValue>: IConcurrentCache<TKey, TValue> {
+	public sealed class NullCache<TKey, TValue>:
+		IConcurrentCache<TKey, TValue>
+		where TKey : notnull
+		where TValue : class {
 
 		public object SyncRoot { get; } = new object();
 
@@ -26,11 +30,11 @@ namespace Minotaur.Collections {
 		/// <remarks>
 		/// <paramref name="key"/> still can't be null.
 		/// </remarks>
-		public bool TryGet(TKey key, out TValue value) {
+		public bool TryGet(TKey key, [MaybeNullWhen(false)] out TValue value) {
 			if (key == null)
 				throw new ArgumentNullException(nameof(key));
 
-			value = default;
+			value = null!;
 			return false;
 		}
 	}
