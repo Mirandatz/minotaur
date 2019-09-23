@@ -5,6 +5,29 @@ namespace Minotaur {
 
 	public sealed class ProgramSettings {
 
+		// This constructor exists just so that the compiler won't complain
+		// about non-initialized non-nullable reference types
+		private ProgramSettings(string trainDataFilename, string trainLabelsFilename, string testDataFilename, string testLabelsFilename, string featureTypesFilename, int maximumGenerations, int hyperRectangleCacheSize, int ruleCoverageCacheSize, int fitnessCacheSize, int populationSize, int mutantsPerGeneration, string[] metricNames, string selectionAlgorithm, int maximumInitialRuleCount, int individualMutationAddRuleWeight, int individualMutationModifyRuleWeight, int individualMutationRemoveRuleWeight, int maximumFailedMutationAttemptsPerGeneration) {
+			TrainDataFilename = trainDataFilename;
+			TrainLabelsFilename = trainLabelsFilename;
+			TestDataFilename = testDataFilename;
+			TestLabelsFilename = testLabelsFilename;
+			FeatureTypesFilename = featureTypesFilename;
+			MaximumGenerations = maximumGenerations;
+			HyperRectangleCacheSize = hyperRectangleCacheSize;
+			RuleCoverageCacheSize = ruleCoverageCacheSize;
+			FitnessCacheSize = fitnessCacheSize;
+			PopulationSize = populationSize;
+			MutantsPerGeneration = mutantsPerGeneration;
+			MetricNames = metricNames;
+			SelectionAlgorithm = selectionAlgorithm;
+			MaximumInitialRuleCount = maximumInitialRuleCount;
+			IndividualMutationAddRuleWeight = individualMutationAddRuleWeight;
+			IndividualMutationModifyRuleWeight = individualMutationModifyRuleWeight;
+			IndividualMutationRemoveRuleWeight = individualMutationRemoveRuleWeight;
+			MaximumFailedMutationAttemptsPerGeneration = maximumFailedMutationAttemptsPerGeneration;
+		}
+
 		/// <summary>
 		/// I'm using this unelegant approach 
 		/// because the CommandLineUtils API is somewhat... Limited.
