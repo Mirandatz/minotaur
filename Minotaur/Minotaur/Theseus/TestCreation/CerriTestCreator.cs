@@ -10,7 +10,7 @@ namespace Minotaur.Theseus.TestCreation {
 		public readonly Dataset Dataset;
 
 		public CerriTestCreator(Dataset dataset) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			Dataset = dataset;
 		}
 
 		public IFeatureTest Create(
@@ -24,32 +24,25 @@ namespace Minotaur.Theseus.TestCreation {
 			if (!Dataset.IsInstanceIndexValid(datasetSeedInstanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(datasetSeedInstanceIndex));
 
-			if (boundingBox is null)
-				throw new ArgumentNullException(nameof(boundingBox));
-
-			switch (Dataset.GetFeatureType(featureIndex)) {
-
-			case FeatureType.Categorical:
-			return FromCategorical(
-			featureIndex: featureIndex,
-			datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-			boundingBox: boundingBox);
-
-			case FeatureType.CategoricalButTriviallyValued:
-			return FromCategorical(
-			featureIndex: featureIndex,
-			datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-			boundingBox: boundingBox);
-
-			case FeatureType.Continuous:
-			return FromContinuous(
+			return (Dataset.GetFeatureType(featureIndex)) switch
+			{
+				FeatureType.Categorical => FromCategorical(
 				featureIndex: featureIndex,
 				datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-				boundingBox: boundingBox);
+				boundingBox: boundingBox),
 
-			default:
-			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
-			}
+				FeatureType.CategoricalButTriviallyValued => FromCategorical(
+				featureIndex: featureIndex,
+				datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+				boundingBox: boundingBox),
+
+				FeatureType.Continuous => FromContinuous(
+					featureIndex: featureIndex,
+					datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+					boundingBox: boundingBox),
+
+				_ => throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}."),
+			};
 		}
 
 		private CategoricalFeatureTest FromCategorical(
@@ -59,6 +52,7 @@ namespace Minotaur.Theseus.TestCreation {
 			) {
 			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
 
+			// @Sanity check
 			if (!boundingBox.Contains(seed))
 				throw new InvalidOperationException();
 
@@ -74,6 +68,7 @@ namespace Minotaur.Theseus.TestCreation {
 		) {
 			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
 
+			// @Sanity check
 			if (!boundingBox.Contains(seed))
 				throw new InvalidOperationException();
 
