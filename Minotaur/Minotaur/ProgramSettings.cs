@@ -1,32 +1,10 @@
 namespace Minotaur {
+	using System;
 	using System.ComponentModel.DataAnnotations;
 	using McMaster.Extensions.CommandLineUtils;
 	using Newtonsoft.Json;
 
 	public sealed class ProgramSettings {
-
-		// This constructor exists just so that the compiler won't complain
-		// about non-initialized non-nullable reference types
-		private ProgramSettings(string trainDataFilename, string trainLabelsFilename, string testDataFilename, string testLabelsFilename, string featureTypesFilename, int maximumGenerations, int hyperRectangleCacheSize, int ruleCoverageCacheSize, int fitnessCacheSize, int populationSize, int mutantsPerGeneration, string[] metricNames, string selectionAlgorithm, int maximumInitialRuleCount, int individualMutationAddRuleWeight, int individualMutationModifyRuleWeight, int individualMutationRemoveRuleWeight, int maximumFailedMutationAttemptsPerGeneration) {
-			TrainDataFilename = trainDataFilename;
-			TrainLabelsFilename = trainLabelsFilename;
-			TestDataFilename = testDataFilename;
-			TestLabelsFilename = testLabelsFilename;
-			FeatureTypesFilename = featureTypesFilename;
-			MaximumGenerations = maximumGenerations;
-			HyperRectangleCacheSize = hyperRectangleCacheSize;
-			RuleCoverageCacheSize = ruleCoverageCacheSize;
-			FitnessCacheSize = fitnessCacheSize;
-			PopulationSize = populationSize;
-			MutantsPerGeneration = mutantsPerGeneration;
-			MetricNames = metricNames;
-			SelectionAlgorithm = selectionAlgorithm;
-			MaximumInitialRuleCount = maximumInitialRuleCount;
-			IndividualMutationAddRuleWeight = individualMutationAddRuleWeight;
-			IndividualMutationModifyRuleWeight = individualMutationModifyRuleWeight;
-			IndividualMutationRemoveRuleWeight = individualMutationRemoveRuleWeight;
-			MaximumFailedMutationAttemptsPerGeneration = maximumFailedMutationAttemptsPerGeneration;
-		}
 
 		/// <summary>
 		/// I'm using this unelegant approach 
@@ -43,7 +21,7 @@ namespace Minotaur {
 			LongName = "train-data",
 			Description = "Path to the .csv file containg the training data."
 			)]
-		public string TrainDataFilename { get; }
+		public string TrainDataFilename { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
@@ -51,7 +29,7 @@ namespace Minotaur {
 			LongName = "train-labels",
 			Description = "Path to the .csv file containg the training labels."
 			)]
-		public string TrainLabelsFilename { get; }
+		public string TrainLabelsFilename { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
@@ -59,7 +37,7 @@ namespace Minotaur {
 			LongName = "test-data",
 			Description = "Path to the.csv file containg the test data."
 			)]
-		public string TestDataFilename { get; }
+		public string TestDataFilename { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
@@ -67,7 +45,7 @@ namespace Minotaur {
 			LongName = "test-labels",
 			Description = "Path to the .csv file containg the test labels."
 			)]
-		public string TestLabelsFilename { get; }
+		public string TestLabelsFilename { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
@@ -80,7 +58,7 @@ namespace Minotaur {
 			"The file must also contain exactly N lines, " +
 			"being N the number of columns in train-data and test-data."
 			)]
-		public string FeatureTypesFilename { get; }
+		public string FeatureTypesFilename { get; } = string.Empty;
 
 		//[Required]
 		//[Option(ShortName = "",
@@ -161,12 +139,12 @@ namespace Minotaur {
 			"The metrics to use as fitness during the training phase."
 			)]
 		[AllowedValues("fscore", "model-size", "average-rule-volume")]
-		public string[] MetricNames { get; }
+		public string[] MetricNames { get; } = Array.Empty<string>();
 
 		[Required]
 		[Option(ShortName = "", LongName = "fittest-selection", Description = "The fittest selection strategy.")]
 		[AllowedValues("nsga2", "lexicographic")]
-		public string SelectionAlgorithm { get; }
+		public string SelectionAlgorithm { get; } = string.Empty;
 
 		[Required]
 		[Option(ShortName = "", LongName = "maximum-initial-rule-count",

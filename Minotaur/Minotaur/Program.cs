@@ -172,17 +172,10 @@ namespace Minotaur {
 				consistencyChecker: consistencyChecker,
 				maximumGenerations: settings.MaximumGenerations);
 
-			var evolutionReport = evolutionEngine.Run(initialPopulation);
-
-			PrintFinalReport(
-				trainDatasetFitnessEvaluator: trainFitnessEvaluator,
-				testDataset: testDataset,
-				settings: settings,
-				report: evolutionReport);
+			_ = evolutionEngine.Run(initialPopulation);
 
 			return 0;
 		}
-
 
 		private static void PrintSettings(ProgramSettings settings) {
 			Console.WriteLine("Running MINOTAUR with settings:");
@@ -230,31 +223,6 @@ namespace Minotaur {
 			});
 
 			Console.WriteLine("Yep, it is.");
-
-		}
-		private static void PrintFinalReport(
-			FitnessEvaluator trainDatasetFitnessEvaluator,
-			Dataset testDataset,
-			ProgramSettings settings,
-			EvolutionReport report
-			) {
-
-			//Console.WriteLine($"Evolution Engine stoped. Reason: {report.ReasonForStoppingEvolution}.");
-			//Console.WriteLine("Computing metrics of final population on train dataset...");
-			//var trainFitnesses = trainDatasetFitnessEvaluator.EvaluateAsMaximizationTask(report.FinalPopulation);
-			//Console.WriteLine(FitnessReportMaker.MakeReport(trainFitnesses));
-
-			//var testsMetrics = MetricsSelector.SelectMetrics(
-			//	dataset: testDataset,
-			//	metricsNames: settings.MetricNames);
-
-			//var testFitnessEvaluator = new FitnessEvaluator(
-			//	metrics: testsMetrics,
-			//	cache: new NullCache<Individual, Fitness>());
-
-			//Console.WriteLine("Computing metrics of final population on test dataset...");
-			//var testFitnesses = testFitnessEvaluator.EvaluateAsMaximizationTask(report.FinalPopulation);
-			//Console.WriteLine(FitnessReportMaker.MakeReport(testFitnesses));
 		}
 	}
 }
