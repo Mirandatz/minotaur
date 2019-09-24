@@ -6,9 +6,9 @@ namespace Minotaur.Theseus.IndividualCreation {
 
 	public sealed class MinimalIndividualCreator: IIndividualCreator {
 		public Dataset Dataset { get; }
-		private readonly OverfittingRuleCreator _ruleCreator;
+		private readonly IRuleCreator _ruleCreator;
 
-		public MinimalIndividualCreator(OverfittingRuleCreator ruleCreator) {
+		public MinimalIndividualCreator(IRuleCreator ruleCreator) {
 			_ruleCreator = ruleCreator;
 			Dataset = ruleCreator.Dataset;
 		}
