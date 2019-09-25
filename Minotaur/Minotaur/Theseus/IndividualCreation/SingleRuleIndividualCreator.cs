@@ -4,11 +4,11 @@ namespace Minotaur.Theseus.IndividualCreation {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Theseus.RuleCreation;
 
-	public sealed class MinimalIndividualCreator: IIndividualCreator {
+	public sealed class SingleRuleIndividualCreator: IIndividualCreator {
 		public Dataset Dataset { get; }
 		private readonly IRuleCreator _ruleCreator;
 
-		public MinimalIndividualCreator(IRuleCreator ruleCreator) {
+		public SingleRuleIndividualCreator(IRuleCreator ruleCreator) {
 			_ruleCreator = ruleCreator;
 			Dataset = ruleCreator.Dataset;
 		}

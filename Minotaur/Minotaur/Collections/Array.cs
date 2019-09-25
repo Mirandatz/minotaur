@@ -34,6 +34,8 @@ namespace Minotaur.Collections {
 
 		public T this[int index] => _items[index];
 
+		public T this[Index index] => _items[index];
+
 		// Implementation of IEnumerable<T>
 
 		public IEnumerator<T> GetEnumerator() => _items.GetGenericEnumerator();
@@ -78,7 +80,7 @@ namespace Minotaur.Collections {
 			for (int i = 0; i < _items.Length; i++)
 				newArray[i] = _items[i];
 
-			newArray[newArray.Length - 1] = item;
+			newArray[^1] = item;
 
 			return newArray;
 		}

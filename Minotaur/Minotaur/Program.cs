@@ -49,9 +49,9 @@ namespace Minotaur {
 				"--mutants-per-generation=100",
 				"--maximum-initial-rule-count=50",
 
-				"--hyperrectangle-cache-size=1000",
-				"--rule-coverage-cache-size=1000",
-				"--individual-fitness-cache-size=1000",
+				$"--hyperrectangle-cache-size={1024*32}",
+				$"--rule-coverage-cache-size={1024*32}",
+				$"--individual-fitness-cache-size={1024}",
 
 				"--fittest-selection=nsga2",
 
@@ -118,7 +118,7 @@ namespace Minotaur {
 				individualMutator: ruleSwappingindividualMutator);
 
 			var populationMutator = new PopulationMutator(
-				individualMutator: repeatingIndividualMutator,
+				individualMutator: ruleSwappingindividualMutator,
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
 
@@ -153,9 +153,7 @@ namespace Minotaur {
 				fittestCount: settings.PopulationSize,
 				fitnessEvaluator: trainFitnessEvaluator);
 
-			var individualCreator = new CerriIndividualCreator(
-				ruleCreator: ruleCreator,
-				maximumInitialRuleCount: settings.MaximumInitialRuleCount);
+			var individualCreator = new SingleRuleIndividualCreator(ruleCreator: ruleCreator);
 
 			var initialPopulation = CreateInitialPopulation(
 				individualCreator: individualCreator,
