@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
@@ -14,20 +15,17 @@ namespace Minotaur.Theseus.RuleCreation {
 		public Dataset Dataset { get; }
 		private readonly SeedSelector _seedSelector;
 		private readonly HyperRectangleCreator _hyperRectangleCreator;
-		private readonly MinimalTestCreator _testCreator;
 		private readonly int _maximumNumberOfNullFeatureTests;
 
 		public MinimalRuleCreator(
 			Dataset dataset,
 			SeedSelector seedSelector,
 			HyperRectangleCreator hyperRectangleCreator,
-			MinimalTestCreator minimalTestCreator,
 			float maximumRatioOfNullFeatureTest
 			) {
 			Dataset = dataset;
 			_seedSelector = seedSelector;
 			_hyperRectangleCreator = hyperRectangleCreator;
-			_testCreator = minimalTestCreator;
 
 			if (maximumRatioOfNullFeatureTest < 0 || maximumRatioOfNullFeatureTest > 1)
 				throw new ArgumentOutOfRangeException(nameof(maximumRatioOfNullFeatureTest));
@@ -141,14 +139,74 @@ namespace Minotaur.Theseus.RuleCreation {
 		}
 
 		private IFeatureTest FromContinuous(int nullFeatureTestCount, int featureIndex, int datasetSeedInstanceIndex, HyperRectangle boundingBox) {
+
 			if (ContinuousTestCanBeNull(nullFeatureTestCount, featureIndex, boundingBox))
 				return new NullFeatureTest(featureIndex);
 
-			throw new NotImplementedException();
+			// @Improve logic
+
+			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
+
+			// @Sanity check
+			if (!boundingBox.Contains(seed))
+				throw new InvalidOperationException();
+
+			var possibleValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
+
+			var cerriPoint = seed[featureIndex];
+
+			var cerriLeftIndex = possibleValues.BinarySearchFirstOccurence(cerriPoint);
+			var cerriRightIndex = possibleValues.BinarySearchLastOccurence(cerriPoint);
+
+			var cerriLowerBound = cerriLeftIndex == 0
+				? float.NegativeInfinity
+				: possibleValues[cerriLeftIndex - 1];
+
+			var cerriUpperBounddd = cerriRightIndex == possibleValues.Length - 1
+				? float.PositiveInfinity
+				: possibleValues[cerriRightIndex + 1];
+
+			var dimensionInterval = (ContinuousDimensionInterval) boundingBox.GetDimensionInterval(featureIndex);
+
+			var lowerBound = Math.Max(
+				cerriLowerBound,
+				dimensionInterval.Start.Value);
+
+			var upperBound = Math.Min(
+				cerriUpperBounddd,
+				dimensionInterval.End.Value);
+
+			return new ContinuousFeatureTest(
+				featureIndex: featureIndex,
+				lowerBound: lowerBound,
+				upperBound: upperBound);
 		}
 
 		private IFeatureTest FromCategorical(int nullFeatureTestCount, int featureIndex, int datasetSeedInstanceIndex, HyperRectangle boundingBox) {
-			throw new NotImplementedException();
+			if (CategoricalTestCanBeNull(nullFeatureTestCount, featureIndex, boundingBox))
+				return new NullFeatureTest(featureIndex);
+
+			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
+
+			// @Sanity check
+			if (!boundingBox.Contains(seed))
+				throw new InvalidOperationException();
+
+			return new CategoricalFeatureTest(
+				featureIndex: featureIndex,
+				value: seed[featureIndex]);
+		}
+
+		private bool CategoricalTestCanBeNull(int nullFeatureTestCount, int featureIndex, HyperRectangle boundingBox) {
+			if (nullFeatureTestCount >= _maximumNumberOfNullFeatureTests)
+				return false;
+
+			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
+			var dimension = (CategoricalDimensionInterval) boundingBox.GetDimensionInterval(featureIndex);
+			var dimensionValues = dimension.SortedValues;
+
+			// @Improve performance
+			return new HashSet<float>(featureValues).SetEquals(dimensionValues);
 		}
 
 		private bool ContinuousTestCanBeNull(int nullFeatureTestCount, int featureIndex, HyperRectangle boundingBox) {
@@ -156,13 +214,23 @@ namespace Minotaur.Theseus.RuleCreation {
 				return false;
 
 			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
-			var datasetLowerBound = featureValues[0];
-			var datasetUpperBound = featureValues[^1];
-
 			var dimension = (ContinuousDimensionInterval) boundingBox.GetDimensionInterval(featureIndex);
-			var lowerBound = dimension.Start;
 
-			throw new NotImplementedException();
+			{
+				var datasetLowerBound = featureValues[0];
+				var boxLowerBound = dimension.Start.Value;
+				if (boxLowerBound > datasetLowerBound)
+					return false;
+			}
+
+			{
+				var datasetUpperBound = featureValues[^1];
+				var boxUpperBound = dimension.End.Value;
+				if (boxUpperBound < datasetUpperBound)
+					return false;
+			}
+
+			return true;
 		}
 	}
 }

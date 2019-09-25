@@ -36,42 +36,61 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			return volume;
 		}
 
+		//private double ComputeTestVolume(Rule rule, int testIndex) {
+
+		//	switch (Dataset.GetFeatureType(testIndex)) {
+
+		//	case FeatureType.Categorical:
+		//	return 1;
+
+		//	case FeatureType.CategoricalButTriviallyValued:
+		//	return 1;
+
+		//	case FeatureType.Continuous: {
+		//		var featureValues = Dataset.GetSortedUniqueFeatureValues(
+		//			featureIndex: testIndex);
+
+		//		var test = (ContinuousFeatureTest) rule.Tests[testIndex];
+
+		//		var testMin = test.LowerBound;
+		//		var datasetMin = featureValues[0];
+
+		//		var testMax = test.UpperBound;
+		//		var datasetMax = featureValues[featureValues.Length - 1];
+
+		//		var delta = Math.Min(testMax, datasetMax) - Math.Max(testMin, datasetMin);
+		//		if (delta == 0) {
+		//			return 1;
+		//			//	throw new InvalidOperationException();
+		//		}
+
+		//		return delta;
+		//	}
+
+		//	case FeatureType.ContinuousButTriviallyValued:
+		//	return 1;
+
+		//	default:
+		//	throw new InvalidOperationException($"Unknown or unsupported value for {nameof(FeatureType)}.");
+		//	}
+		//}
+
+
 		private double ComputeTestVolume(Rule rule, int testIndex) {
 
-			switch (Dataset.GetFeatureType(testIndex)) {
+			switch (rule.Tests[testIndex]) {
 
-			case FeatureType.Categorical:
+			case NullFeatureTest nft:
+			throw new NotImplementedException();
+
+			case CategoricalFeatureTest cat:
 			return 1;
 
-			case FeatureType.CategoricalButTriviallyValued:
-			return 1;
-
-			case FeatureType.Continuous: {
-				var featureValues = Dataset.GetSortedUniqueFeatureValues(
-					featureIndex: testIndex);
-
-				var test = (ContinuousFeatureTest) rule.Tests[testIndex];
-
-				var testMin = test.LowerBound;
-				var datasetMin = featureValues[0];
-
-				var testMax = test.UpperBound;
-				var datasetMax = featureValues[featureValues.Length - 1];
-
-				var delta = Math.Min(testMax, datasetMax) - Math.Max(testMin, datasetMin);
-				if (delta == 0) {
-					return 1;
-					//	throw new InvalidOperationException();
-				}
-
-				return delta;
-			}
-
-			case FeatureType.ContinuousButTriviallyValued:
-			return 1;
+			case ContinuousFeatureTest cont:
+			throw new NotImplementedException();
 
 			default:
-			throw new InvalidOperationException($"Unknown or unsupported value for {nameof(FeatureType)}.");
+			throw new InvalidOperationException($"Unknown or unsupported implementation of {nameof(IFeatureTest)}.");
 			}
 		}
 	}

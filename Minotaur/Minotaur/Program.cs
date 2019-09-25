@@ -95,13 +95,12 @@ namespace Minotaur {
 			var seedSelector = new SeedSelector(
 				hyperRectangleCreator: hyperRectangleCreator,
 				ruleCoverageComputer: ruleCoverageComputer);
-
-			var testCreator = new CerriTestCreator(dataset: trainDataset);
-
-			var ruleCreator = new CerriRuleCreator(
+			
+			var ruleCreator = new MinimalRuleCreator(
+				dataset: trainDataset,
 				seedSelector: seedSelector,
-				testCreator: testCreator,
-				hyperRectangleCreator: hyperRectangleCreator);
+				hyperRectangleCreator: hyperRectangleCreator,
+				maximumRatioOfNullFeatureTest: 0.9f);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {
@@ -113,9 +112,6 @@ namespace Minotaur {
 			var ruleSwappingindividualMutator = new RuleSwappingIndividualMutator(
 				mutationChooser: individualMutationChooser,
 				ruleCreator: ruleCreator);
-
-			var repeatingIndividualMutator = new RepeatingIndividualMutator(
-				individualMutator: ruleSwappingindividualMutator);
 
 			var populationMutator = new PopulationMutator(
 				individualMutator: ruleSwappingindividualMutator,
