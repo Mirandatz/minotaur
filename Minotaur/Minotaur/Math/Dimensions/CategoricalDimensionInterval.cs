@@ -5,13 +5,16 @@ namespace Minotaur.Math.Dimensions {
 
 	// @Assumption: intervals can not  be empty.
 	public sealed class CategoricalDimensionInterval: IDimensionInterval {
-		public int DimensionIndex { get; }
 
 		private readonly float[] _values;
 
-		private CategoricalDimensionInterval(int dimensionIndex, float[] values) {
-			DimensionIndex = dimensionIndex;
+		public double Volume { get; }
+		public int DimensionIndex { get; }
+
+		private CategoricalDimensionInterval(float[] values, double volume, int dimensionIndex) {
 			_values = values;
+			Volume = volume;
+			DimensionIndex = dimensionIndex;
 		}
 
 		public Array<float> SortedValues => Array<float>.Wrap(_values);
@@ -57,7 +60,8 @@ namespace Minotaur.Math.Dimensions {
 
 			return new CategoricalDimensionInterval(
 				dimensionIndex: dimensionIndex,
-				values: copyOfValues);
+				values: copyOfValues,
+				volume: copyOfValues.Length);
 		}
 
 		public static CategoricalDimensionInterval FromSingleValue(int dimensionIndex, float value) {
@@ -66,14 +70,17 @@ namespace Minotaur.Math.Dimensions {
 			if (float.IsNaN(value))
 				throw new ArgumentOutOfRangeException(nameof(value) + " can't be NaN.");
 
+			var values = new float[] { value };
+
 			return new CategoricalDimensionInterval(
 				dimensionIndex: dimensionIndex,
-				values: new float[] { value });
+				values: values,
+				volume: values.Length);
 		}
 
 		public bool Contains(float value) {
 			if (value.IsNanOrInfinity())
-				throw new ArgumentOutOfRangeException(nameof(value) + " must be finite.");
+				throw new ArgumentOutOfRangeException(nameof(value));
 
 			var index = Array.BinarySearch(_values, value);
 			return index >= 0;

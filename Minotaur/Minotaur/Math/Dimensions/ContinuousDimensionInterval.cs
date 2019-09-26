@@ -5,6 +5,7 @@ namespace Minotaur.Math.Dimensions {
 	public sealed class ContinuousDimensionInterval: IDimensionInterval {
 
 		public int DimensionIndex { get; }
+		public double Volume { get; }
 		public readonly DimensionBound Start;
 		public readonly DimensionBound End;
 
@@ -38,6 +39,7 @@ namespace Minotaur.Math.Dimensions {
 			DimensionIndex = dimensionIndex;
 			Start = start;
 			End = end;
+			Volume = End.Value - Start.Value;
 		}
 
 		public static ContinuousDimensionInterval FromSingleValue(int dimensionIndex, float value) {
