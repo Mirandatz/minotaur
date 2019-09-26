@@ -138,7 +138,7 @@ namespace Minotaur {
 			Description =
 			"The metrics to use as fitness during the training phase."
 			)]
-		[AllowedValues("fscore", "model-size", "average-rule-volume")]
+		[AllowedValues("fscore", "model-size", "average-rule-volume", "rule-count")]
 		public string[] MetricNames { get; } = Array.Empty<string>();
 
 		[Required]

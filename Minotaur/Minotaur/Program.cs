@@ -39,14 +39,14 @@ namespace Minotaur {
 				//"--output-directory=C:/Source/minotaur/temp/",
 
 				"--fitness-metrics=fscore",
-				"--fitness-metrics=model-size",
+				"--fitness-metrics=rule-count",
 				//"--fitness-metrics=average-rule-volume",
 
 				"--max-generations=2000",
 				"--max-failed-mutations-per-generation=2000",
 
-				"--population-size=100",
-				"--mutants-per-generation=100",
+				"--population-size=50",
+				"--mutants-per-generation=50",
 				"--maximum-initial-rule-count=50",
 
 				$"--hyperrectangle-cache-size={1024*32}",
@@ -60,7 +60,7 @@ namespace Minotaur {
 				//"--rule-mutation-modify-test-weight=80",
 				//"--rule-mutation-modify-consequent-weight=20",
 
-				"--individual-mutation-add-rule-weight=15",
+				"--individual-mutation-add-rule-weight=900",
 				"--individual-mutation-modify-rule-weight=30",
 				"--individual-mutation-remove-rule-weight=2",
 			};
@@ -75,6 +75,10 @@ namespace Minotaur {
 				testDataFilename: settings.TestDataFilename,
 				testLabelsFilename: settings.TestLabelsFilename,
 				featureTypesFilename: settings.FeatureTypesFilename);
+
+			Console.WriteLine();
+			PrintTrainDatasetInformation(trainDataset);
+			Console.WriteLine();
 
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
@@ -95,7 +99,7 @@ namespace Minotaur {
 			var seedSelector = new SeedSelector(
 				hyperRectangleCreator: hyperRectangleCreator,
 				ruleCoverageComputer: ruleCoverageComputer);
-			
+
 			var ruleCreator = new MinimalRuleCreator(
 				dataset: trainDataset,
 				seedSelector: seedSelector,
@@ -177,6 +181,14 @@ namespace Minotaur {
 			var serialized = JsonConvert.SerializeObject(settings, Formatting.Indented);
 			Console.WriteLine(serialized);
 			Console.WriteLine();
+		}
+
+		private static void PrintTrainDatasetInformation(Dataset trainDataset) {
+			Console.WriteLine("Train dataset information");
+			Console.WriteLine($"Train dataset instance count {trainDataset.InstanceCount}");
+			Console.WriteLine($"Train dataset feature count {trainDataset.FeatureCount}");
+			Console.WriteLine($"Train dataset class count {trainDataset.ClassCount}");
+			Console.WriteLine($"Train dataset volume {VolumeComputer.ComputeDatasetVolume(trainDataset)}");
 		}
 
 		private static Individual[] CreateInitialPopulation(IIndividualCreator individualCreator, ProgramSettings settings) {

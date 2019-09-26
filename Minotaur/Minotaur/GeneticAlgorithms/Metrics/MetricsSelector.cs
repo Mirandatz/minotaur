@@ -19,24 +19,18 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			var metrics = new IMetric[metricsNames.Length];
 
 			for (int i = 0; i < metricsNames.Length; i++) {
+
 				var currentMetricName = metricsNames[i];
-				switch (metricsNames[i]) {
 
-				case "fscore":
-				metrics[i] = new FScore(dataset);
-				break;
+				metrics[i] = (metricsNames[i]) switch
+				{
+					"fscore" => new FScore(dataset),
+					"model-size" => new ModelSize(),
+					"average-rule-volume" => new AverageRuleVolume(dataset),
+					"rule-count" => new RuleCount(),
 
-				case "model-size":
-				metrics[i] = new ModelSize();
-				break;
-
-				case "average-rule-volume":
-				metrics[i] = new AverageRuleVolume(dataset);
-				break;
-
-				default:
-				throw new ArgumentException($"Unsupported metric: {currentMetricName}");
-				}
+					_ => throw new ArgumentException($"Unsupported metric: {currentMetricName}"),
+				};
 			}
 
 			return metrics;
