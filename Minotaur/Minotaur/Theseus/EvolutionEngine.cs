@@ -48,7 +48,7 @@ namespace Minotaur.Theseus {
 			int generationsRan;
 			for (generationsRan = 0; generationsRan < MaximumGenerations; generationsRan++) {
 				Console.Write($"\rRunning generation {generationsRan}/{MaximumGenerations}");
-				
+
 				if (!PopulationMutator.TryMutate(population, out var mutants)) {
 					reasonForStoppingEvolution = "" +
 						"reached maximum number of failed mutation attempts " +
@@ -58,7 +58,7 @@ namespace Minotaur.Theseus {
 
 				// Saniy check
 				Parallel.For(0, population.Length, i => {
-					var individual = mutants[i];
+					var individual = population[i];
 					var isConsistent = ConsistencyChecker.IsConsistent(individual);
 					if (!isConsistent) {
 						throw new InvalidOperationException();

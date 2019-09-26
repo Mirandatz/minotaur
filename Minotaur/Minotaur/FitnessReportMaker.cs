@@ -37,8 +37,12 @@ namespace Minotaur {
 			builder.AppendLine("Train Dataset Fitness");
 			builder.Append("Best individual: ");
 			builder.AppendLine(sortedFitnesses[^1].ToString());
+			builder.Append("Second best individual: ");
+			builder.AppendLine(sortedFitnesses[^2].ToString());
 			builder.Append("Median individual: ");
 			builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
+			builder.Append("Second worst individual: ");
+			builder.AppendLine(sortedFitnesses[1].ToString());
 			builder.Append("Worst individual: ");
 			builder.AppendLine(sortedFitnesses[0].ToString());
 
@@ -52,8 +56,12 @@ namespace Minotaur {
 			builder.AppendLine("Test Dataset Fitness");
 			builder.Append("Best individual: ");
 			builder.AppendLine(sortedFitnesses[^1].ToString());
+			builder.Append("Second best individual: ");
+			builder.AppendLine(sortedFitnesses[^2].ToString());
 			builder.Append("Median individual: ");
 			builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
+			builder.Append("Second worst individual: ");
+			builder.AppendLine(sortedFitnesses[1].ToString());
 			builder.Append("Worst individual: ");
 			builder.AppendLine(sortedFitnesses[0].ToString());
 

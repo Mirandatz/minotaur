@@ -45,7 +45,7 @@ namespace Minotaur {
 				"--max-generations=2000",
 				"--max-failed-mutations-per-generation=2000",
 
-				"--population-size=50",
+				"--population-size=100",
 				"--mutants-per-generation=100",
 				"--maximum-initial-rule-count=50",
 
@@ -61,8 +61,8 @@ namespace Minotaur {
 				//"--rule-mutation-modify-consequent-weight=20",
 
 				"--individual-mutation-add-rule-weight=15",
-				"--individual-mutation-modify-rule-weight=80",
-				"--individual-mutation-remove-rule-weight=5",
+				"--individual-mutation-modify-rule-weight=30",
+				"--individual-mutation-remove-rule-weight=2",
 			};
 		}
 
