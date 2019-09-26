@@ -81,16 +81,28 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			switch (rule.Tests[testIndex]) {
 
 			case NullFeatureTest nft:
-			throw new NotImplementedException();
+			return Dataset.GetDimensionInterval(testIndex).Volume;
 
 			case CategoricalFeatureTest cat:
 			return 1;
 
-			case ContinuousFeatureTest cont:
-			throw new NotImplementedException();
+			case ContinuousFeatureTest cont: {
+				var lower = cont.LowerBound;
+				var upper = cont.UpperBound;
+
+				var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex: testIndex);
+
+				if (float.IsNegativeInfinity(lower))
+					lower = featureValues[0];
+
+				if (float.IsPositiveInfinity(upper))
+					upper = featureValues[^1];
+
+				return upper - lower;
+			}
 
 			default:
-			throw new InvalidOperationException($"Unknown or unsupported implementation of {nameof(IFeatureTest)}.");
+			throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
 			}
 		}
 	}
