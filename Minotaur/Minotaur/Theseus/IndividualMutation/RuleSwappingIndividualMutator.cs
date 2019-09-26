@@ -29,7 +29,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 				IndividualMutationType.ModifyRule => TryModifyRule(original, out mutated),
 				IndividualMutationType.RemoveRule => TryRemoveRule(original, out mutated!),
 
-				_ => throw new InvalidOperationException($"Unknown / unsupported value for {nameof(IndividualMutationType)}."),
+				_ => throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType),
 			};
 		}
 
