@@ -40,7 +40,7 @@ namespace Minotaur {
 
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
-				"--fitness-metrics=average-rule-volume",
+				//"--fitness-metrics=average-rule-volume",
 
 				"--max-generations=2000",
 				"--max-failed-mutations-per-generation=2000",
@@ -100,7 +100,8 @@ namespace Minotaur {
 				dataset: trainDataset,
 				seedSelector: seedSelector,
 				hyperRectangleCreator: hyperRectangleCreator,
-				maximumRatioOfNullFeatureTest: 0.9f);
+				maximumRatioOfNullFeatureTest: 0.9f,
+				probabilityOfGeneratingNullTest: 1f);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {

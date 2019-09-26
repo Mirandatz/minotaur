@@ -16,22 +16,26 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly SeedSelector _seedSelector;
 		private readonly HyperRectangleCreator _hyperRectangleCreator;
 		private readonly int _maximumNumberOfNullFeatureTests;
+		private readonly float _probabilityOfGeneratingNullTest;
 
 		public MinimalRuleCreator(
 			Dataset dataset,
 			SeedSelector seedSelector,
 			HyperRectangleCreator hyperRectangleCreator,
-			float maximumRatioOfNullFeatureTest
+			float maximumRatioOfNullFeatureTest,
+			float probabilityOfGeneratingNullTest
 			) {
 			Dataset = dataset;
 			_seedSelector = seedSelector;
 			_hyperRectangleCreator = hyperRectangleCreator;
-
 			if (maximumRatioOfNullFeatureTest < 0 || maximumRatioOfNullFeatureTest > 1)
 				throw new ArgumentOutOfRangeException(nameof(maximumRatioOfNullFeatureTest));
 
 			var featureCount = Dataset.FeatureCount;
 			_maximumNumberOfNullFeatureTests = (int) (featureCount * maximumRatioOfNullFeatureTest);
+
+			if (maximumRatioOfNullFeatureTest < 0 || maximumRatioOfNullFeatureTest > 1)
+				_probabilityOfGeneratingNullTest = probabilityOfGeneratingNullTest;
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule newRule) {
@@ -75,7 +79,6 @@ namespace Minotaur.Theseus.RuleCreation {
 		}
 
 		private IFeatureTest[] CreateTests(int datasetSeedIndex, HyperRectangle boundingRectangle) {
-
 			var testCreationOrder = NaturalRange.CreateShuffled(
 				inclusiveStart: 0,
 				exclusiveEnd: Dataset.FeatureCount);
@@ -201,36 +204,28 @@ namespace Minotaur.Theseus.RuleCreation {
 			if (nullFeatureTestCount >= _maximumNumberOfNullFeatureTests)
 				return false;
 
-			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
-			var dimension = (CategoricalDimensionInterval) boundingBox.GetDimensionInterval(featureIndex);
-			var dimensionValues = dimension.SortedValues;
+			var shouldBeNull = Random.Bool(biasForTrue: _probabilityOfGeneratingNullTest);
+			if (!shouldBeNull)
+				return false;
 
-			// @Improve performance
-			return new HashSet<float>(featureValues).SetEquals(dimensionValues);
+			var datasetDimension = (CategoricalDimensionInterval) Dataset.GetDimensionInterval(featureIndex: featureIndex);
+			var boxDimension = (CategoricalDimensionInterval) boundingBox.GetDimensionInterval(dimensionIndex: featureIndex);
+
+			return boxDimension.Equals(datasetDimension);
 		}
 
 		private bool ContinuousTestCanBeNull(int nullFeatureTestCount, int featureIndex, HyperRectangle boundingBox) {
 			if (nullFeatureTestCount >= _maximumNumberOfNullFeatureTests)
 				return false;
 
-			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
-			var dimension = (ContinuousDimensionInterval) boundingBox.GetDimensionInterval(featureIndex);
+			var shouldBeNull = Random.Bool(biasForTrue: _probabilityOfGeneratingNullTest);
+			if (!shouldBeNull)
+				return false;
 
-			{
-				var datasetLowerBound = featureValues[0];
-				var boxLowerBound = dimension.Start.Value;
-				if (boxLowerBound > datasetLowerBound)
-					return false;
-			}
+			var datasetDimension = (ContinuousDimensionInterval) Dataset.GetDimensionInterval(featureIndex: featureIndex);
+			var boxDimension = (ContinuousDimensionInterval) boundingBox.GetDimensionInterval(dimensionIndex: featureIndex);
 
-			{
-				var datasetUpperBound = featureValues[^1];
-				var boxUpperBound = dimension.End.Value;
-				if (boxUpperBound < datasetUpperBound)
-					return false;
-			}
-
-			return true;
+			return boxDimension.Contains(datasetDimension);
 		}
 	}
 }

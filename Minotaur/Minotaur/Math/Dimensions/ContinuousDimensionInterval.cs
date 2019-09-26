@@ -86,5 +86,22 @@ namespace Minotaur.Math.Dimensions {
 				Start.Equals(other.Start) &&
 				End.Equals(other.End);
 		}
+
+		public bool Contains(ContinuousDimensionInterval datasetDimension) {
+
+			var dsStart = datasetDimension.Start;
+			if (Start.Value > dsStart.Value)
+				return false;
+			if (Start.Value == dsStart.Value && !Start.IsInclusive)
+				return false;
+
+			var dsEnd = datasetDimension.End;
+			if (End.Value < dsEnd.Value)
+				return false;
+			if (End.Value == dsEnd.Value && !End.IsInclusive)
+				return false;
+
+			return true;
+		}
 	}
 }
