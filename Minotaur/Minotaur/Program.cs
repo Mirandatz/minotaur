@@ -101,7 +101,7 @@ namespace Minotaur {
 				seedSelector: seedSelector,
 				hyperRectangleCreator: hyperRectangleCreator,
 				maximumRatioOfNullFeatureTest: 0.9f,
-				probabilityOfGeneratingNullTest: 1f);
+				probabilityOfGeneratingNullTest: 0.2f);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {

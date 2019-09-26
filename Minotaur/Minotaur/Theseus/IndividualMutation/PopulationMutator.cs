@@ -74,11 +74,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 						if (updatedFailedAttempts >= MaximumFailedAttemptsPerGeneration)
 							loopState.Stop();
 
-						var candidateIndex = Random.Int(
-							inclusiveMin: 0,
-							exclusiveMax: population.Length);
-
-						var mutationCandidate = population[candidateIndex];
+						var mutationCandidate = Random.Choice(population);
 
 						var sucess = IndividualMutator.TryMutate(
 							original: mutationCandidate,
