@@ -35,7 +35,9 @@ namespace Minotaur.Theseus.RuleCreation {
 			_maximumNumberOfNullFeatureTests = (int) (featureCount * maximumRatioOfNullFeatureTest);
 
 			if (maximumRatioOfNullFeatureTest < 0 || maximumRatioOfNullFeatureTest > 1)
-				_probabilityOfGeneratingNullTest = probabilityOfGeneratingNullTest;
+				throw new ArgumentOutOfRangeException(nameof(probabilityOfGeneratingNullTest));
+
+			_probabilityOfGeneratingNullTest = probabilityOfGeneratingNullTest;
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule newRule) {
