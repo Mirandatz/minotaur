@@ -32,4 +32,22 @@ namespace Minotaur.ExtensionMethods.SystemArray {
 			return false;
 		}
 	}
+
+	public static class FloatSystemArrayExtensions {
+
+		public static bool FloatSequenceEquals(this float[] lhs, float[] rhs) {
+			if (ReferenceEquals(lhs, rhs))
+				return true;
+
+			if (lhs.Length != rhs.Length)
+				return false;
+
+			for (int i = 0; i < lhs.Length; i++) {
+				if (lhs[i] != rhs[i])
+					return false;
+			}
+
+			return true;
+		}
+	}
 }

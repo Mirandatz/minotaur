@@ -1,7 +1,7 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
 
-	public readonly struct DimensionBound {
+	public readonly struct DimensionBound: IEquatable<DimensionBound> {
 		public readonly float Value;
 		public readonly bool IsInclusive;
 
@@ -35,6 +35,12 @@ namespace Minotaur.Math.Dimensions {
 			return new DimensionBound(
 				value: value,
 				isInclusive: false);
+		}
+
+		public bool Equals(DimensionBound other) {
+			return
+				Value == other.Value &&
+				IsInclusive == other.IsInclusive;
 		}
 	}
 }

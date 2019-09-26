@@ -70,5 +70,21 @@ namespace Minotaur.Math.Dimensions {
 
 			return false;
 		}
+
+		// Implementation of IEquatable
+		public bool Equals(IDimensionInterval dimensionInterval) {
+			if (dimensionInterval is ContinuousDimensionInterval other)
+				return Equals(other);
+			else
+				return false;
+		}
+
+		public bool Equals(ContinuousDimensionInterval other) {
+			return
+				DimensionIndex == other.DimensionIndex &&
+				Volume == other.Volume &&
+				Start.Equals(other.Start) &&
+				End.Equals(other.End);
+		}
 	}
 }

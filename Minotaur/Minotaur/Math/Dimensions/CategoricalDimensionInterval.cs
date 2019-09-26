@@ -2,6 +2,7 @@ namespace Minotaur.Math.Dimensions {
 	using System;
 	using Minotaur.Collections;
 	using Minotaur.ExtensionMethods.Float;
+	using Minotaur.ExtensionMethods.SystemArray;
 
 	// @Assumption: intervals can not  be empty.
 	public sealed class CategoricalDimensionInterval: IDimensionInterval {
@@ -84,6 +85,26 @@ namespace Minotaur.Math.Dimensions {
 
 			var index = Array.BinarySearch(_values, value);
 			return index >= 0;
+		}
+
+		// Implementation of IEquatable
+		public bool Equals(IDimensionInterval dimensionInterval) {
+			if (dimensionInterval is CategoricalDimensionInterval other)
+				return Equals(other);
+			else
+				return false;
+		}
+
+		public bool Equals(CategoricalDimensionInterval other) {
+			if (ReferenceEquals(this, other))
+				return true;
+
+			if (DimensionIndex != other.DimensionIndex)
+				return false;
+			if (Volume != other.Volume)
+				return false;
+
+			return _values.FloatSequenceEquals(other._values);
 		}
 	}
 }
