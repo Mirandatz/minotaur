@@ -1,5 +1,6 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
+	using System.Text;
 
 	// @Assumption: intervals can not  be empty.
 	public sealed class ContinuousDimensionInterval: IDimensionInterval {
@@ -71,6 +72,25 @@ namespace Minotaur.Math.Dimensions {
 			return false;
 		}
 
+		public override string ToString() {
+			var builder = new StringBuilder();
+			if (Start.IsInclusive)
+				builder.Append('[');
+			else
+				builder.Append(']');
+
+			builder.Append(Start.Value);
+			builder.Append(", ");
+			builder.Append(End.Value);
+
+			if (End.IsInclusive)
+				builder.Append(']');
+			else
+				builder.Append('[');
+
+			return builder.ToString();
+		}
+
 		// Implementation of IEquatable
 		public bool Equals(IDimensionInterval dimensionInterval) {
 			if (dimensionInterval is ContinuousDimensionInterval other)
@@ -88,16 +108,16 @@ namespace Minotaur.Math.Dimensions {
 		}
 
 		public bool Contains(ContinuousDimensionInterval other) {
-			var dsStart = other.Start;
-			if (Start.Value > dsStart.Value)
+			var otherStart = other.Start;
+			if (Start.Value > otherStart.Value)
 				return false;
-			if (Start.Value == dsStart.Value && !Start.IsInclusive)
+			if (Start.Value == otherStart.Value && !Start.IsInclusive)
 				return false;
 
-			var dsEnd = other.End;
-			if (End.Value < dsEnd.Value)
+			var otherEnd = other.End;
+			if (End.Value < otherEnd.Value)
 				return false;
-			if (End.Value == dsEnd.Value && !End.IsInclusive)
+			if (End.Value == otherEnd.Value && !End.IsInclusive)
 				return false;
 
 			return true;

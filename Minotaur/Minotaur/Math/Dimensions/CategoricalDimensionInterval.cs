@@ -87,6 +87,10 @@ namespace Minotaur.Math.Dimensions {
 			return index >= 0;
 		}
 
+		public override string ToString() {
+			return $"[{string.Join(", ", _values)}]";
+		}
+
 		// Implementation of IEquatable
 		public bool Equals(IDimensionInterval dimensionInterval) {
 			if (dimensionInterval is CategoricalDimensionInterval other)

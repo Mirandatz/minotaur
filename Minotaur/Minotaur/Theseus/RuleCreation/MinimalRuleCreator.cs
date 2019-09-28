@@ -67,6 +67,12 @@ namespace Minotaur.Theseus.RuleCreation {
 			if (!secureRectangle.Contains(seed))
 				throw new InvalidOperationException();
 
+			// @Sanity check
+			foreach (var existingRectangle in hyperRectangles) {
+				if (HyperRectangleIntersector.IntersectsInAllDimensions(existingRectangle, secureRectangle))
+					throw new InvalidOperationException();
+			}
+
 			var tests = CreateTests(
 				datasetSeedIndex: seedIndex,
 				boundingRectangle: secureRectangle);
