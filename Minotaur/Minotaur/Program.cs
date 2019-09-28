@@ -10,6 +10,7 @@ namespace Minotaur {
 	using Minotaur.GeneticAlgorithms.Metrics;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
+	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
@@ -178,6 +179,44 @@ namespace Minotaur {
 				fittestSelector: fittestSelector,
 				consistencyChecker: consistencyChecker,
 				maximumGenerations: settings.MaximumGenerations);
+
+			var d1 = new ContinuousDimensionInterval(
+				dimensionIndex: 0,
+				start: DimensionBound.CreateStart(float.NegativeInfinity),
+				end: DimensionBound.CreateEnd(-1.9858872f));
+
+			var d2 = new ContinuousDimensionInterval(
+				dimensionIndex: 1,
+				start: DimensionBound.CreateStart(0.008649528f),
+				end: DimensionBound.CreateEnd(0.052685183f));
+
+			var box = new HyperRectangle(new IDimensionInterval[] { d1, d2 });
+			var seed = new float[] { 0.6426971f, 0.052685183f };
+			var order = NaturalRange.CreateShuffled(0, 2);
+			while (order[0] != 0)
+				order = NaturalRange.CreateShuffled(0, 2);
+
+			//var d1 = new ContinuousDimensionInterval(
+			//	dimensionIndex: 0,
+			//	start: DimensionBound.CreateStart(0),
+			//	end: DimensionBound.CreateEnd(2));
+
+			//var d2 = new ContinuousDimensionInterval(
+			//	dimensionIndex: 1,
+			//	start: DimensionBound.CreateStart(0),
+			//	end: DimensionBound.CreateEnd(2f));
+
+			//var box = new HyperRectangle(new IDimensionInterval[] { d1, d2 });
+			//var seed = new float[] { 3, 3 };
+			//var order = NaturalRange.CreateShuffled(0, 2);
+			//while (order[0] != 1)
+			//	order = NaturalRange.CreateShuffled(0, 2);
+
+
+			var wtf = hyperRectangleCreator.CreateLargestNonIntersectingHyperRectangle(
+				seed: seed,
+				existingRectangles: new HyperRectangle[] { box },
+				dimensionExpansionOrder: order);
 
 			_ = evolutionEngine.Run(initialPopulation);
 

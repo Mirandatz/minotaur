@@ -36,10 +36,6 @@ namespace Minotaur.Math.Dimensions {
 		}
 
 		public static MutableHyperRectangle FromDatasetInstance(Array<float> seed, Array<FeatureType> featureTypes) {
-			if (seed is null)
-				throw new ArgumentNullException(nameof(seed));
-			if (featureTypes is null)
-				throw new ArgumentNullException(nameof(featureTypes));
 			if (seed.Length != featureTypes.Length)
 				throw new ArgumentException($"{nameof(seed)} and {nameof(featureTypes)} must have the same length.");
 

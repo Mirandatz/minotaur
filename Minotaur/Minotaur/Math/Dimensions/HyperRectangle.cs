@@ -31,9 +31,6 @@ namespace Minotaur.Math.Dimensions {
 		}
 
 		public bool Contains(Array<float> point) {
-			if (point is null)
-				throw new ArgumentNullException(nameof(point));
-
 			if (point.Length != DimensionCount) {
 				throw new ArgumentException(
 					nameof(point) + " must contain the same number of dimensions as this " +

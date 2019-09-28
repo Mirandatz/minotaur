@@ -32,21 +32,10 @@ namespace Minotaur.Theseus {
 			Array<HyperRectangle> existingRectangles,
 			NaturalRange dimensionExpansionOrder
 			) {
-			if (seed is null)
-				throw new ArgumentNullException(nameof(seed));
-			if (existingRectangles is null)
-				throw new ArgumentNullException(nameof(existingRectangles));
-			if (dimensionExpansionOrder is null)
-				throw new ArgumentNullException(nameof(dimensionExpansionOrder));
 
 			// @Todo: add loads of safety checks
-			if (existingRectangles.IsEmpty) {
-				var dimensions = new IDimensionInterval[seed.Length];
-				for (int i = 0; i < dimensions.Length; i++)
-					dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimensionInterval(dimensionIndex: i);
-
-				return new HyperRectangle(dimensions);
-			}
+			if (existingRectangles.IsEmpty)
+				return CreateMaximalRectangle();
 
 			var mutable = MutableHyperRectangle.FromDatasetInstance(
 				seed: seed,
@@ -56,6 +45,7 @@ namespace Minotaur.Theseus {
 				var dimensionIndex = dimensionExpansionOrder[i];
 
 				switch (Dataset.GetFeatureType(dimensionIndex)) {
+
 				case FeatureType.Categorical:
 				EnlargeCategoricalDimension(
 					seed: seed,
@@ -86,11 +76,19 @@ namespace Minotaur.Theseus {
 				break;
 
 				default:
-				throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
+				throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
 				}
 			}
 
 			return mutable.ToHyperRectangle();
+		}
+
+		private HyperRectangle CreateMaximalRectangle() {
+			var dimensions = new IDimensionInterval[Dataset.FeatureCount];
+			for (int i = 0; i < dimensions.Length; i++)
+				dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimensionInterval(dimensionIndex: i);
+
+			return new HyperRectangle(dimensions);
 		}
 
 		private void EnlargeCategoricalDimension(
@@ -166,16 +164,21 @@ namespace Minotaur.Theseus {
 
 				var otherDimension = (ContinuousDimensionInterval) otherRectangle.Dimensions[dimensionIndex];
 
-				// This is a sanity check
-				var pivot = seed[dimensionIndex];
+				var seedValue = seed[dimensionIndex];
 				var otherMin = otherDimension.Start.Value;
 				var otherMax = otherDimension.End.Value;
 
-				if (seed[dimensionIndex] > otherDimension.End.Value)
-					min = Math.Max(min, otherDimension.End.Value);
+				// If the seed is to the right of the other interval
+				// we need to adjust the left side of our enlarged rectangle,
+				// i.e. the min
+				if (seedValue > otherMax)
+					min = Math.Max(min, otherMax);
 
-				if (seed[dimensionIndex] < otherDimension.Start.Value)
-					max = Math.Min(max, otherDimension.Start.Value);
+				// If the seed is to the left of the other interval,
+				// we need to adjust the right side of our enlarged rectangle,
+				// i.e. the max
+				if (seedValue <= otherMin)
+					max = Math.Min(max, otherMin);
 			}
 
 			// @Assumption all continuous intervals have 
