@@ -77,6 +77,8 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			return allPredictions.ToMatrix();
 		}
 
+		public override string ToString() => string.Join(Environment.NewLine, Rules);
+
 		public override int GetHashCode() => HashCode;
 
 		public override bool Equals(object? obj) {

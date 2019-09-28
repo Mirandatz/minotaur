@@ -30,11 +30,19 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
-				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
-				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
-				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
-				"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+				//"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
+				//"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
+				//"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
+				//"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
+				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+
+				"--train-data=C:/Source/dataset-making/train-data.csv",
+				"--train-labels=C:/Source/dataset-making/train-labels.csv",
+
+				"--test-data=C:/Source/dataset-making/test-data.csv",
+				"--test-labels=C:/Source/dataset-making/test-labels.csv",
+
+				"--feature-types=C:/Source/dataset-making/feature-types.csv",
 
 				//"--output-directory=C:/Source/minotaur/temp/",
 
@@ -46,7 +54,7 @@ namespace Minotaur {
 				"--max-failed-mutations-per-generation=2000",
 
 				"--population-size=50",
-				"--mutants-per-generation=50",
+				"--mutants-per-generation=100",
 				"--maximum-initial-rule-count=50",
 
 				$"--hyperrectangle-cache-size={1024*32}",

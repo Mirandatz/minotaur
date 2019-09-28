@@ -1,5 +1,7 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
+	using System.Linq;
+	using System.Text;
 	using Minotaur.Collections;
 	using Newtonsoft.Json;
 
@@ -65,6 +67,16 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			}
 
 			return true;
+		}
+
+		public override string ToString() {
+			var builder = new StringBuilder();
+
+			var relevantTests = Tests.Where(t => !(t is NullFeatureTest));
+
+			var antecedent = "IF " + string.Join(" AND ", relevantTests);
+			var consequent = " THEN " + PredictedLabels.ToString();
+			return antecedent + consequent;
 		}
 
 		public override int GetHashCode() => _precomputedHashCode;

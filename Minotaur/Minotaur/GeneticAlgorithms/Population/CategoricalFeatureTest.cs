@@ -35,6 +35,8 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public bool Matches(Array<float> instance) => instance[FeatureIndex] == Value;
 
+		public override string ToString() => $"f[{FeatureIndex}]={Value}";
+
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) {

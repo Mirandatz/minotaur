@@ -36,6 +36,9 @@ namespace Minotaur.Collections {
 
 		public T this[Index index] => _items[index];
 
+		// Basic overrides
+		public override string ToString() => $"[{string.Join(", ", _items)}]";
+
 		// Implementation of IEnumerable<T>
 
 		public IEnumerator<T> GetEnumerator() => _items.GetGenericEnumerator();

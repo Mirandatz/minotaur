@@ -20,6 +20,8 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public bool Matches(Array<float> instance) => true;
 
+		public override string ToString() => string.Empty;
+
 		public override int GetHashCode() => FeatureIndex;
 
 		public override bool Equals(object? obj) {

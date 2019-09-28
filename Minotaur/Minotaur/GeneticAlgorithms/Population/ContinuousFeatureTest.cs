@@ -69,6 +69,8 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			return LowerBound <= featureValue && featureValue < UpperBound;
 		}
 
+		public override string ToString() => $"{LowerBound} <= f[{FeatureIndex}] < {UpperBound}";
+
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) {
