@@ -8,13 +8,10 @@ namespace Minotaur.Theseus {
 		public readonly HyperRectangleCreator HyperRectangleCreator;
 
 		public RuleConsistencyChecker(HyperRectangleCreator hyperRectangleCreator) {
-			HyperRectangleCreator = hyperRectangleCreator ?? throw new ArgumentNullException(nameof(hyperRectangleCreator));
+			HyperRectangleCreator = hyperRectangleCreator;
 		}
 
 		public bool IsConsistent(Individual individual) {
-			if (individual is null)
-				throw new ArgumentNullException(nameof(individual));
-
 			var allRulesSpan = individual.Rules.AsSpan();
 
 			for (int i = 1; i < allRulesSpan.Length; i++) {
@@ -24,7 +21,7 @@ namespace Minotaur.Theseus {
 
 				var currentRule = allRulesSpan[i];
 
-				if (!AreConsistent(previousRules, currentRule))
+				if (!AreConsistent(existingRules: previousRules, newRule: currentRule))
 					return false;
 			}
 
@@ -32,9 +29,6 @@ namespace Minotaur.Theseus {
 		}
 
 		public bool AreConsistent(ReadOnlySpan<Rule> existingRules, Rule newRule) {
-			if (newRule is null)
-				throw new ArgumentNullException(nameof(newRule));
-
 			for (int i = 0; i < existingRules.Length; i++) {
 				if (!AreConsistent(existingRules[i], newRule))
 					return false;
@@ -49,7 +43,7 @@ namespace Minotaur.Theseus {
 
 			var lhsBox = HyperRectangleCreator.FromRule(lhs);
 			var rhsBox = HyperRectangleCreator.FromRule(rhs);
-			var boxesOverlap = HyperRectangleIntersector.IntersectsInAllDimensinos(lhsBox, rhsBox);
+			var boxesOverlap = HyperRectangleIntersector.IntersectsInAllDimensions(lhsBox, rhsBox);
 
 			return !boxesOverlap;
 		}

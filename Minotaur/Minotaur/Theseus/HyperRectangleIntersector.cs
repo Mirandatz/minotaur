@@ -4,18 +4,12 @@ namespace Minotaur.Theseus {
 
 	public static class HyperRectangleIntersector {
 
-		public static bool IntersectsInAllDimensinos(HyperRectangle lhs, HyperRectangle rhs) {
-			if (lhs is null)
-				throw new ArgumentNullException(nameof(lhs));
-			if (rhs is null)
-				throw new ArgumentNullException(nameof(rhs));
+		public static bool IntersectsInAllDimensions(HyperRectangle lhs, HyperRectangle rhs) {
 			if (lhs.DimensionCount != rhs.DimensionCount)
 				throw new ArgumentException();
 
 			var dimensionCount = lhs.DimensionCount;
-
 			for (int i = 0; i < dimensionCount; i++) {
-
 				var intersects = DimensionIntersects(
 					lhs: lhs.GetDimensionInterval(i),
 					rhs: rhs.GetDimensionInterval(i));
@@ -35,11 +29,6 @@ namespace Minotaur.Theseus {
 			HyperRectangle other,
 			int dimensionToSkip
 			) {
-			if (target is null)
-				throw new ArgumentNullException(nameof(target));
-			if (other is null)
-				throw new ArgumentNullException(nameof(other));
-
 #if Debug
 			if (!target.IsCompatibleWith(other)) {
 				throw new ArgumentException(
