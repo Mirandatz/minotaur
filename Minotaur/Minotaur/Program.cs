@@ -31,19 +31,19 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				//"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
-				//"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
-				//"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
-				//"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
-				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
+				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
+				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
+				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
+				"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
 
-				"--train-data=C:/Source/dataset-making/train-data.csv",
-				"--train-labels=C:/Source/dataset-making/train-labels.csv",
+				//"--train-data=C:/Source/dataset-making/train-data.csv",
+				//"--train-labels=C:/Source/dataset-making/train-labels.csv",
 
-				"--test-data=C:/Source/dataset-making/test-data.csv",
-				"--test-labels=C:/Source/dataset-making/test-labels.csv",
+				//"--test-data=C:/Source/dataset-making/test-data.csv",
+				//"--test-labels=C:/Source/dataset-making/test-labels.csv",
 
-				"--feature-types=C:/Source/dataset-making/feature-types.csv",
+				//"--feature-types=C:/Source/dataset-making/feature-types.csv",
 
 				//"--output-directory=C:/Source/minotaur/temp/",
 
@@ -179,46 +179,9 @@ namespace Minotaur {
 				fittestSelector: fittestSelector,
 				consistencyChecker: consistencyChecker,
 				maximumGenerations: settings.MaximumGenerations);
-
-			var d1 = new ContinuousDimensionInterval(
-				dimensionIndex: 0,
-				start: DimensionBound.CreateStart(float.NegativeInfinity),
-				end: DimensionBound.CreateEnd(-1.9858872f));
-
-			var d2 = new ContinuousDimensionInterval(
-				dimensionIndex: 1,
-				start: DimensionBound.CreateStart(0.008649528f),
-				end: DimensionBound.CreateEnd(0.052685183f));
-
-			var box = new HyperRectangle(new IDimensionInterval[] { d1, d2 });
-			var seed = new float[] { 0.6426971f, 0.052685183f };
-			var order = NaturalRange.CreateShuffled(0, 2);
-			while (order[0] != 0)
-				order = NaturalRange.CreateShuffled(0, 2);
-
-			//var d1 = new ContinuousDimensionInterval(
-			//	dimensionIndex: 0,
-			//	start: DimensionBound.CreateStart(0),
-			//	end: DimensionBound.CreateEnd(2));
-
-			//var d2 = new ContinuousDimensionInterval(
-			//	dimensionIndex: 1,
-			//	start: DimensionBound.CreateStart(0),
-			//	end: DimensionBound.CreateEnd(2f));
-
-			//var box = new HyperRectangle(new IDimensionInterval[] { d1, d2 });
-			//var seed = new float[] { 3, 3 };
-			//var order = NaturalRange.CreateShuffled(0, 2);
-			//while (order[0] != 1)
-			//	order = NaturalRange.CreateShuffled(0, 2);
-
-
-			var wtf = hyperRectangleCreator.CreateLargestNonIntersectingHyperRectangle(
-				seed: seed,
-				existingRectangles: new HyperRectangle[] { box },
-				dimensionExpansionOrder: order);
-
-			_ = evolutionEngine.Run(initialPopulation);
+			
+			var evolutionReport = evolutionEngine.Run(initialPopulation);
+			Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
 
 			return 0;
 		}
