@@ -168,17 +168,22 @@ namespace Minotaur.Theseus {
 				var otherMin = otherDimension.Start.Value;
 				var otherMax = otherDimension.End.Value;
 
-				// If the seed is to the right of the other interval
-				// we need to adjust the left side of our enlarged rectangle,
-				// i.e. the min
-				if (seedValue > otherMax)
+				if (seedValue >= otherMax)
 					min = Math.Max(min, otherMax);
-
-				// If the seed is to the left of the other interval,
-				// we need to adjust the right side of our enlarged rectangle,
-				// i.e. the max
-				if (seedValue <= otherMin)
+				else
 					max = Math.Min(max, otherMin);
+
+				//// If the seed is to the right of the other interval
+				//// we need to adjust the left side of our enlarged rectangle,
+				//// i.e. the min
+				//if (seedValue > otherMax)
+				//	min = Math.Max(min, otherMax);
+
+				//// If the seed is to the left of the other interval,
+				//// we need to adjust the right side of our enlarged rectangle,
+				//// i.e. the max
+				//if (seedValue <= otherMin)
+				//	max = Math.Min(max, otherMin);
 			}
 
 			// @Assumption all continuous intervals have 
