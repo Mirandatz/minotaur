@@ -56,6 +56,7 @@ namespace Minotaur.Theseus {
 					break;
 				}
 
+#if DEBUG
 				// Saniy check
 				Parallel.For(0, population.Length, i => {
 					var individual = population[i];
@@ -64,6 +65,7 @@ namespace Minotaur.Theseus {
 						throw new InvalidOperationException();
 					}
 				});
+#endif
 
 				if (generationsRan % 10 == 0) {
 					Console.WriteLine();

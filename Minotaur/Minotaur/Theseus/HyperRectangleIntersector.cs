@@ -29,7 +29,7 @@ namespace Minotaur.Theseus {
 			HyperRectangle other,
 			int dimensionToSkip
 			) {
-#if Debug
+#if DEBUG
 			if (!target.IsCompatibleWith(other)) {
 				throw new ArgumentException(
 					$"{nameof(target)} " +
