@@ -3,6 +3,7 @@ namespace Minotaur.Collections.Dataset {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
+	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class Dataset {
@@ -16,6 +17,7 @@ namespace Minotaur.Collections.Dataset {
 		public readonly Matrix<float> Data;
 
 		// These are stored for performance reasons
+		public readonly Matrix<double> DistanceMatrix;
 		public readonly Matrix<float> DataTransposed;
 		private readonly float[][] _sortedFeatureValues;
 		private readonly float[][] _sortedUniqueFeatureValues;
@@ -26,6 +28,7 @@ namespace Minotaur.Collections.Dataset {
 			FeatureType[] featureTypes,
 			Matrix<float> data,
 			Matrix<float> dataTransposed,
+			Matrix<double> distanceMatrix,
 			float[][] sortedFeatureValues,
 			float[][] sortedUniqueFeatureValues,
 			Dictionary<float, int>[] featureValueFrequencies,
@@ -35,6 +38,7 @@ namespace Minotaur.Collections.Dataset {
 			FeatureTypes = featureTypes;
 			Data = data;
 			DataTransposed = dataTransposed;
+			DistanceMatrix = distanceMatrix;
 			_sortedFeatureValues = sortedFeatureValues;
 			_sortedUniqueFeatureValues = sortedUniqueFeatureValues;
 			_featureValueFrequencies = featureValueFrequencies;
@@ -75,6 +79,8 @@ namespace Minotaur.Collections.Dataset {
 			var sortedUniqueFeatureValues = new float[featuresCount][];
 			var featureValueFrequencies = new Dictionary<float, int>[featuresCount];
 			var dimensionIntervals = new IDimensionInterval[featuresCount];
+
+			var distanceMatrixTask = Task.Run(() => Distance.ComputeEuclideanDistanceMatrix(data));
 
 			Parallel.For(
 				fromInclusive: 0,
@@ -125,15 +131,20 @@ namespace Minotaur.Collections.Dataset {
 						sortedUniqueValues: sortedUniqueFeatureValues[featureIndex]);
 				});
 
+			Task.WaitAll(distanceMatrixTask);
+			var distanceMatrix = distanceMatrixTask.Result;
+
 			return new Dataset(
 				featureTypes: featureTypes,
 				data: data,
 				dataTransposed: dataTransposed,
+				distanceMatrix: distanceMatrix,
 				sortedFeatureValues: sortedFeatureValues,
 				sortedUniqueFeatureValues: sortedUniqueFeatureValues,
 				featureValueFrequencies: featureValueFrequencies,
 				labels: labels,
 				dimensionIntervals: dimensionIntervals);
+			;
 		}
 
 		private static IDimensionInterval CreateDimensionInterval(
@@ -329,6 +340,27 @@ namespace Minotaur.Collections.Dataset {
 				throw new ArgumentOutOfRangeException(nameof(featureIndex));
 
 			return _dimensionIntervals[featureIndex];
+		}
+
+		public double[] ComputeDistances(int targetInstanceIndex, Array<int> otherInstancesIndices) {
+			if (!IsInstanceIndexValid(targetInstanceIndex))
+				throw new ArgumentOutOfRangeException(nameof(targetInstanceIndex) + $" must be between [0, {InstanceCount}[.");
+
+			var distances = new double[otherInstancesIndices.Length];
+
+			for (int i = 0; i < otherInstancesIndices.Length; i++) {
+				var rhsIndex = otherInstancesIndices[i];
+
+				if (!IsInstanceIndexValid(rhsIndex))
+					throw new ArgumentException(nameof(otherInstancesIndices) + " contains invalid indices.");
+
+				distances[i] = DistanceMatrix.Get(
+					rowIndex: targetInstanceIndex,
+					columnIndex: rhsIndex);
+			}
+
+			return distances;
+
 		}
 	}
 }

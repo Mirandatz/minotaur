@@ -1,10 +1,11 @@
 namespace Minotaur.Math {
 	using System;
+	using System.Threading.Tasks;
 	using Minotaur.Collections;
 
 	public static class Distance {
 
-		public static double SquaredEuclidean(Array<float> lhs, Array<float> rhs) {
+		public static double Euclidean(Array<float> lhs, Array<float> rhs) {
 			if (lhs.Length != rhs.Length)
 				throw new ArgumentException();
 			if (lhs.Length == 0)
@@ -19,7 +20,23 @@ namespace Minotaur.Math {
 					z: distance);
 			}
 
-			return distance;
+			return Math.Sqrt(distance);
+		}
+
+		public static Matrix<double> ComputeEuclideanDistanceMatrix(Matrix<float> datasetInstaces) {
+			var instanceCount = datasetInstaces.RowCount;
+			var distances = new MutableMatrix<double>(instanceCount, instanceCount);
+
+			Parallel.For(0, instanceCount, i => {
+				var lhs = datasetInstaces.GetRow(i);
+				for (int j = 0; j < instanceCount; j++) {
+					var rhs = datasetInstaces.GetRow(j);
+					var distance = Euclidean(lhs, rhs);
+					distances.Set(i, j, distance);
+				}
+			});
+
+			return distances.ToMatrix();
 		}
 	}
 }

@@ -13,11 +13,12 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 		private readonly int _minimumInstancesToCover;
 
-		public CoverageAwareRuleCreator(Dataset dataset, SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer) {
+		public CoverageAwareRuleCreator(Dataset dataset, SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, int minimumInstancesToCover) {
 			Dataset = dataset;
 			_seedSelector = seedSelector;
 			_boxCreator = boxCreator;
 			_coverageComputer = coverageComputer;
+			_minimumInstancesToCover = minimumInstancesToCover;
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
@@ -47,12 +48,22 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
 
+			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
+
 			// @Consideration: maybe we could try finding another seed?
-			if(secureRectangleCoverage.IndicesOfCoveredInstances.Length < _minimumInstancesToCover) {
+			if (coveredInstancesIndices.Length < _minimumInstancesToCover) {
 				rule = null!;
 				return false;
 			}
 
+			var coveredInstancesDistancesToSeed = Dataset.ComputeDistances(
+				targetInstanceIndex: seedIndex,
+				otherInstancesIndices: coveredInstancesIndices);
+
+			Array.Sort(
+				keys: coveredInstancesIndices,
+				items: coveredInstancesDistancesToSeed);
+			
 			throw new NotImplementedException();
 		}
 	}
