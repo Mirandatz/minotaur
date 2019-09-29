@@ -5,7 +5,7 @@ namespace Minotaur.Math.Dimensions {
 	using Minotaur.ExtensionMethods.SystemArray;
 
 	// @Assumption: intervals can not  be empty.
-	public sealed class CategoricalDimensionInterval: IDimensionInterval {
+	public sealed class CategoricalDimensionInterval: IDimensionInterval, IEquatable<CategoricalDimensionInterval> {
 
 		private readonly float[] _values;
 
@@ -20,14 +20,9 @@ namespace Minotaur.Math.Dimensions {
 
 		public Array<float> SortedValues => Array<float>.Wrap(_values);
 
-		public static CategoricalDimensionInterval FromSortedUniqueValues(
-			int dimensionIndex,
-			Array<float> sortedUniqueValues
-			) {
+		public static CategoricalDimensionInterval FromSortedUniqueValues(int dimensionIndex, Array<float> sortedUniqueValues) {
 			if (dimensionIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex) + " must be >=0.");
-			if (sortedUniqueValues is null)
-				throw new ArgumentNullException(nameof(sortedUniqueValues));
 			if (sortedUniqueValues.Length == 0)
 				throw new ArgumentException(nameof(sortedUniqueValues) + " can't be empty.");
 
@@ -87,8 +82,16 @@ namespace Minotaur.Math.Dimensions {
 			return index >= 0;
 		}
 
-		public override string ToString() {
-			return $"[{string.Join(", ", _values)}]";
+		// Silly overrides 
+		public override string ToString() => $"[{string.Join(", ", _values)}]";
+
+		public override int GetHashCode() => HashCode.Combine(DimensionIndex, Volume);
+
+		public override bool Equals(object? obj) {
+			if (obj is CategoricalDimensionInterval other)
+				return Equals(other);
+			else
+				return false;
 		}
 
 		// Implementation of IEquatable

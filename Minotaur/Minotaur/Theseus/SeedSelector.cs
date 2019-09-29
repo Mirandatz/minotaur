@@ -8,20 +8,19 @@ namespace Minotaur.Theseus {
 
 	public sealed class SeedSelector {
 		public readonly Dataset Dataset;
-		private readonly RuleCoverageComputer _ruleCoverageComputer;
+		private readonly HyperRectangleCreator _boxCreator;
+		private readonly HyperRectangleCoverageComputer _coverageComputer;
 
 		public SeedSelector(
 			HyperRectangleCreator hyperRectangleCreator,
-			RuleCoverageComputer ruleCoverageComputer
+			HyperRectangleCoverageComputer hyperRectangleCoverageComputer
 			) {
-			_ruleCoverageComputer = ruleCoverageComputer ?? throw new ArgumentNullException(nameof(ruleCoverageComputer));
-
+			_boxCreator = hyperRectangleCreator;
+			_coverageComputer = hyperRectangleCoverageComputer;
 			Dataset = hyperRectangleCreator.Dataset;
 		}
 
 		public bool TryFindSeed(Array<Rule> existingRules, out int datasetInstanceIndex) {
-			if (existingRules == null)
-				throw new ArgumentNullException(nameof(existingRules));
 			if (existingRules.ContainsNulls())
 				throw new ArgumentException(nameof(existingRules) + " can't contain nulls.");
 
@@ -33,7 +32,9 @@ namespace Minotaur.Theseus {
 				return true;
 			}
 
-			var totalCoverage = FindCombinedRuleCoverage(existingRules);
+			var rectangles = _boxCreator.FromRules(existingRules);
+			var coverages = _coverageComputer.ComputeCoverages(rectangles);
+			var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
 			var potentialSeeds = totalCoverage.IndicesOfUncoveredInstances;
 
 			if (potentialSeeds.Length == 0) {
@@ -43,16 +44,6 @@ namespace Minotaur.Theseus {
 				datasetInstanceIndex = Random.Choice(potentialSeeds);
 				return true;
 			}
-		}
-
-		private DatasetCoverage FindCombinedRuleCoverage(Array<Rule> existingRules) {
-			var coverages = new DatasetCoverage[existingRules.Length];
-			Parallel.For(0, coverages.Length, i => {
-				coverages[i] = _ruleCoverageComputer.ComputeRuleCoverage(existingRules[i]);
-			});
-
-			var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
-			return totalCoverage;
 		}
 	}
 }

@@ -16,9 +16,8 @@ namespace Minotaur.Theseus {
 			DimensionIntervalCreator dimensionIntervalCreator,
 			IConcurrentCache<Rule, HyperRectangle> cache
 			) {
-			_dimensionIntervalCreator = dimensionIntervalCreator ?? throw new ArgumentNullException(nameof(dimensionIntervalCreator));
-			_cache = cache ?? throw new ArgumentNullException(nameof(cache));
-
+			_dimensionIntervalCreator = dimensionIntervalCreator;
+			_cache = cache;
 			Dataset = dimensionIntervalCreator.Dataset;
 		}
 
@@ -210,9 +209,6 @@ namespace Minotaur.Theseus {
 		}
 
 		public HyperRectangle[] FromRules(Array<Rule> rules) {
-			if (rules is null)
-				throw new ArgumentNullException(nameof(rules));
-
 			var hyperRectangles = new HyperRectangle[rules.Length];
 
 			Parallel.For(0, hyperRectangles.Length, i => {

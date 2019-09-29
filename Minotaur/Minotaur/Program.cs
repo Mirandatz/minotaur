@@ -89,13 +89,6 @@ namespace Minotaur {
 
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
-			var ruleCoverageCache = IConcurrentCacheSelector.Create<Rule, DatasetCoverage>(
-				capacity: settings.RuleCoverageCacheSize);
-
-			var ruleCoverageComputer = new RuleCoverageComputer(
-				dataset: trainDataset,
-				cache: ruleCoverageCache);
-
 			var hyperRectangleCreatorCache = IConcurrentCacheSelector.Create<Rule, HyperRectangle>(
 				capacity: settings.HyperRectangleCacheSize);
 
@@ -103,9 +96,16 @@ namespace Minotaur {
 			  dimensionIntervalCreator: dimensionIntervalCreator,
 			  cache: hyperRectangleCreatorCache);
 
+			var hyperRectangleCoverageCache = IConcurrentCacheSelector.Create<HyperRectangle, DatasetCoverage>(
+				capacity: 32 * 1024);
+
+			var hyperRectangleCoverageComputer = new HyperRectangleCoverageComputer(
+				dataset: trainDataset,
+				cache: hyperRectangleCoverageCache);
+
 			var seedSelector = new SeedSelector(
 				hyperRectangleCreator: hyperRectangleCreator,
-				ruleCoverageComputer: ruleCoverageComputer);
+				hyperRectangleCoverageComputer: hyperRectangleCoverageComputer);
 
 			var ruleCreator = new MinimalRuleCreator(
 				dataset: trainDataset,

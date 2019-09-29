@@ -2,32 +2,37 @@ namespace Minotaur.Math.Dimensions {
 	using System;
 	using Minotaur.Collections;
 
-	public sealed class HyperRectangle: IHyperRectangle {
+	public sealed class HyperRectangle: IHyperRectangle, IEquatable<HyperRectangle> {
 		public int DimensionCount { get; }
 		public Array<IDimensionInterval> Dimensions { get; }
 
-		public HyperRectangle(Array<IDimensionInterval> dimensions) {
-			if (dimensions == null)
-				throw new ArgumentNullException(nameof(dimensions));
+		private readonly int _precomputedHashCode;
 
+		public HyperRectangle(Array<IDimensionInterval> dimensions) {
 			Dimensions = dimensions.Clone();
 			DimensionCount = Dimensions.Length;
 
-			// Checking wether the dimensions are not null and that their
-			// dimensions indices match with their positions in the provided array
+			var hash = new HashCode();
+
+			// Checking whether the dimensions are not null,
+			// and that their dimensions indices match with their positions in the provided array
+			// and computing the hashcode ._.
 			for (int i = 0; i < dimensions.Length; i++) {
 				var dimension = dimensions[i];
 
-				if (dimension == null)
+				if (dimension is null)
 					throw new ArgumentException(nameof(dimension) + " can't contain nulls.");
 
-				var dimensionIndex = dimension.DimensionIndex;
-				if (dimensionIndex != i) {
+				if (dimension.DimensionIndex != i) {
 					throw new ArgumentException($"" +
 						$"There is a mismatch between {nameof(IDimensionInterval.DimensionIndex)}" +
 						$"at position {i}.");
 				}
+
+				hash.Add(dimension);
 			}
+
+			_precomputedHashCode = hash.ToHashCode();
 		}
 
 		public bool Contains(Array<float> point) {
@@ -73,6 +78,20 @@ namespace Minotaur.Math.Dimensions {
 			}
 
 			return true;
+		}
+
+		public override int GetHashCode() => _precomputedHashCode;
+
+		public override bool Equals(object? obj) {
+			if (obj is HyperRectangle other)
+				return Equals(other);
+			else
+				return false;
+		}
+
+		public bool Equals(HyperRectangle other) {
+			// @Danger, this might not work
+			return ReferenceEquals(this, other);
 		}
 	}
 }

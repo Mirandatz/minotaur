@@ -3,7 +3,7 @@ namespace Minotaur.Math.Dimensions {
 	using System.Text;
 
 	// @Assumption: intervals can not  be empty.
-	public sealed class ContinuousDimensionInterval: IDimensionInterval {
+	public sealed class ContinuousDimensionInterval: IDimensionInterval, IEquatable<ContinuousDimensionInterval> {
 
 		public int DimensionIndex { get; }
 		public double Volume { get; }
@@ -43,6 +43,7 @@ namespace Minotaur.Math.Dimensions {
 			Volume = End.Value - Start.Value;
 		}
 
+		// Constructor for lazy programmers
 		public static ContinuousDimensionInterval FromSingleValue(int dimensionIndex, float value) {
 			if (dimensionIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex) + " must be >= 0.");
@@ -56,6 +57,22 @@ namespace Minotaur.Math.Dimensions {
 				dimensionIndex: dimensionIndex,
 				start: bound,
 				end: bound);
+		}
+
+		public bool Contains(ContinuousDimensionInterval other) {
+			var otherStart = other.Start;
+			if (Start.Value > otherStart.Value)
+				return false;
+			if (Start.Value == otherStart.Value && !Start.IsInclusive)
+				return false;
+
+			var otherEnd = other.End;
+			if (End.Value < otherEnd.Value)
+				return false;
+			if (End.Value == otherEnd.Value && !End.IsInclusive)
+				return false;
+
+			return true;
 		}
 
 		public bool Contains(float value) {
@@ -72,6 +89,7 @@ namespace Minotaur.Math.Dimensions {
 			return false;
 		}
 
+		// Silly overrides
 		public override string ToString() {
 			var builder = new StringBuilder();
 			if (Start.IsInclusive)
@@ -91,6 +109,15 @@ namespace Minotaur.Math.Dimensions {
 			return builder.ToString();
 		}
 
+		public override int GetHashCode() => HashCode.Combine(DimensionIndex, Start, End);
+
+		public override bool Equals(object? obj) {
+			if (obj is ContinuousDimensionInterval other)
+				return Equals(other);
+			else
+				return false;
+		}
+
 		// Implementation of IEquatable
 		public bool Equals(IDimensionInterval dimensionInterval) {
 			if (dimensionInterval is ContinuousDimensionInterval other)
@@ -105,22 +132,6 @@ namespace Minotaur.Math.Dimensions {
 				Volume == other.Volume &&
 				Start.Equals(other.Start) &&
 				End.Equals(other.End);
-		}
-
-		public bool Contains(ContinuousDimensionInterval other) {
-			var otherStart = other.Start;
-			if (Start.Value > otherStart.Value)
-				return false;
-			if (Start.Value == otherStart.Value && !Start.IsInclusive)
-				return false;
-
-			var otherEnd = other.End;
-			if (End.Value < otherEnd.Value)
-				return false;
-			if (End.Value == otherEnd.Value && !End.IsInclusive)
-				return false;
-
-			return true;
 		}
 	}
 }

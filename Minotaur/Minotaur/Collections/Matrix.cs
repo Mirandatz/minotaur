@@ -1,7 +1,6 @@
 namespace Minotaur.Collections {
 	using System;
 
-
 	/// <remarks>This matrix is row major.</remarks>
 	public sealed class Matrix<T> {
 

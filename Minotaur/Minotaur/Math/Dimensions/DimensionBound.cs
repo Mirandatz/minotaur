@@ -37,6 +37,16 @@ namespace Minotaur.Math.Dimensions {
 				isInclusive: false);
 		}
 
+		// Silly overrides
+		public override int GetHashCode() => HashCode.Combine(Value, IsInclusive);
+
+		public override bool Equals(object? obj) {
+			if (obj is DimensionBound other)
+				return Equals(other);
+			else
+				return false;
+		}
+
 		public bool Equals(DimensionBound other) {
 			return
 				Value == other.Value &&
