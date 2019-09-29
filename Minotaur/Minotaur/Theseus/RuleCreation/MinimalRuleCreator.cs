@@ -1,13 +1,11 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
-	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
-	using Minotaur.Theseus.TestCreation;
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class MinimalRuleCreator: IRuleCreator {

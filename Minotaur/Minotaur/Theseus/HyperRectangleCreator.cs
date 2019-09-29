@@ -1,6 +1,5 @@
 namespace Minotaur.Theseus {
 	using System;
-	using System.Linq;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
@@ -98,41 +97,43 @@ namespace Minotaur.Theseus {
 			Array<HyperRectangle> existingRectangles
 			) {
 
-			var possibleValues = Dataset
-				.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex)
-				.ToHashSet();
+			throw new NotImplementedException();
 
-			for (int i = 0; i < existingRectangles.Length; i++) {
-				var otherRectangle = existingRectangles[i];
+			//var possibleValues = Dataset
+			//	.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex)
+			//	.ToHashSet();
 
-				// In the lords name, the most basic of sanity checks
-				//if (otherRectangle.Contains(seed))
-				//	throw new InvalidOperationException();
+			//for (int i = 0; i < existingRectangles.Length; i++) {
+			//	var otherRectangle = existingRectangles[i];
 
-				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
-					target: mutable,
-					other: otherRectangle,
-					dimensionToSkip: dimensionIndex);
+			//	// In the lords name, the most basic of sanity checks
+			//	//if (otherRectangle.Contains(seed))
+			//	//	throw new InvalidOperationException();
 
-				var otherDimension = (CategoricalDimensionInterval) otherRectangle.GetDimensionInterval(dimensionIndex);
+			//	var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
+			//		target: mutable,
+			//		other: otherRectangle,
+			//		dimensionToSkip: dimensionIndex);
 
-				if (intersects)
-					possibleValues.ExceptWith(otherDimension.SortedValues);
+			//	var otherDimension = (CategoricalDimensionInterval) otherRectangle.GetDimensionInterval(dimensionIndex);
 
-				// It's not possible to enlarge the dimension
-				if (possibleValues.Count == 0)
-					return;
-			}
+			//	if (intersects)
+			//		possibleValues.ExceptWith(otherDimension.SortedValues);
 
-			var sortedPossibleValues = possibleValues
-				.OrderBy(v => v)
-				.ToArray();
+			//	// It's not possible to enlarge the dimension
+			//	if (possibleValues.Count == 0)
+			//		return;
+			//}
 
-			var enlargedDimension = CategoricalDimensionInterval.FromSortedUniqueValues(
-				dimensionIndex: dimensionIndex,
-				sortedUniqueValues: sortedPossibleValues);
+			//var sortedPossibleValues = possibleValues
+			//	.OrderBy(v => v)
+			//	.ToArray();
 
-			mutable.SetDimensionInterval(enlargedDimension);
+			//var enlargedDimension = CategoricalDimensionInterval.FromSortedUniqueValues(
+			//	dimensionIndex: dimensionIndex,
+			//	sortedUniqueValues: sortedPossibleValues);
+
+			//mutable.SetDimensionInterval(enlargedDimension);
 		}
 
 		private void EnlargeContinuousDimension(

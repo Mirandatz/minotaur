@@ -1,12 +1,10 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 	using Minotaur.Collections;
-	using Newtonsoft.Json;
 
-	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class CategoricalFeatureTest: IFeatureTest, IEquatable<CategoricalFeatureTest> {
 
-		[JsonProperty] public int FeatureIndex { get; }
+		public int FeatureIndex { get; }
 
 		public int TestSize => 1;
 
@@ -14,11 +12,10 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		/// We're using floats because the .csv parser
 		/// only handles floats.
 		/// </remarks>
-		[JsonProperty] public readonly float Value;
+		public readonly float Value;
 
 		private readonly int _precomputedHashCode;
 
-		[JsonConstructor]
 		public CategoricalFeatureTest(int featureIndex, float value) {
 			if (featureIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be >= 0");

@@ -2,7 +2,6 @@ namespace Minotaur {
 	using System;
 	using System.ComponentModel.DataAnnotations;
 	using McMaster.Extensions.CommandLineUtils;
-	using Newtonsoft.Json;
 
 	public sealed class ProgramSettings {
 

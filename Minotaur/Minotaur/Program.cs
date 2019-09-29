@@ -1,6 +1,7 @@
 namespace Minotaur {
 	using System;
 	using System.Collections.Generic;
+	using System.Text.Json;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using McMaster.Extensions.CommandLineUtils;
@@ -10,15 +11,12 @@ namespace Minotaur {
 	using Minotaur.GeneticAlgorithms.Metrics;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
-	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.IndividualCreation;
 	using Minotaur.Theseus.IndividualMutation;
 	using Minotaur.Theseus.RuleCreation;
-	using Minotaur.Theseus.TestCreation;
-	using Newtonsoft.Json;
 
 	public static class Program {
 
@@ -179,7 +177,7 @@ namespace Minotaur {
 				fittestSelector: fittestSelector,
 				consistencyChecker: consistencyChecker,
 				maximumGenerations: settings.MaximumGenerations);
-			
+
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 			Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
 
@@ -188,7 +186,12 @@ namespace Minotaur {
 
 		private static void PrintSettings(ProgramSettings settings) {
 			Console.WriteLine("Running MINOTAUR with settings:");
-			var serialized = JsonConvert.SerializeObject(settings, Formatting.Indented);
+
+			var serializationOptions = new JsonSerializerOptions() {
+				WriteIndented = true
+			};
+
+			var serialized = JsonSerializer.Serialize(settings, serializationOptions);
 			Console.WriteLine(serialized);
 			Console.WriteLine();
 		}

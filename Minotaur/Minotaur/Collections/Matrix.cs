@@ -1,23 +1,19 @@
 namespace Minotaur.Collections {
 	using System;
-	using Newtonsoft.Json;
+
 
 	/// <remarks>This matrix is row major.</remarks>
-	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class Matrix<T> {
 
-		[JsonProperty] public readonly int ColumnCount;
-
-		[JsonProperty] public readonly int RowCount;
-
-		[JsonProperty] public readonly Array<T> FlattenedValues;
+		public readonly int ColumnCount;
+		public readonly int RowCount;
+		public readonly Array<T> FlattenedValues;
 
 		// We store the values in two formats,
 		// rows of values and flattened values,
 		// for performance reasons
 		public readonly Array<Array<T>> Rows;
 
-		[JsonConstructor]
 		public Matrix(int rowCount, int columnCount, T[] values) {
 			if (columnCount < 0)
 				throw new ArgumentOutOfRangeException(nameof(columnCount) + " must be equal to or greater than zero.");

@@ -3,16 +3,13 @@ namespace Minotaur.GeneticAlgorithms {
 	using System.Collections;
 	using System.Collections.Generic;
 	using Minotaur.ExtensionMethods.SystemArray;
-	using Newtonsoft.Json;
 
-	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class Fitness: IEquatable<Fitness>, IReadOnlyList<float> {
 
-		[JsonProperty] private readonly float[] _objectives;
+		private readonly float[] _objectives;
 
 		private readonly int _precomputedHashCode;
 
-		[JsonConstructor]
 		private Fitness(float[] objectives) {
 			if (objectives.Length == 0)
 				throw new ArgumentException(nameof(objectives) + " can't be empty");

@@ -1,20 +1,17 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 	using Minotaur.Collections;
-	using Newtonsoft.Json;
 
-	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class ContinuousFeatureTest: IFeatureTest, IEquatable<ContinuousFeatureTest> {
 
-		[JsonProperty] public readonly float LowerBound;
-		[JsonProperty] public readonly float UpperBound;
-		[JsonProperty] public int FeatureIndex { get; }
+		public readonly float LowerBound;
+		public readonly float UpperBound;
+		public int FeatureIndex { get; }
 
 		public int TestSize => 2;
 
 		private readonly int _precomputedHashCode;
 
-		[JsonConstructor]
 		public ContinuousFeatureTest(int featureIndex, float lowerBound, float upperBound) {
 			if (featureIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be >= 0");

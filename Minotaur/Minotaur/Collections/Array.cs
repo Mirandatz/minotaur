@@ -4,20 +4,17 @@ namespace Minotaur.Collections {
 	using System.Collections.Generic;
 	using System.Text;
 	using Minotaur.ExtensionMethods.SystemArray;
-	using Newtonsoft.Json;
 
-	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class Array<T>: IEnumerable<T> {
 
-		[JsonProperty] public readonly int Length;
-		[JsonProperty] private readonly T[] _items;
+		public readonly int Length;
+		private readonly T[] _items;
 
 		private Array(T[] items) {
 			_items = items;
 			Length = _items.Length;
 		}
 
-		[JsonConstructor]
 		private Array(int length, T[] items) {
 			Length = length;
 			_items = items;

@@ -1,14 +1,11 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 	using Minotaur.Collections;
-	using Newtonsoft.Json;
 
-	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class NullFeatureTest: IFeatureTest, IEquatable<NullFeatureTest> {
 
 		public int TestSize => 0;
 
-		[JsonConstructor]
 		public NullFeatureTest(int featureIndex) {
 			if (featureIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be  >= 0");
@@ -16,7 +13,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			FeatureIndex = featureIndex;
 		}
 
-		[JsonProperty] public int FeatureIndex { get; }
+		public int FeatureIndex { get; }
 
 		public bool Matches(Array<float> instance) => true;
 

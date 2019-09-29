@@ -3,7 +3,6 @@ namespace Minotaur {
 	using System.Linq;
 	using System.Text;
 	using Minotaur.Collections;
-	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms;
 	using Minotaur.GeneticAlgorithms.Population;
 

@@ -3,9 +3,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 	using System.Linq;
 	using System.Text;
 	using Minotaur.Collections;
-	using Newtonsoft.Json;
 
-	[JsonObject(MemberSerialization.OptIn)]
 	public sealed class Rule: IEquatable<Rule> {
 		public const int MinimumTestCount = 1;
 
@@ -15,12 +13,11 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		/// Contains N references to tests, with N == dataset.FeatureCount.
 		/// The tests are sorted by the feature index they are testing.
 		/// </summary>
-		[JsonProperty] public readonly Array<IFeatureTest> Tests;
-		[JsonProperty] public readonly Array<bool> PredictedLabels;
+		public readonly Array<IFeatureTest> Tests;
+		public readonly Array<bool> PredictedLabels;
 
 		private readonly int _precomputedHashCode;
 
-		[JsonConstructor]
 		public Rule(Array<IFeatureTest> tests, Array<bool> predictedLabels) {
 			Tests = tests;
 			PredictedLabels = predictedLabels;
