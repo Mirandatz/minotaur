@@ -30,7 +30,7 @@ namespace Minotaur.Theseus {
 			int dimensionToSkip
 			) {
 #if DEBUG
-			if (!target.IsCompatibleWith(other)) {
+			if (!HyperRectangleCompatibilityChecker.AreCompatible(lhs: target, rhs: other)) {
 				throw new ArgumentException(
 					$"{nameof(target)} " +
 					$"must be compatible (i.e. same number and types of dimensions) " +
