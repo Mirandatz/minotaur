@@ -5,19 +5,23 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math;
+	using Minotaur.Math.Dimensions;
+	using Minotaur.Theseus.TestCreation;
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
 		public Dataset Dataset { get; }
 		private readonly SeedSelector _seedSelector;
 		private readonly HyperRectangleCreator _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
+		private readonly MaximalTestCreator _testCreator;
 		private readonly int _minimumInstancesToCover;
 
-		public CoverageAwareRuleCreator(Dataset dataset, SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, int minimumInstancesToCover) {
-			Dataset = dataset;
+		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, MaximalTestCreator testCreator, int minimumInstancesToCover) {
+			Dataset = _seedSelector.Dataset;
 			_seedSelector = seedSelector;
 			_boxCreator = boxCreator;
 			_coverageComputer = coverageComputer;
+			_testCreator = testCreator;
 			_minimumInstancesToCover = minimumInstancesToCover;
 		}
 
@@ -63,7 +67,11 @@ namespace Minotaur.Theseus.RuleCreation {
 			Array.Sort(
 				keys: coveredInstancesIndices,
 				items: coveredInstancesDistancesToSeed);
-			
+
+			throw new NotImplementedException();
+		}
+
+		private Rule FromHyperRectangle(HyperRectangle hyperRectangle) {
 			throw new NotImplementedException();
 		}
 	}
