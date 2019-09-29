@@ -2,9 +2,10 @@ namespace Minotaur.Math.Dimensions {
 	using System;
 	using Minotaur.Collections;
 
-	public sealed class HyperRectangle: IHyperRectangle, IEquatable<HyperRectangle> {
-		public int DimensionCount { get; }
-		public Array<IDimensionInterval> Dimensions { get; }
+	public sealed class HyperRectangle: IEquatable<HyperRectangle> {
+
+		public readonly int DimensionCount;
+		public readonly Array<IDimensionInterval> Dimensions;
 
 		private readonly int _precomputedHashCode;
 
@@ -57,41 +58,12 @@ namespace Minotaur.Math.Dimensions {
 			return Dimensions[dimensionIndex];
 		}
 
-		public bool IsCompatibleWith(IHyperRectangle other) {
-			if (other is null)
-				throw new ArgumentNullException(nameof(other));
-
-			if (this.DimensionCount != other.DimensionCount)
-				return false;
-
-			var dimensionCount = Dimensions.Length;
-
-			for (int i = 0; i < dimensionCount; i++) {
-				var lhs = GetDimensionInterval(dimensionIndex: i);
-				var rhs = other.GetDimensionInterval(dimensionIndex: i);
-
-				if (lhs.DimensionIndex != rhs.DimensionIndex)
-					return false;
-
-				if (lhs.GetType() != rhs.GetType())
-					return false;
-			}
-
-			return true;
-		}
-
 		public override int GetHashCode() => _precomputedHashCode;
 
-		public override bool Equals(object? obj) {
-			if (obj is HyperRectangle other)
-				return Equals(other);
-			else
-				return false;
-		}
+		// @Danger, this might now work
+		public override bool Equals(object? obj) => ReferenceEquals(this, obj);
 
-		public bool Equals(HyperRectangle other) {
-			// @Danger, this might not work
-			return ReferenceEquals(this, other);
-		}
+		// @Danger, this might not work
+		public bool Equals(HyperRectangle other) => ReferenceEquals(this, other);
 	}
 }
