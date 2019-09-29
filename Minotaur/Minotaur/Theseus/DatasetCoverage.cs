@@ -5,7 +5,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.ExtensionMethods.SystemArray;
 
-	public sealed class RuleCoverage {
+	public sealed class DatasetCoverage {
 		public readonly Dataset Dataset;
 		public readonly Array<bool> InstancesCovered;
 		public readonly Array<int> IndicesOfCoveredInstances;
@@ -13,9 +13,9 @@ namespace Minotaur.Theseus {
 
 		public float CoverageRatio => ((float) IndicesOfCoveredInstances.Length) / InstancesCovered.Length;
 
-		public RuleCoverage(Dataset dataset, Array<bool> instancesCovered) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
-			InstancesCovered = instancesCovered ?? throw new ArgumentNullException(nameof(instancesCovered));
+		public DatasetCoverage(Dataset dataset, Array<bool> instancesCovered) {
+			Dataset = dataset;
+			InstancesCovered = instancesCovered;
 
 			// @Improve performance
 			var covered = new List<int>(capacity: instancesCovered.Length);
@@ -32,7 +32,7 @@ namespace Minotaur.Theseus {
 			IndicesOfUncoveredInstances = uncovered.ToArray();
 		}
 
-		public static RuleCoverage CombineCoveragesBinaryOr(Array<RuleCoverage> coverages) {
+		public static DatasetCoverage CombineCoveragesBinaryOr(Array<DatasetCoverage> coverages) {
 			if (coverages == null)
 				throw new ArgumentNullException(nameof(coverages));
 			if (coverages.ContainsNulls())
@@ -51,13 +51,13 @@ namespace Minotaur.Theseus {
 			for (int i = 0; i < coverages.Length; i++)
 				BinaryOr(finalCoverage, coverages[i]);
 
-			return new RuleCoverage(
+			return new DatasetCoverage(
 				dataset: coverages[0].Dataset,
 				instancesCovered: finalCoverage);
 
 		}
 
-		private static void BinaryOr(bool[] finalCoverage, RuleCoverage ruleCoverage) {
+		private static void BinaryOr(bool[] finalCoverage, DatasetCoverage ruleCoverage) {
 			var lhs = finalCoverage;
 			var rhs = ruleCoverage.InstancesCovered;
 

@@ -89,7 +89,7 @@ namespace Minotaur {
 
 			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
-			var ruleCoverageCache = IConcurrentCacheSelector.Create<Rule, RuleCoverage>(
+			var ruleCoverageCache = IConcurrentCacheSelector.Create<Rule, DatasetCoverage>(
 				capacity: settings.RuleCoverageCacheSize);
 
 			var ruleCoverageComputer = new RuleCoverageComputer(

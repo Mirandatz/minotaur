@@ -45,13 +45,13 @@ namespace Minotaur.Theseus {
 			}
 		}
 
-		private RuleCoverage FindCombinedRuleCoverage(Array<Rule> existingRules) {
-			var coverages = new RuleCoverage[existingRules.Length];
+		private DatasetCoverage FindCombinedRuleCoverage(Array<Rule> existingRules) {
+			var coverages = new DatasetCoverage[existingRules.Length];
 			Parallel.For(0, coverages.Length, i => {
 				coverages[i] = _ruleCoverageComputer.ComputeRuleCoverage(existingRules[i]);
 			});
 
-			var totalCoverage = RuleCoverage.CombineCoveragesBinaryOr(coverages);
+			var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
 			return totalCoverage;
 		}
 	}

@@ -5,14 +5,14 @@ namespace Minotaur.Theseus {
 
 	public sealed class RuleCoverageComputer {
 		private readonly Dataset _dataset;
-		private readonly IConcurrentCache<Rule, RuleCoverage> _cache;
+		private readonly IConcurrentCache<Rule, DatasetCoverage> _cache;
 
-		public RuleCoverageComputer(Dataset dataset, IConcurrentCache<Rule, RuleCoverage> cache) {
+		public RuleCoverageComputer(Dataset dataset, IConcurrentCache<Rule, DatasetCoverage> cache) {
 			_dataset = dataset;
 			_cache = cache;
 		}
 
-		public RuleCoverage ComputeRuleCoverage(Rule rule) {
+		public DatasetCoverage ComputeRuleCoverage(Rule rule) {
 			if (_cache.TryGet(rule, out var ruleCoverage)) {
 				return ruleCoverage;
 			} else {
@@ -22,7 +22,7 @@ namespace Minotaur.Theseus {
 			}
 		}
 
-		private RuleCoverage UncachedComputeRuleCoverage(Rule rule) {
+		private DatasetCoverage UncachedComputeRuleCoverage(Rule rule) {
 			var instanceCount = _dataset.InstanceCount;
 			var instaceIsCovered = new bool[instanceCount];
 
@@ -31,7 +31,7 @@ namespace Minotaur.Theseus {
 				instaceIsCovered[i] = rule.Covers(instanceData);
 			}
 
-			return new RuleCoverage(
+			return new DatasetCoverage(
 				dataset: _dataset,
 				instancesCovered: instaceIsCovered);
 		}
