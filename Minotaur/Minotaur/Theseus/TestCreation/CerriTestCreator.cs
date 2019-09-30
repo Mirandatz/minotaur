@@ -24,25 +24,27 @@ namespace Minotaur.Theseus.TestCreation {
 			if (!Dataset.IsInstanceIndexValid(datasetSeedInstanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(datasetSeedInstanceIndex));
 
-			return (Dataset.GetFeatureType(featureIndex)) switch
-			{
-				FeatureType.Categorical => FromCategorical(
-				featureIndex: featureIndex,
-				datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-				boundingBox: boundingBox),
+			throw new NotImplementedException();
 
-				FeatureType.CategoricalButTriviallyValued => FromCategorical(
-				featureIndex: featureIndex,
-				datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-				boundingBox: boundingBox),
+			//return (Dataset.GetFeatureType(featureIndex)) switch
+			//{
+			//	FeatureType.Categorical => FromCategorical(
+			//	featureIndex: featureIndex,
+			//	datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			//	boundingBox: boundingBox),
 
-				FeatureType.Continuous => FromContinuous(
-					featureIndex: featureIndex,
-					datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-					boundingBox: boundingBox),
+			//	FeatureType.CategoricalButTriviallyValued => FromCategorical(
+			//	featureIndex: featureIndex,
+			//	datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			//	boundingBox: boundingBox),
 
-				_ => throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}."),
-			};
+			//	FeatureType.Continuous => FromContinuous(
+			//		featureIndex: featureIndex,
+			//		datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			//		boundingBox: boundingBox),
+
+			//	_ => throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}."),
+			//};
 		}
 
 		private CategoricalFeatureTest FromCategorical(

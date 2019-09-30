@@ -39,54 +39,56 @@ namespace Minotaur.Theseus {
 				seed: seed,
 				featureTypes: Dataset.FeatureTypes);
 
-			for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
-				var dimensionIndex = dimensionExpansionOrder[i];
+			throw new NotImplementedException();
 
-				switch (Dataset.GetFeatureType(dimensionIndex)) {
+			//for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
+			//	var dimensionIndex = dimensionExpansionOrder[i];
+				//switch (Dataset.GetFeatureType(dimensionIndex)) {
 
-				case FeatureType.Categorical:
-				EnlargeCategoricalDimension(
-					seed: seed,
-					mutable: mutable,
-					dimensionIndex: dimensionIndex,
-					existingRectangles: existingRectangles);
-				break;
+				//case FeatureType.Categorical:
+				//EnlargeCategoricalDimension(
+				//	seed: seed,
+				//	mutable: mutable,
+				//	dimensionIndex: dimensionIndex,
+				//	existingRectangles: existingRectangles);
+				//break;
 
-				case FeatureType.CategoricalButTriviallyValued:
-				// Ain't nothing to do, bruh... There is a single
-				// value in the dataset... Whata pain...
-				break;
+				//case FeatureType.CategoricalButTriviallyValued:
+				//// Ain't nothing to do, bruh... There is a single
+				//// value in the dataset... Whata pain...
+				//break;
 
-				case FeatureType.Continuous:
-				EnlargeContinuousDimension(
-					seed: seed,
-					mutable: mutable,
-					dimensionIndex: dimensionIndex,
-					existingRectangles: existingRectangles);
-				break;
+				//case FeatureType.Continuous:
+				//EnlargeContinuousDimension(
+				//	seed: seed,
+				//	mutable: mutable,
+				//	dimensionIndex: dimensionIndex,
+				//	existingRectangles: existingRectangles);
+				//break;
 
-				case FeatureType.ContinuousButTriviallyValued:
-				EnlargeContinuousDimension(
-					seed: seed,
-					mutable: mutable,
-					dimensionIndex: dimensionIndex,
-					existingRectangles: existingRectangles);
-				break;
+				//case FeatureType.ContinuousButTriviallyValued:
+				//EnlargeContinuousDimension(
+				//	seed: seed,
+				//	mutable: mutable,
+				//	dimensionIndex: dimensionIndex,
+				//	existingRectangles: existingRectangles);
+				//break;
 
-				default:
-				throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
-				}
-			}
+				//default:
+				//throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
+				//}
+			//}
 
-			return mutable.ToHyperRectangle();
+			//return mutable.ToHyperRectangle();
 		}
 
 		private HyperRectangle CreateMaximalRectangle() {
-			var dimensions = new IDimensionInterval[Dataset.FeatureCount];
-			for (int i = 0; i < dimensions.Length; i++)
-				dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimensionInterval(dimensionIndex: i);
+			throw new NotImplementedException();
+			//var dimensions = new IDimensionInterval[Dataset.FeatureCount];
+			//for (int i = 0; i < dimensions.Length; i++)
+			//	dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimensionInterval(dimensionIndex: i);
 
-			return new HyperRectangle(dimensions);
+			//return new HyperRectangle(dimensions);
 		}
 
 		private void EnlargeCategoricalDimension(

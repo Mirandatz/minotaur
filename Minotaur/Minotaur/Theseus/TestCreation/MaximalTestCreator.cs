@@ -14,23 +14,7 @@ namespace Minotaur.Theseus.TestCreation {
 		}
 
 		public IFeatureTest FromDimensionInterval(IDimensionInterval dimensionInterval) {
-			return dimensionInterval switch
-			{
-				CategoricalDimensionInterval cat => FromCategorical(cat),
-				ContinuousDimensionInterval cont => FromContinuous(cont),
-
-				_ => throw new ArgumentException()
-			};
-		}
-
-		private IFeatureTest FromCategorical(CategoricalDimensionInterval cat) {
-			// @Todo: add safety (sanity?) checks
-			var possibleValues = cat.SortedValues;
-			var selectedValue = Random.Choice(possibleValues);
-
-			return new CategoricalFeatureTest(
-				featureIndex: cat.DimensionIndex,
-				value: selectedValue);
+			throw new NotImplementedException();
 		}
 
 		private IFeatureTest FromContinuous(ContinuousDimensionInterval cont) {

@@ -56,10 +56,10 @@ namespace Minotaur.Theseus {
 			// Creating them scopes just to make just I'm not using
 			// wrong variables... They have such similar names, nom saying?
 			{
-				var lhsCat = lhs as CategoricalDimensionInterval;
-				var rhsCat = rhs as CategoricalDimensionInterval;
+				var lhsCat = lhs as BinaryDimensionInterval;
+				var rhsCat = rhs as BinaryDimensionInterval;
 				if (!(lhsCat is null) && !(rhsCat is null))
-					return IntersectsCategorical(lhsCat, rhsCat);
+					throw new NotImplementedException();
 			}
 
 			{
@@ -70,24 +70,6 @@ namespace Minotaur.Theseus {
 			}
 
 			throw new InvalidOperationException("This line should never be reached.");
-		}
-
-		private static bool IntersectsCategorical(CategoricalDimensionInterval lhsCat, CategoricalDimensionInterval rhsCat) {
-			var lhsValues = lhsCat.SortedValues.AsSpan();
-			var rhsValues = rhsCat.SortedValues.AsSpan();
-
-			if (lhsValues.IsEmpty || rhsValues.IsEmpty)
-				return false;
-
-			// @Improve performance
-			for (int i = 0; i < lhsValues.Length; i++) {
-				var featureValue = lhsValues[i];
-				var indexOnRhs = rhsValues.BinarySearch(featureValue);
-				if (indexOnRhs >= 0)
-					return true;
-			}
-
-			return false;
 		}
 
 		private static bool IntersectsContinuous(ContinuousDimensionInterval lhsCont, ContinuousDimensionInterval rhsCont) {

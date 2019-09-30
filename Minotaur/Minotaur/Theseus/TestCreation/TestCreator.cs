@@ -5,7 +5,6 @@ namespace Minotaur.Theseus.TestCreation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
-	using Minotaur.Random;
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class TestCreator: ITestCreator {
@@ -13,7 +12,7 @@ namespace Minotaur.Theseus.TestCreation {
 		public Dataset Dataset { get; }
 
 		public TestCreator(Dataset dataset) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			Dataset = dataset;
 		}
 
 		// @Remarks: any IFeatureTests created by this method
@@ -26,48 +25,43 @@ namespace Minotaur.Theseus.TestCreation {
 			if (!Dataset.IsDimesionIntervalValid(dimensionInterval))
 				throw new ArgumentOutOfRangeException(nameof(dimensionInterval));
 
-			switch (dimensionInterval) {
+			return dimensionInterval switch
+			{
+				BinaryDimensionInterval cat => throw new NotImplementedException(),
+				ContinuousDimensionInterval cont => FromContinuous(cont),
 
-			case CategoricalDimensionInterval cat:
-			return FromCategorical(cat);
-
-			case ContinuousDimensionInterval cont:
-			return FromContinuous(cont);
-
-			default:
-			throw new InvalidOperationException(
-				$"Unknown / unsupported implementation of {nameof(IDimensionInterval)}.");
-			}
+				_ => throw CommonExceptions.UnknownDimensionIntervalImplementation
+			};
 		}
 
 		// @Remarks: Any CategoricalFeatureTest created by this method
 		// will use feature values _from the dataset_ as "target values" for the test.
 		// That means that values that appear more often in the dataset
 		// have a higher chance of being used. 
-		private CategoricalFeatureTest FromCategorical(CategoricalDimensionInterval cat) {
-			var featureIndex = cat.DimensionIndex;
+		//private CategoricalFeatureTest FromCategorical(CategoricalDimensionInterval cat) {
+		//	var featureIndex = cat.DimensionIndex;
 
-			var possibleValues = cat.SortedValues;
-			var weights = new int[possibleValues.Length];
+		//	var possibleValues = cat.SortedValues;
+		//	var weights = new int[possibleValues.Length];
 
-			for (int i = 0; i < weights.Length; i++) {
-				var frequency = Dataset.GetFeatureValueFrequency(
-					featureIndex: featureIndex,
-					featureValue: possibleValues[i]);
+		//	for (int i = 0; i < weights.Length; i++) {
+		//		var frequency = Dataset.GetFeatureValueFrequency(
+		//			featureIndex: featureIndex,
+		//			featureValue: possibleValues[i]);
 
-				weights[i] = frequency;
-			}
+		//		weights[i] = frequency;
+		//	}
 
-			var chooser = BiasedOptionChooser<float>.Create(
-				options: possibleValues,
-				weights: weights);
+		//	var chooser = BiasedOptionChooser<float>.Create(
+		//		options: possibleValues,
+		//		weights: weights);
 
-			var value = chooser.GetRandomChoice();
+		//	var value = chooser.GetRandomChoice();
 
-			return new CategoricalFeatureTest(
-				featureIndex: cat.DimensionIndex,
-				value: value);
-		}
+		//	return new CategoricalFeatureTest(
+		//		featureIndex: cat.DimensionIndex,
+		//		value: value);
+		//}
 
 		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cont) {
 			var dimensionIndex = cont.DimensionIndex;

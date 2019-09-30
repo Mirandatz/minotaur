@@ -6,17 +6,11 @@ namespace Minotaur.Collections.Dataset {
 	public static class DatasetLoader {
 
 		private static MutableMatrix<float> LoadData(string filename) {
-			if (filename == null)
-				throw new ArgumentNullException(nameof(filename));
-
 			var csv = File.ReadAllText(filename);
 			return CsvParser.ParseCsv(csv);
 		}
 
 		private static MutableMatrix<bool> LoadLabels(string filename) {
-			if (filename == null)
-				throw new ArgumentNullException(nameof(filename));
-
 			var csv = File.ReadAllText(filename);
 			var labelsAsFloats = CsvParser.ParseCsv(csv);
 			var labels = labelsAsFloats.CastValues(f => {
@@ -24,16 +18,13 @@ namespace Minotaur.Collections.Dataset {
 					return false;
 				if (f == 1)
 					return true;
-				throw new InvalidOperationException("Label's can only be 0 or 1");
+				throw new InvalidOperationException("Label's can only be 0 or 1.");
 			});
 
 			return labels;
 		}
 
 		private static FeatureType[] LoadFeatureTypes(string filename) {
-			if (filename == null)
-				throw new ArgumentNullException(nameof(filename));
-
 			var lines = File.ReadAllLines(filename);
 			var featureTypes = new FeatureType[lines.Length];
 
@@ -49,16 +40,13 @@ namespace Minotaur.Collections.Dataset {
 				.Trim()
 				.ToLower();
 
-			switch (sanitizedText) {
-			case "categorical":
-			return FeatureType.Categorical;
+			return sanitizedText switch
+			{
+				"binary" => FeatureType.Binary,
+				"continuous" => FeatureType.Continuous,
 
-			case "continuous":
-			return FeatureType.Continuous;
-
-			default:
-			throw new InvalidOperationException($"Error on line {i}: unable to parse {originalText}");
-			}
+				_ => throw new InvalidOperationException($"Error on line {i}: unable to parse {originalText}"),
+			};
 		}
 
 		public static (Dataset TrainDataset, Dataset TestDataset) LoadDatasets(
@@ -68,17 +56,6 @@ namespace Minotaur.Collections.Dataset {
 			string testLabelsFilename,
 			string featureTypesFilename
 			) {
-			if (trainDataFilename is null)
-				throw new ArgumentNullException(nameof(trainDataFilename));
-			if (trainLabelsFilename is null)
-				throw new ArgumentNullException(nameof(trainLabelsFilename));
-			if (testDataFilename is null)
-				throw new ArgumentNullException(nameof(testDataFilename));
-			if (testLabelsFilename is null)
-				throw new ArgumentNullException(nameof(testLabelsFilename));
-			if (featureTypesFilename is null)
-				throw new ArgumentNullException(nameof(featureTypesFilename));
-
 			Console.Write("Loading datasets... ");
 
 			var trainData = Task.Run(() => DatasetLoader.LoadData(trainDataFilename));
@@ -101,26 +78,14 @@ namespace Minotaur.Collections.Dataset {
 			var trainDataset = Dataset.CreateFromMutableObjects(
 				mutableFeatureTypes: featureTypes.Result,
 				mutableData: trainData.Result,
-				mutableLabels: trainLabels.Result);
+				mutableLabels: trainLabels.Result,
+				isTrainDataset: true);
 
 			var testDataset = Dataset.CreateFromMutableObjects(
 				mutableFeatureTypes: featureTypes.Result,
 				mutableData: testData.Result,
-				mutableLabels: testLabels.Result);
-
-			Console.Write("Checking if TrainDataset is usable... ");
-			{
-				var trainFeatureTypes = trainDataset.FeatureTypes;
-				for (int i = 0; i < trainFeatureTypes.Length; i++) {
-					if (trainFeatureTypes[i] == FeatureType.ContinuousButTriviallyValued) {
-						throw new InvalidOperationException(
-							"The train dataset cannot contain continuous features" +
-							" which all instances have the same value.");
-					}
-				}
-			}
-			Console.WriteLine("Yep, it is.");
-
+				mutableLabels: testLabels.Result,
+				isTrainDataset: false);
 
 			Console.Write("Checking if TrainDataset and TestDataset are compatible... ");
 			if (trainDataset.FeatureCount != testDataset.FeatureCount)
@@ -132,51 +97,11 @@ namespace Minotaur.Collections.Dataset {
 				var trainFeatureType = trainDataset.GetFeatureType(i);
 				var testFeatureType = testDataset.GetFeatureType(i);
 
-				switch (trainFeatureType) {
-
-				case FeatureType.Categorical:
-				if (testFeatureType == FeatureType.Categorical ||
-					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
-					continue;
-				} else {
+				if (trainFeatureType != testFeatureType)
 					throw new InvalidOperationException(
 						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				case FeatureType.Continuous:
-				if (testFeatureType == FeatureType.Continuous ||
-					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
-					continue;
-				} else {
-					throw new InvalidOperationException(
-						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				case FeatureType.CategoricalButTriviallyValued:
-				if (testFeatureType == FeatureType.Categorical ||
-					testFeatureType == FeatureType.CategoricalButTriviallyValued) {
-					continue;
-				} else {
-					throw new InvalidOperationException(
-						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				case FeatureType.ContinuousButTriviallyValued:
-				if (testFeatureType == FeatureType.Continuous ||
-					testFeatureType == FeatureType.ContinuousButTriviallyValued) {
-					continue;
-				} else {
-					throw new InvalidOperationException(
-						nameof(trainDataset) + " and " +
-						nameof(testDataset) + " must have the same feature types.");
-				}
-
-				default:
-				throw new InvalidOperationException("Unknown / unsupported value for {nameof(FeatureType)}.");
-				}
+						nameof(testDataset) + " " +
+						"must have the same feature types.");
 			}
 
 			Console.WriteLine("Yep, they are.");

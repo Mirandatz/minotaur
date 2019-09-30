@@ -37,53 +37,54 @@ namespace Minotaur.Math.Dimensions {
 				throw new ArgumentException($"{nameof(seed)} and {nameof(featureTypes)} must have the same length.");
 
 			var dimensions = new IDimensionInterval[seed.Length];
+			throw new NotImplementedException();
 
-			for (int i = 0; i < dimensions.Length; i++) {
+			//for (int i = 0; i < dimensions.Length; i++) {
 
-				switch (featureTypes[i]) {
+			//	switch (featureTypes[i]) {
 
-				case FeatureType.Categorical: {
-					var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
-						dimensionIndex: i,
-						value: seed[i]);
+			//	case FeatureType.Categorical: {
+			//		var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
+			//			dimensionIndex: i,
+			//			value: seed[i]);
 
-					dimensions[i] = dimensionInterval;
-					break;
-				}
+			//		dimensions[i] = dimensionInterval;
+			//		break;
+			//	}
 
-				case FeatureType.CategoricalButTriviallyValued: {
-					var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
-						dimensionIndex: i,
-						value: seed[i]);
+			//	case FeatureType.CategoricalButTriviallyValued: {
+			//		var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
+			//			dimensionIndex: i,
+			//			value: seed[i]);
 
-					dimensions[i] = dimensionInterval;
-					break;
-				}
+			//		dimensions[i] = dimensionInterval;
+			//		break;
+			//	}
 
-				case FeatureType.Continuous: {
-					var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
-						dimensionIndex: i,
-						value: seed[i]);
+			//	case FeatureType.Continuous: {
+			//		var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
+			//			dimensionIndex: i,
+			//			value: seed[i]);
 
-					dimensions[i] = dimensionInterval;
-					break;
-				}
+			//		dimensions[i] = dimensionInterval;
+			//		break;
+			//	}
 
-				case FeatureType.ContinuousButTriviallyValued: {
-					var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
-						dimensionIndex: i,
-						value: seed[i]);
+			//	case FeatureType.ContinuousButTriviallyValued: {
+			//		var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
+			//			dimensionIndex: i,
+			//			value: seed[i]);
 
-					dimensions[i] = dimensionInterval;
-					break;
-				}
+			//		dimensions[i] = dimensionInterval;
+			//		break;
+			//	}
 
-				default:
-				throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
-				}
-			}
+			//	default:
+			//	throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
+			//	}
+			//}
 
-			return new MutableHyperRectangle(dimensions);
+			//return new MutableHyperRectangle(dimensions);
 		}
 
 		public static MutableHyperRectangle FromHyperRectangle(HyperRectangle rect) {

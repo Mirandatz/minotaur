@@ -53,7 +53,8 @@ namespace Minotaur.Collections.Dataset {
 		public static Dataset CreateFromMutableObjects(
 			FeatureType[] mutableFeatureTypes,
 			MutableMatrix<float> mutableData,
-			MutableMatrix<bool> mutableLabels
+			MutableMatrix<bool> mutableLabels,
+			bool isTrainDataset
 			) {
 			if (mutableFeatureTypes.Length != mutableData.ColumnCount)
 				throw new ArgumentException("featureTypes.Length must be equal to  data.ColumnCount");
@@ -82,29 +83,17 @@ namespace Minotaur.Collections.Dataset {
 
 					var featureValues = dataTransposed.GetRow(featureIndex).ToArray();
 
-					if (featureValues.Any(v => !float.IsFinite(v)))
-						throw new InvalidOperationException(nameof(Dataset) + " only supports finite values.");
+					ThrowIfDatasetContainsNonFiniteValues(featureValues);
 
-					sortedUniqueFeatureValues[featureIndex] = featureValues
+					var sufv = featureValues
 					.Distinct()
 					.OrderBy(v => v)
 					.ToArray();
 
-					if (sortedUniqueFeatureValues[featureIndex].Length == 1) {
-						switch (featureTypes[featureIndex]) {
+					sortedUniqueFeatureValues[featureIndex] = sufv;
 
-						case FeatureType.Categorical:
-						featureTypes[featureIndex] = FeatureType.CategoricalButTriviallyValued;
-						break;
-
-						case FeatureType.Continuous:
-						featureTypes[featureIndex] = FeatureType.ContinuousButTriviallyValued;
-						break;
-
-						default:
-						throw new InvalidOperationException();
-						}
-					}
+					ThrowIfTrainDatasetContainsFeaturesWithSingleValue(isTrainDataset, featureIndex, sufv);
+					ThrowIfDatasetContainsNonBinaryValuesForBinaryFeatures(featureIndex, featureTypes, sufv);
 
 					sortedFeatureValues[featureIndex] = featureValues
 					.OrderBy(v => v)
@@ -128,7 +117,7 @@ namespace Minotaur.Collections.Dataset {
 			var distanceMatrix = distanceMatrixTask.Result;
 
 			if (featureTypes.Any(v => v != FeatureType.Continuous))
-				throw new NotSupportedException();
+				throw new NotImplementedException();
 
 			return new Dataset(
 				featureTypes: featureTypes,
@@ -140,7 +129,40 @@ namespace Minotaur.Collections.Dataset {
 				featureValueFrequencies: featureValueFrequencies,
 				labels: labels,
 				dimensionIntervals: dimensionIntervals);
-			;
+
+
+			static void ThrowIfDatasetContainsNonFiniteValues(float[] featureValues) {
+				if (featureValues.Any(v => !float.IsFinite(v)))
+					throw new InvalidOperationException(nameof(Dataset) + " only supports finite values.");
+			}
+
+			static void ThrowIfTrainDatasetContainsFeaturesWithSingleValue(bool isTrainDataset, int featureIndex, float[] sufv) {
+				if (isTrainDataset && sufv.Length == 1) {
+					var message = $"Feature (0-indexed) {featureIndex} contains a single value in the train dataset.";
+					throw new InvalidOperationException(message);
+				}
+			}
+
+			static void ThrowIfDatasetContainsNonBinaryValuesForBinaryFeatures(int featureIndex, FeatureType[] featureTypes, float[] sufv) {
+				var featureType = featureTypes[featureIndex];
+
+				// Using a switch to future-proof against addition of new values to FeatureType
+				switch (featureType) {
+
+				case FeatureType.Binary: {
+					if (sufv.Any(v => v != 0 && v != 1))
+						throw new InvalidOperationException($"Dataset contains non-binary values for binary feature {featureIndex}.");
+
+					break;
+				}
+
+				case FeatureType.Continuous:
+				break;
+
+				default:
+				throw CommonExceptions.UnknownFeatureType;
+				}
+			}
 		}
 
 		private static IDimensionInterval CreateDimensionInterval(
@@ -148,36 +170,7 @@ namespace Minotaur.Collections.Dataset {
 			FeatureType featureType,
 			float[] sortedUniqueValues
 			) {
-
-			switch (featureType) {
-
-			case FeatureType.Categorical:
-			return CategoricalDimensionInterval.FromSortedUniqueValues(
-				dimensionIndex: featureIndex,
-				sortedUniqueValues: sortedUniqueValues);
-
-			case FeatureType.CategoricalButTriviallyValued:
-			return CategoricalDimensionInterval.FromSingleValue(
-				dimensionIndex: featureIndex,
-				value: sortedUniqueValues[0]);
-
-			case FeatureType.Continuous: {
-				var start = DimensionBound.CreateStart(sortedUniqueValues[0]);
-				var end = DimensionBound.CreateEnd(sortedUniqueValues[^1]);
-				return new ContinuousDimensionInterval(
-					dimensionIndex: featureIndex,
-					start: start,
-					end: end);
-			}
-
-			case FeatureType.ContinuousButTriviallyValued:
-			return ContinuousDimensionInterval.FromSingleValue(
-				dimensionIndex: featureIndex,
-				value: sortedUniqueValues[0]);
-
-			default:
-			throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
-			}
+			throw new NotImplementedException();
 		}
 
 		public bool IsFeatureIndexValid(int featureIndex) {
@@ -189,75 +182,74 @@ namespace Minotaur.Collections.Dataset {
 		}
 
 		public bool IsDimesionIntervalValid(IDimensionInterval dimensionInterval) {
-			if (dimensionInterval is null)
-				throw new ArgumentNullException(nameof(dimensionInterval));
+			throw new NotImplementedException();
 
-			var featureIndex = dimensionInterval.DimensionIndex;
-			if (!IsFeatureIndexValid(featureIndex))
-				return false;
+			//var featureIndex = dimensionInterval.DimensionIndex;
+			//if (!IsFeatureIndexValid(featureIndex))
+			//	return false;
 
-			var featureType = GetFeatureType(featureIndex);
-			switch (featureType) {
+			//var featureType = GetFeatureType(featureIndex);
+			//switch (featureType) {
 
-			case FeatureType.Categorical: {
-				var categorical = dimensionInterval as CategoricalDimensionInterval;
-				if (categorical == null)
-					return false;
+			//case FeatureType.Categorical: {
+			//	var categorical = dimensionInterval as CategoricalDimensionInterval;
+			//	if (categorical == null)
+			//		return false;
 
-				var possibleValues = _sortedUniqueFeatureValues[featureIndex];
-				var actualValues = categorical.SortedValues;
+			//	var possibleValues = _sortedUniqueFeatureValues[featureIndex];
+			//	var actualValues = categorical.SortedValues;
 
-				// @Improve performance of the look-up operation.
-				// Maybe use HashSet to store the unique values?
-				for (int i = 0; i < actualValues.Length; i++) {
-					var valueIndex = Array.BinarySearch(
-						array: possibleValues,
-						value: actualValues[i]);
+			//	// @Improve performance of the look-up operation.
+			//	// Maybe use HashSet to store the unique values?
+			//	for (int i = 0; i < actualValues.Length; i++) {
+			//		var valueIndex = Array.BinarySearch(
+			//			array: possibleValues,
+			//			value: actualValues[i]);
 
-					if (valueIndex < 0)
-						return false;
-				}
+			//		if (valueIndex < 0)
+			//			return false;
+			//	}
 
-				return true;
-			}
+			//	return true;
+			//}
 
-			case FeatureType.Continuous: {
-				var continuous = dimensionInterval as ContinuousDimensionInterval;
-				if (continuous == null)
-					return false;
+			//case FeatureType.Continuous: {
+			//	var continuous = dimensionInterval as ContinuousDimensionInterval;
+			//	if (continuous == null)
+			//		return false;
 
-				var possibleValues = _sortedUniqueFeatureValues[featureIndex];
-				var lowerBound = continuous.Start.Value;
+			//	var possibleValues = _sortedUniqueFeatureValues[featureIndex];
+			//	var lowerBound = continuous.Start.Value;
 
-				// @Improve performance of the look-up operation.
-				// Maybe use HashSet to store the unique values?
-				if (!float.IsNegativeInfinity(lowerBound)) {
-					var valueIndex = Array.BinarySearch(
-						array: possibleValues,
-						value: lowerBound);
+			//	// @Improve performance of the look-up operation.
+			//	// Maybe use HashSet to store the unique values?
+			//	if (!float.IsNegativeInfinity(lowerBound)) {
+			//		var valueIndex = Array.BinarySearch(
+			//			array: possibleValues,
+			//			value: lowerBound);
 
-					if (valueIndex < 0)
-						return false;
-				}
+			//		if (valueIndex < 0)
+			//			return false;
+			//	}
 
-				// @Improve performance of the look-up operation.
-				// Maybe use HashSet to store the unique values?
-				var upperBound = continuous.End.Value;
-				if (!float.IsPositiveInfinity(upperBound)) {
-					var valueIndex = Array.BinarySearch(
-						array: possibleValues,
-						value: upperBound);
+			//	// @Improve performance of the look-up operation.
+			//	// Maybe use HashSet to store the unique values?
+			//	var upperBound = continuous.End.Value;
+			//	if (!float.IsPositiveInfinity(upperBound)) {
+			//		var valueIndex = Array.BinarySearch(
+			//			array: possibleValues,
+			//			value: upperBound);
 
-					if (valueIndex < 0)
-						return false;
-				}
+			//		if (valueIndex < 0)
+			//			return false;
+			//	}
 
-				return true;
-			}
+			//	return true;
+			//}
 
-			default:
-			throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
-			}
+			//default:
+			//throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}.");
+			//}
 		}
 
 		public float GetDatum(int instanceIndex, int featureIndex) {

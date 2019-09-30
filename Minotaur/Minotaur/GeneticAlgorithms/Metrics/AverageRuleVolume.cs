@@ -102,7 +102,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			}
 
 			default:
-			throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
+			throw CommonExceptions.UnknownFeatureType;
 			}
 		}
 	}

@@ -24,15 +24,11 @@ namespace Minotaur.Theseus.TestCreation {
 
 			switch (dimensionInterval) {
 
-			case CategoricalDimensionInterval cat:
-			throw new NotImplementedException();
-
 			case ContinuousDimensionInterval cont:
 			return FromContinuousNasty(cont);
 
 			default:
-			throw new InvalidOperationException(
-				$"Unknown / unsupported implementation of {nameof(IDimensionInterval)}.");
+			throw CommonExceptions.UnknownDimensionIntervalImplementation;
 			}
 		}
 

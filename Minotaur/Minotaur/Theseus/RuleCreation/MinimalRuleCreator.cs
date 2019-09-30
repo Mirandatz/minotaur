@@ -123,28 +123,30 @@ namespace Minotaur.Theseus.RuleCreation {
 			if (!Dataset.IsInstanceIndexValid(datasetSeedInstanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(datasetSeedInstanceIndex));
 
-			return (Dataset.GetFeatureType(featureIndex)) switch
-			{
-				FeatureType.Categorical => FromCategorical(
-					nullFeatureTestCount: nullFeatureTestCount,
-					featureIndex: featureIndex,
-					datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-					boundingBox: boundingBox),
+			throw new NotImplementedException();
 
-				FeatureType.CategoricalButTriviallyValued => FromCategorical(
-					nullFeatureTestCount: nullFeatureTestCount,
-					featureIndex: featureIndex,
-					datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-					boundingBox: boundingBox),
+			//return (Dataset.GetFeatureType(featureIndex)) switch
+			//{
+			//	FeatureType.Categorical => FromCategorical(
+			//		nullFeatureTestCount: nullFeatureTestCount,
+			//		featureIndex: featureIndex,
+			//		datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			//		boundingBox: boundingBox),
 
-				FeatureType.Continuous => FromContinuous(
-					nullFeatureTestCount: nullFeatureTestCount,
-					featureIndex: featureIndex,
-					datasetSeedInstanceIndex: datasetSeedInstanceIndex,
-					boundingBox: boundingBox),
+			//	FeatureType.CategoricalButTriviallyValued => FromCategorical(
+			//		nullFeatureTestCount: nullFeatureTestCount,
+			//		featureIndex: featureIndex,
+			//		datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			//		boundingBox: boundingBox),
 
-				_ => throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}."),
-			};
+			//	FeatureType.Continuous => FromContinuous(
+			//		nullFeatureTestCount: nullFeatureTestCount,
+			//		featureIndex: featureIndex,
+			//		datasetSeedInstanceIndex: datasetSeedInstanceIndex,
+			//		boundingBox: boundingBox),
+
+			//	_ => throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}."),
+			//};
 		}
 
 		private IFeatureTest FromContinuous(int nullFeatureTestCount, int featureIndex, int datasetSeedInstanceIndex, HyperRectangle boundingBox) {
@@ -207,17 +209,18 @@ namespace Minotaur.Theseus.RuleCreation {
 		}
 
 		private bool CategoricalTestCanBeNull(int nullFeatureTestCount, int featureIndex, HyperRectangle boundingBox) {
-			if (nullFeatureTestCount >= _maximumNumberOfNullFeatureTests)
-				return false;
+			throw new NotImplementedException();
+			//if (nullFeatureTestCount >= _maximumNumberOfNullFeatureTests)
+			//	return false;
 
-			var shouldBeNull = Random.Bool(biasForTrue: _probabilityOfGeneratingNullTest);
-			if (!shouldBeNull)
-				return false;
+			//var shouldBeNull = Random.Bool(biasForTrue: _probabilityOfGeneratingNullTest);
+			//if (!shouldBeNull)
+			//	return false;
 
-			var datasetDimension = (CategoricalDimensionInterval) Dataset.GetDimensionInterval(featureIndex: featureIndex);
-			var boxDimension = (CategoricalDimensionInterval) boundingBox.GetDimensionInterval(dimensionIndex: featureIndex);
+			//var datasetDimension = (CategoricalDimensionInterval) Dataset.GetDimensionInterval(featureIndex: featureIndex);
+			//var boxDimension = (CategoricalDimensionInterval) boundingBox.GetDimensionInterval(dimensionIndex: featureIndex);
 
-			return boxDimension.Equals(datasetDimension);
+			//return boxDimension.Equals(datasetDimension);
 		}
 
 		private bool ContinuousTestCanBeNull(int nullFeatureTestCount, int featureIndex, HyperRectangle boundingBox) {

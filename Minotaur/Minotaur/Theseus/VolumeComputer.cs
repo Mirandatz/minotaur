@@ -9,68 +9,71 @@ namespace Minotaur.Theseus {
 			if (dataset is null)
 				throw new ArgumentNullException(nameof(dataset));
 
-			var featureCount = dataset.FeatureCount;
-			double volume = 1;
+			throw new NotImplementedException();
 
-			for (int i = 0; i < featureCount; i++) {
-				var featureValues = dataset.GetSortedUniqueFeatureValues(i);
+			//var featureCount = dataset.FeatureCount;
+			//double volume = 1;
 
-				switch (dataset.GetFeatureType(i)) {
-				case FeatureType.Categorical:
-				volume *= featureValues.Length;
-				break;
+			//for (int i = 0; i < featureCount; i++) {
+			//	var featureValues = dataset.GetSortedUniqueFeatureValues(i);
 
-				case FeatureType.CategoricalButTriviallyValued:
-				break;
+			//	switch (dataset.GetFeatureType(i)) {
+			//	case FeatureType.Categorical:
+			//	volume *= featureValues.Length;
+			//	break;
 
-				case FeatureType.Continuous:
-				var min = featureValues[0];
-				var max = featureValues[featureValues.Length - 1];
-				volume *= (max - min);
-				break;
+			//	case FeatureType.CategoricalButTriviallyValued:
+			//	break;
 
-				case FeatureType.ContinuousButTriviallyValued:
-				break;
+			//	case FeatureType.Continuous:
+			//	var min = featureValues[0];
+			//	var max = featureValues[featureValues.Length - 1];
+			//	volume *= (max - min);
+			//	break;
 
-				default:
-				throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
-				}
-			}
+			//	case FeatureType.ContinuousButTriviallyValued:
+			//	break;
 
-			return volume;
+			//	default:
+			//	throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
+			//	}
+			//}
+
+			//return volume;
 		}
 
 		public static double ComputeRuleVolume(Dataset dataset, Rule rule) {
-			if (rule is null)
-				throw new ArgumentNullException(nameof(rule));
 
-			var featureCount = dataset.FeatureCount;
-			double volume = 1;
+			throw new NotImplementedException();
 
-			for (int i = 0; i < featureCount; i++) {
-				switch (dataset.GetFeatureType(i)) {
-				case FeatureType.Categorical:
-				break;
+			//var featureCount = dataset.FeatureCount;
 
-				case FeatureType.CategoricalButTriviallyValued:
-				break;
+			//double volume = 1;
 
-				case FeatureType.Continuous:
-				var test = (ContinuousFeatureTest) rule.Tests[i];
-				var min = test.LowerBound;
-				var max = test.UpperBound;
-				volume *= (max - min);
-				break;
+			//for (int i = 0; i < featureCount; i++) {
+			//	switch (dataset.GetFeatureType(i)) {
+			//	case FeatureType.Categorical:
+			//	break;
 
-				case FeatureType.ContinuousButTriviallyValued:
-				break;
+			//	case FeatureType.CategoricalButTriviallyValued:
+			//	break;
 
-				default:
-				throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
-				}
-			}
+			//	case FeatureType.Continuous:
+			//	var test = (ContinuousFeatureTest) rule.Tests[i];
+			//	var min = test.LowerBound;
+			//	var max = test.UpperBound;
+			//	volume *= (max - min);
+			//	break;
 
-			return volume;
+			//	case FeatureType.ContinuousButTriviallyValued:
+			//	break;
+
+			//	default:
+			//	throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
+			//	}
+			//}
+
+			//return volume;
 		}
 	}
 }
