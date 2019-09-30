@@ -55,13 +55,6 @@ namespace Minotaur.Collections.Dataset {
 			MutableMatrix<float> mutableData,
 			MutableMatrix<bool> mutableLabels
 			) {
-			if (mutableFeatureTypes == null)
-				throw new ArgumentNullException(nameof(mutableFeatureTypes));
-			if (mutableData == null)
-				throw new ArgumentNullException(nameof(mutableData));
-			if (mutableLabels == null)
-				throw new ArgumentNullException(nameof(mutableLabels));
-
 			if (mutableFeatureTypes.Length != mutableData.ColumnCount)
 				throw new ArgumentException("featureTypes.Length must be equal to  data.ColumnCount");
 			if (mutableData.RowCount != mutableLabels.RowCount)
@@ -133,6 +126,9 @@ namespace Minotaur.Collections.Dataset {
 
 			Task.WaitAll(distanceMatrixTask);
 			var distanceMatrix = distanceMatrixTask.Result;
+
+			if (featureTypes.Any(v => v != FeatureType.Continuous))
+				throw new NotSupportedException();
 
 			return new Dataset(
 				featureTypes: featureTypes,
