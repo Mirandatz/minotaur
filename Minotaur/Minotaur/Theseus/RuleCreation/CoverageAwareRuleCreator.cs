@@ -15,14 +15,16 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 		private readonly MaximalTestCreator _testCreator;
 		private readonly int _minimumInstancesToCover;
+		private readonly AveragingRuleConsequentCreator _consequentCreator;
 
-		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, MaximalTestCreator testCreator, int minimumInstancesToCover) {
-			Dataset = _seedSelector.Dataset;
+		public CoverageAwareRuleCreator(Dataset dataset, SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, MaximalTestCreator testCreator, int minimumInstancesToCover, AveragingRuleConsequentCreator consequentCreator) {
+			Dataset = dataset;
 			_seedSelector = seedSelector;
 			_boxCreator = boxCreator;
 			_coverageComputer = coverageComputer;
 			_testCreator = testCreator;
 			_minimumInstancesToCover = minimumInstancesToCover;
+			_consequentCreator = consequentCreator;
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
@@ -68,10 +70,12 @@ namespace Minotaur.Theseus.RuleCreation {
 				keys: coveredInstancesIndices,
 				items: coveredInstancesDistancesToSeed);
 
-			throw new NotImplementedException();
-		}
+			var relevantInstances = coveredInstancesIndices
+				.AsSpan()
+				.Slice(start: 0, length: _minimumInstancesToCover);
 
-		private Rule FromHyperRectangle(HyperRectangle hyperRectangle) {
+			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
+
 			throw new NotImplementedException();
 		}
 	}
