@@ -2,7 +2,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 	using Minotaur.Collections;
 
-	public sealed class CategoricalFeatureTest: IFeatureTest, IEquatable<CategoricalFeatureTest> {
+	public sealed class BinaryFeatureTest: IFeatureTest, IEquatable<BinaryFeatureTest> {
 
 		public int FeatureIndex { get; }
 
@@ -16,11 +16,11 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		private readonly int _precomputedHashCode;
 
-		public CategoricalFeatureTest(int featureIndex, float value) {
+		public BinaryFeatureTest(int featureIndex, float value) {
 			if (featureIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be >= 0");
-			if (float.IsNaN(value))
-				throw new ArgumentOutOfRangeException(nameof(value) + " can't be NaN");
+			if (value != 0 && value != 1)
+				throw new ArgumentOutOfRangeException(nameof(value));
 
 			FeatureIndex = featureIndex;
 			Value = value;
@@ -37,20 +37,20 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) {
-			if (obj is CategoricalFeatureTest other)
+			if (obj is BinaryFeatureTest other)
 				return Equals(other);
 			else
 				return false;
 		}
 
 		public bool Equals(IFeatureTest test) {
-			if (test is CategoricalFeatureTest other)
+			if (test is BinaryFeatureTest other)
 				return Equals(other);
 			else
 				return false;
 		}
 
-		public bool Equals(CategoricalFeatureTest other) {
+		public bool Equals(BinaryFeatureTest other) {
 			return
 				other.FeatureIndex == FeatureIndex &&
 				other.Value == Value;

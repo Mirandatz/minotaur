@@ -197,15 +197,16 @@ namespace Minotaur.Theseus.RuleCreation {
 			if (CategoricalTestCanBeNull(nullFeatureTestCount, featureIndex, boundingBox))
 				return new NullFeatureTest(featureIndex);
 
-			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
+			throw new NotImplementedException();
+			//var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
 
-			// @Sanity check
-			if (!boundingBox.Contains(seed))
-				throw new InvalidOperationException();
+			//// @Sanity check
+			//if (!boundingBox.Contains(seed))
+			//	throw new InvalidOperationException();
 
-			return new CategoricalFeatureTest(
-				featureIndex: featureIndex,
-				value: seed[featureIndex]);
+			//return new BinaryFeatureTest(
+			//	featureIndex: featureIndex,
+			//	value: seed[featureIndex]);
 		}
 
 		private bool CategoricalTestCanBeNull(int nullFeatureTestCount, int featureIndex, HyperRectangle boundingBox) {

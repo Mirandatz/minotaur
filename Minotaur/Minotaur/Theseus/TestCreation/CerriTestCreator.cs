@@ -45,23 +45,7 @@ namespace Minotaur.Theseus.TestCreation {
 
 			//	_ => throw new InvalidOperationException($"Unknown / unsupported value for {nameof(FeatureType)}."),
 			//};
-		}
-
-		private CategoricalFeatureTest FromCategorical(
-			int featureIndex,
-			int datasetSeedInstanceIndex,
-			HyperRectangle boundingBox
-			) {
-			var seed = Dataset.GetInstanceData(datasetSeedInstanceIndex);
-
-			// @Sanity check
-			if (!boundingBox.Contains(seed))
-				throw new InvalidOperationException();
-
-			return new CategoricalFeatureTest(
-				featureIndex: featureIndex,
-				value: seed[featureIndex]);
-		}
+		}		
 
 		private IFeatureTest FromContinuous(
 		int featureIndex,

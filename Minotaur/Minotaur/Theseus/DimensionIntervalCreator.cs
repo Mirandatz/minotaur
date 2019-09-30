@@ -8,56 +8,44 @@ namespace Minotaur.Theseus {
 		public readonly Dataset Dataset;
 
 		public DimensionIntervalCreator(Dataset dataset) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			Dataset = dataset;
 		}
 
 		public IDimensionInterval FromFeatureTest(IFeatureTest test) {
-			if (test is null)
-				throw new ArgumentNullException(nameof(test));
+			return test switch
+			{
+				NullFeatureTest nft => FromNullFeatureTest(nft),
+				BinaryFeatureTest bft => FromBinaryFeatureTest(bft),
+				ContinuousFeatureTest cft => FromContinuousFeatureTest(cft),
 
-			switch (test) {
-			case NullFeatureTest nft:
-			return FromNullFeatureTest(nft);
-
-			case CategoricalFeatureTest categorical:
-			return FromCategoricalFeatureTest(categorical);
-
-			case ContinuousFeatureTest continuous:
-			return FromContinuousFeatureTest(continuous);
-
-			default:
-			throw new InvalidOperationException($"Unknown {nameof(IFeatureTest)} type.");
-			}
+				_ => throw new InvalidOperationException($"Unknown implementation of {nameof(IFeatureTest)}."),
+			};
 		}
 
 		private IDimensionInterval FromNullFeatureTest(NullFeatureTest nullFeatureTest) {
 			var featureIndex = nullFeatureTest.FeatureIndex;
-			if (!Dataset.IsFeatureIndexValid(featureIndex))
-				throw new ArgumentOutOfRangeException($"{nameof(nullFeatureTest)}.{nameof(nullFeatureTest.FeatureIndex)} is invalid.");
-
 			var featureType = Dataset.GetFeatureType(featureIndex);
 			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
 
-			throw new NotImplementedException();
-			//switch (featureType) {
+			switch (featureType) {
 
-			//// @Improve performance
-			//case FeatureType.Categorical:
-			//return CategoricalDimensionInterval.FromSortedUniqueValues(
-			//	dimensionIndex: featureIndex,
-			//	sortedUniqueValues: featureValues);
+			// @Improve performance
+			case FeatureType.Binary:
+			return BinaryDimensionInterval.FromSortedUniqueFeatureValues(
+				dimensionIndex: featureIndex,
+				featureValues: featureValues);
 
-			//case FeatureType.Continuous:
-			//var min = featureValues[0];
-			//var max = featureValues[featureValues.Length - 1];
-			//return new ContinuousDimensionInterval(
-			//	dimensionIndex: featureIndex,
-			//	start: new DimensionBound(value: min, isInclusive: true),
-			//	end: new DimensionBound(value: max, isInclusive: true));
+			case FeatureType.Continuous:
+			var min = featureValues[0];
+			var max = featureValues[^1];
+			return new ContinuousDimensionInterval(
+				dimensionIndex: featureIndex,
+				start: new DimensionBound(value: min, isInclusive: true),
+				end: new DimensionBound(value: max, isInclusive: true));
 
-			//default:
-			//throw new InvalidOperationException($"Unknown {nameof(FeatureType)} type.");
-			//}
+			default:
+			throw new InvalidOperationException($"Unknown {nameof(FeatureType)} type.");
+			}
 		}
 
 		private IDimensionInterval FromContinuousFeatureTest(ContinuousFeatureTest continuous) {
@@ -67,11 +55,10 @@ namespace Minotaur.Theseus {
 				end: new DimensionBound(value: continuous.UpperBound, isInclusive: false));
 		}
 
-		private IDimensionInterval FromCategoricalFeatureTest(CategoricalFeatureTest categorical) {
-			throw new NotImplementedException();
-			//return CategoricalDimensionInterval.FromSingleValue(
-			//	dimensionIndex: categorical.FeatureIndex,
-			//	value: categorical.Value);
+		private IDimensionInterval FromBinaryFeatureTest(BinaryFeatureTest binary) {
+			return BinaryDimensionInterval.FromSingleValue(
+				dimensionIndex: binary.FeatureIndex,
+				value: binary.Value);
 		}
 
 		public IDimensionInterval CreateMaximalDimensionInterval(int dimensionIndex) {

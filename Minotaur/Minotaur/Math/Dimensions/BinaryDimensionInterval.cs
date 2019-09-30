@@ -1,28 +1,78 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
+	using Minotaur.Collections;
 
 	public sealed class BinaryDimensionInterval: IDimensionInterval, IEquatable<BinaryDimensionInterval> {
 
 		public double Volume => 1;
 		public int DimensionIndex { get; }
-		public readonly float Value;
+		public readonly bool ContainsFalse;
+		public readonly bool ContainsTrue;
 
-		public BinaryDimensionInterval(int dimensionIndex, float value) {
+		private BinaryDimensionInterval(int dimensionIndex, bool containsFalse, bool containsTrue) {
 			if (dimensionIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
-			if (value != 0 && value != 1)
-				throw new ArgumentOutOfRangeException(nameof(value));
+
+			if (!(containsTrue || containsFalse))
+				throw new InvalidOperationException("Intervals can't be empty.");
 
 			DimensionIndex = dimensionIndex;
-			Value = value;
+			ContainsTrue = containsTrue;
+			ContainsFalse = containsFalse;
 		}
 
-		public bool Contains(float value) => value == Value;
+		public static BinaryDimensionInterval FromSortedUniqueFeatureValues(int dimensionIndex, Array<float> featureValues) {
+			return featureValues.Length switch
+			{
+				1 => FromSingleValue(dimensionIndex: dimensionIndex, value: featureValues[0]),
+				2 => FromTwoValues(dimensionIndex: dimensionIndex, values: featureValues),
+
+				_ => throw new InvalidOperationException($"You can't create a {nameof(BinaryDimensionInterval)} with non-binary values."),
+			};
+		}
+
+		public static BinaryDimensionInterval FromSingleValue(int dimensionIndex, float value) {
+			return (value) switch
+			{
+				0f => new BinaryDimensionInterval(dimensionIndex: dimensionIndex, containsFalse: true, containsTrue: false),
+				1f => new BinaryDimensionInterval(dimensionIndex: dimensionIndex, containsFalse: false, containsTrue: true),
+				_ => throw new InvalidOperationException($"You can't create a {nameof(BinaryDimensionInterval)} with non-binary values.")
+			};
+		}
+
+		private static BinaryDimensionInterval FromTwoValues(int dimensionIndex, Array<float> values) {
+			if (values[0] != 0f || values[1] != 1)
+				throw new InvalidOperationException($"Either {nameof(values)} contains non-binary values or its not sorted.");
+
+			return new BinaryDimensionInterval(
+				dimensionIndex: dimensionIndex,
+				containsFalse: true,
+				containsTrue: true);
+		}
+
+		public bool Contains(float value) {
+			if (value != 0 && value != 1)
+				throw new InvalidOperationException("Jesus, this should never happen...");
+
+			return (value == 0 && ContainsFalse) || (value == 1 && ContainsTrue);
+		}
 
 		// Silly overrides
-		public override string ToString() => $"[{Value}]";
+		public override string ToString() {
+			if (ContainsFalse && ContainsTrue)
+				return "[0, 1]";
 
-		public override int GetHashCode() => HashCode.Combine(DimensionIndex, Value);
+			if (ContainsFalse && !ContainsTrue)
+				return "[0]";
+
+			// By now we know that ContainsFalse == false
+			// therefore ContainsTrue must be true,
+			// because we don't allow empty intervals
+
+			return "[1]";
+		}
+
+		public override int GetHashCode() => HashCode.Combine(DimensionIndex, ContainsFalse, ContainsTrue);
 
 		public override bool Equals(object? obj) {
 			if (obj is BinaryDimensionInterval bdi)
@@ -41,7 +91,8 @@ namespace Minotaur.Math.Dimensions {
 		public bool Equals(BinaryDimensionInterval other) {
 			return
 				DimensionIndex == other.DimensionIndex &&
-				Value == other.Value;
+				ContainsFalse == other.ContainsFalse &&
+				ContainsTrue == other.ContainsTrue;
 		}
 	}
 }

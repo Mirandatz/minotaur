@@ -80,10 +80,10 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 
 			switch (rule.Tests[testIndex]) {
 
-			case NullFeatureTest nft:
+			case NullFeatureTest _:
 			return Dataset.GetDimensionInterval(testIndex).Volume;
 
-			case CategoricalFeatureTest cat:
+			case BinaryFeatureTest _:
 			return 1;
 
 			case ContinuousFeatureTest cont: {

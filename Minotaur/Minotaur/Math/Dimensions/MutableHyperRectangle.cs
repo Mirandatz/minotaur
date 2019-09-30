@@ -53,7 +53,7 @@ namespace Minotaur.Math.Dimensions {
 		private static IDimensionInterval CreateDimension(int featureIndex, FeatureType featureType, float seedValue) {
 			return featureType switch
 			{
-				FeatureType.Binary => new BinaryDimensionInterval(dimensionIndex: featureIndex, value: seedValue),
+				FeatureType.Binary => BinaryDimensionInterval.FromSingleValue(dimensionIndex: featureIndex, value: seedValue),
 				FeatureType.Continuous => ContinuousDimensionInterval.FromSingleValue(dimensionIndex: featureIndex, value: seedValue),
 
 				_ => throw CommonExceptions.UnknownFeatureType,
