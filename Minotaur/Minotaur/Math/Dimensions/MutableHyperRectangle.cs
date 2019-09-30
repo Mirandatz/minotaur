@@ -37,59 +37,27 @@ namespace Minotaur.Math.Dimensions {
 				throw new ArgumentException($"{nameof(seed)} and {nameof(featureTypes)} must have the same length.");
 
 			var dimensions = new IDimensionInterval[seed.Length];
-			throw new NotImplementedException();
 
-			//for (int i = 0; i < dimensions.Length; i++) {
+			for (int i = 0; i < dimensions.Length; i++) {
+				var dimension = CreateDimension(
+					featureIndex: i,
+					featureType: featureTypes[i],
+					seedValue: seed[i]);
 
-			//	switch (featureTypes[i]) {
+				dimensions[i] = dimension;
+			}
 
-			//	case FeatureType.Categorical: {
-			//		var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
-			//			dimensionIndex: i,
-			//			value: seed[i]);
-
-			//		dimensions[i] = dimensionInterval;
-			//		break;
-			//	}
-
-			//	case FeatureType.CategoricalButTriviallyValued: {
-			//		var dimensionInterval = CategoricalDimensionInterval.FromSingleValue(
-			//			dimensionIndex: i,
-			//			value: seed[i]);
-
-			//		dimensions[i] = dimensionInterval;
-			//		break;
-			//	}
-
-			//	case FeatureType.Continuous: {
-			//		var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
-			//			dimensionIndex: i,
-			//			value: seed[i]);
-
-			//		dimensions[i] = dimensionInterval;
-			//		break;
-			//	}
-
-			//	case FeatureType.ContinuousButTriviallyValued: {
-			//		var dimensionInterval = ContinuousDimensionInterval.FromSingleValue(
-			//			dimensionIndex: i,
-			//			value: seed[i]);
-
-			//		dimensions[i] = dimensionInterval;
-			//		break;
-			//	}
-
-			//	default:
-			//	throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
-			//	}
-			//}
-
-			//return new MutableHyperRectangle(dimensions);
+			return new MutableHyperRectangle(dimensions);
 		}
 
-		public static MutableHyperRectangle FromHyperRectangle(HyperRectangle rect) {
-			var dimensions = rect.Dimensions.ToArray();
-			return new MutableHyperRectangle(dimensions);
+		private static IDimensionInterval CreateDimension(int featureIndex, FeatureType featureType, float seedValue) {
+			return featureType switch
+			{
+				FeatureType.Binary => new BinaryDimensionInterval(dimensionIndex: featureIndex, value: seedValue),
+				FeatureType.Continuous => ContinuousDimensionInterval.FromSingleValue(dimensionIndex: featureIndex, value: seedValue),
+
+				_ => throw CommonExceptions.UnknownFeatureType,
+			};
 		}
 
 		public HyperRectangle ToHyperRectangle() => new HyperRectangle(_dimensionIntervals);
