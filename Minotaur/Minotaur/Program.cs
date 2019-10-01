@@ -17,6 +17,7 @@ namespace Minotaur {
 	using Minotaur.Theseus.IndividualCreation;
 	using Minotaur.Theseus.IndividualMutation;
 	using Minotaur.Theseus.RuleCreation;
+	using Minotaur.Theseus.TestCreation;
 
 	public static class Program {
 
@@ -107,12 +108,21 @@ namespace Minotaur {
 				hyperRectangleCreator: hyperRectangleCreator,
 				hyperRectangleCoverageComputer: hyperRectangleCoverageComputer);
 
-			var ruleCreator = new MinimalRuleCreator(
+			var testCreator = new TestCreator(trainDataset);
+
+			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(testCreator);
+
+			var consequentCreator = new InstanceLabelsAveragingRuleConsequentCreator(
 				dataset: trainDataset,
+				threshold: 0.5f);
+
+			var ruleCreator = new CoverageAwareRuleCreator(
 				seedSelector: seedSelector,
 				hyperRectangleCreator: hyperRectangleCreator,
-				maximumRatioOfNullFeatureTest: 0.9f,
-				probabilityOfGeneratingNullTest: 0.2f);
+				coverageComputer: hyperRectangleCoverageComputer,
+				antecedentCreator: antecedentCreator,
+				consequentCreator: consequentCreator,
+				minimumInstancesToCover: 3);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {

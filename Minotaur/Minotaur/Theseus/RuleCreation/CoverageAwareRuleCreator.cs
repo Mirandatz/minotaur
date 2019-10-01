@@ -15,9 +15,9 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator;
 		private readonly int _minimumInstancesToCover;
 
-		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
+		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator hyperRectangleCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
 			_seedSelector = seedSelector;
-			_boxCreator = boxCreator;
+			_boxCreator = hyperRectangleCreator;
 			_coverageComputer = coverageComputer;
 			_antecedentCreator = antecedentCreator;
 			_consequentCreator = consequentCreator;

@@ -6,40 +6,30 @@ namespace Minotaur.Theseus {
 	public static class VolumeComputer {
 
 		public static double ComputeDatasetVolume(Dataset dataset) {
-			if (dataset is null)
-				throw new ArgumentNullException(nameof(dataset));
+			var featureCount = dataset.FeatureCount;
+			double volume = 1;
 
-			throw new NotImplementedException();
+			for (int i = 0; i < featureCount; i++) {
 
-			//var featureCount = dataset.FeatureCount;
-			//double volume = 1;
+				switch (dataset.GetFeatureType(i)) {
+				case FeatureType.Binary:
+				volume *= 2;
+				break;
 
-			//for (int i = 0; i < featureCount; i++) {
-			//	var featureValues = dataset.GetSortedUniqueFeatureValues(i);
 
-			//	switch (dataset.GetFeatureType(i)) {
-			//	case FeatureType.Categorical:
-			//	volume *= featureValues.Length;
-			//	break;
+				case FeatureType.Continuous:
+				var featureValues = dataset.GetSortedUniqueFeatureValues(i);
+				var min = featureValues[0];
+				var max = featureValues[featureValues.Length - 1];
+				volume *= (max - min);
+				break;
 
-			//	case FeatureType.CategoricalButTriviallyValued:
-			//	break;
+				default:
+				throw CommonExceptions.UnknownFeatureType;
+				}
+			}
 
-			//	case FeatureType.Continuous:
-			//	var min = featureValues[0];
-			//	var max = featureValues[featureValues.Length - 1];
-			//	volume *= (max - min);
-			//	break;
-
-			//	case FeatureType.ContinuousButTriviallyValued:
-			//	break;
-
-			//	default:
-			//	throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
-			//	}
-			//}
-
-			//return volume;
+			return volume;
 		}
 
 		public static double ComputeRuleVolume(Dataset dataset, Rule rule) {
