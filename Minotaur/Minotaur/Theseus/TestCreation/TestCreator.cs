@@ -1,6 +1,5 @@
 namespace Minotaur.Theseus.TestCreation {
 	using System;
-	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -15,116 +14,86 @@ namespace Minotaur.Theseus.TestCreation {
 			Dataset = dataset;
 		}
 
-		// @Remarks: any IFeatureTests created by this method
-		// will use feature values _from the dataset_, instead of random values.
-		// That means that values that appear more often in the dataset
-		// have a higher chance of being used.
 		public IFeatureTest FromDimensionInterval(IDimensionInterval dimensionInterval) {
-			if (dimensionInterval is null)
-				throw new ArgumentNullException(nameof(dimensionInterval));
-			if (!Dataset.IsDimesionIntervalValid(dimensionInterval))
-				throw new ArgumentOutOfRangeException(nameof(dimensionInterval));
+			if (!Dataset.IsFeatureIndexValid(dimensionInterval.DimensionIndex))
+				throw new InvalidOperationException(nameof(dimensionInterval) + nameof(dimensionInterval.DimensionIndex) + " is invalid.");
 
 			return dimensionInterval switch
 			{
-				BinaryDimensionInterval cat => throw new NotImplementedException(),
-				ContinuousDimensionInterval cont => FromContinuous(cont),
+				BinaryDimensionInterval bdi => FromBinary(bdi),
+				ContinuousDimensionInterval cdi => FromContinuous(cdi),
 
 				_ => throw CommonExceptions.UnknownDimensionIntervalImplementation
 			};
 		}
 
-		// @Remarks: Any CategoricalFeatureTest created by this method
-		// will use feature values _from the dataset_ as "target values" for the test.
-		// That means that values that appear more often in the dataset
-		// have a higher chance of being used. 
-		//private CategoricalFeatureTest FromCategorical(CategoricalDimensionInterval cat) {
-		//	var featureIndex = cat.DimensionIndex;
+		private BinaryFeatureTest FromBinary(BinaryDimensionInterval bdi) {
 
-		//	var possibleValues = cat.SortedValues;
-		//	var weights = new int[possibleValues.Length];
+			float testValue;
+			if (bdi.ContainsFalse && bdi.ContainsTrue) {
+				if (Random.Bool())
+					testValue = 1f;
+				else
+					testValue = 0f;
+			} else {
+				if (bdi.ContainsFalse)
+					testValue = 0f;
+				else
+					testValue = 1f;
+			}
 
-		//	for (int i = 0; i < weights.Length; i++) {
-		//		var frequency = Dataset.GetFeatureValueFrequency(
-		//			featureIndex: featureIndex,
-		//			featureValue: possibleValues[i]);
-
-		//		weights[i] = frequency;
-		//	}
-
-		//	var chooser = BiasedOptionChooser<float>.Create(
-		//		options: possibleValues,
-		//		weights: weights);
-
-		//	var value = chooser.GetRandomChoice();
-
-		//	return new CategoricalFeatureTest(
-		//		featureIndex: cat.DimensionIndex,
-		//		value: value);
-		//}
-
-		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cont) {
-			var dimensionIndex = cont.DimensionIndex;
-			var startValue = cont.Start.Value;
-			var endValue = cont.End.Value;
-
-			var featureValues = Dataset.GetSortedUniqueFeatureValues(dimensionIndex);
-			var possibleValues = featureValues
-				.Where(v => v >= startValue && v <= endValue)
-				.ToArray();
-
-			var firstBound = Random.Choice(possibleValues);
-
-			possibleValues = possibleValues.Where(v => v != firstBound).ToArray();
-
-			var secondBound = Random.Choice(possibleValues);
-
-			return ContinuousFeatureTest.FromUnsortedBounds(
-				featureIndex: dimensionIndex,
-				firstBound: firstBound,
-				secondBound: secondBound);
+			return new BinaryFeatureTest(
+				featureIndex: bdi.DimensionIndex,
+				value: testValue);
 		}
 
-		private static ContinuousFeatureTest FirstBoundIsLargestValue(
-			int dimensionIndex,
-			Array<float> featureValues,
-			int startIndex,
-			int firstBoundIndex
-			) {
-			var firstBoundValue = featureValues[firstBoundIndex];
-			var firstOccurence = featureValues.BinarySearchFirstOccurence(firstBoundValue);
+		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cdi) {
+			var featureIndex = cdi.DimensionIndex;
+			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
+			
+			var lowerBound = GetLowerBound(start: cdi.Start, sortedUniqueFeatureValues: featureValues);
+			var upperBound = GetUpperBound(end: cdi.End, sortedUniqueFeatureValues: featureValues);
 
-			var secondBoundIndex = Random.Int(
-				inclusiveMin: startIndex,
-				exclusiveMax: firstOccurence);
-
-			var secondBoundValue = featureValues[secondBoundIndex];
-
-			return ContinuousFeatureTest.FromUnsortedBounds(
-				featureIndex: dimensionIndex,
-				firstBound: firstBoundValue,
-				secondBound: secondBoundValue);
+			return new ContinuousFeatureTest(
+				featureIndex: featureIndex,
+				lowerBound: lowerBound,
+				upperBound: upperBound);
 		}
 
-		private static ContinuousFeatureTest FirstBoundIsSmallestValue(
-			int dimensionIndex,
-			Array<float> featureValues,
-			int stopIndex,
-			int firstBoundIndex
-			) {
-			var firstBoundValue = featureValues[firstBoundIndex];
-			var lastOccurence = featureValues.BinarySearchLastOccurence(firstBoundValue);
+		private static float GetLowerBound(DimensionBound start, Array<float> sortedUniqueFeatureValues) {
+			var startValue = start.Value;
+			var isInclusive = start.IsInclusive;
+			var indexOfStart = sortedUniqueFeatureValues.BinarySearch(startValue);
 
-			var secondBoundIndex = Random.Int(
-				inclusiveMin: lastOccurence + 1,
-				exclusiveMax: stopIndex + 1);
+			if (indexOfStart < 0)
+				throw new InvalidOperationException();
 
-			var secondBoundValue = featureValues[secondBoundIndex];
+			if (!isInclusive) {
+				return sortedUniqueFeatureValues[indexOfStart + 1];
+			} else {
+				if (indexOfStart == 0)
+					return float.NegativeInfinity;
+				else
+					return startValue;
+			}
+		}
 
-			return ContinuousFeatureTest.FromUnsortedBounds(
-				featureIndex: dimensionIndex,
-				firstBound: firstBoundValue,
-				secondBound: secondBoundValue);
+		private static float GetUpperBound(DimensionBound end, Array<float> sortedUniqueFeatureValues) {
+			var endValue = end.Value;
+			var isInclusive = end.IsInclusive;
+			var indexOfEnd = sortedUniqueFeatureValues.BinarySearch(endValue);
+
+			if (indexOfEnd < 0)
+				throw new InvalidOperationException();
+
+			if (!isInclusive) {
+				return sortedUniqueFeatureValues[indexOfEnd - 1];
+			} else {
+				if (indexOfEnd == sortedUniqueFeatureValues.Length - 1)
+					return float.PositiveInfinity;
+				else
+					return endValue;
+			}
 		}
 	}
 }

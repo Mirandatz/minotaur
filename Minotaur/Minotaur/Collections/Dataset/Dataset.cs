@@ -203,41 +203,6 @@ namespace Minotaur.Collections.Dataset {
 			return instanceIndex >= 0 && instanceIndex < InstanceCount;
 		}
 
-		public bool IsDimesionIntervalValid(IDimensionInterval dimensionInterval) {
-			var featureIndex = dimensionInterval.DimensionIndex;
-			if (!IsFeatureIndexValid(featureIndex))
-				return false;
-
-			switch (dimensionInterval) {
-
-			case BinaryDimensionInterval _:
-			return FeatureTypes[featureIndex] == FeatureType.Binary;
-
-			case ContinuousDimensionInterval cdi: {
-				var startValue = cdi.Start.Value;
-				var featureValues = GetSortedUniqueFeatureValues(featureIndex);
-
-				if (float.IsFinite(startValue)) {
-					var index = featureValues.BinarySearch(startValue);
-					if (index < 0)
-						return false;
-				}
-
-				var endValue = cdi.End.Value;
-				if (float.IsFinite(endValue)) {
-					var index = featureValues.BinarySearch(endValue);
-					if (index < 0)
-						return false;
-				}
-
-				return true;
-			}
-
-			default:
-			throw CommonExceptions.UnknownDimensionIntervalImplementation;
-			}
-		}
-
 		public float GetDatum(int instanceIndex, int featureIndex) {
 			if (!IsInstanceIndexValid(instanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");

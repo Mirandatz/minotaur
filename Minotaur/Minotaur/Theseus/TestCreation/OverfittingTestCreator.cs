@@ -17,19 +17,20 @@ namespace Minotaur.Theseus.TestCreation {
 		// That means that values that appear more often in the dataset
 		// have a higher chance of being used.
 		public IFeatureTest FromDimensionInterval(IDimensionInterval dimensionInterval) {
-			if (dimensionInterval is null)
-				throw new ArgumentNullException(nameof(dimensionInterval));
-			if (!Dataset.IsDimesionIntervalValid(dimensionInterval))
-				throw new ArgumentOutOfRangeException(nameof(dimensionInterval));
+			throw new NotImplementedException();
+			//if (dimensionInterval is null)
+			//	throw new ArgumentNullException(nameof(dimensionInterval));
+			//if (!Dataset.ContainsDimensionInterval(dimensionInterval))
+			//	throw new ArgumentOutOfRangeException(nameof(dimensionInterval));
 
-			switch (dimensionInterval) {
+			//switch (dimensionInterval) {
 
-			case ContinuousDimensionInterval cont:
-			return FromContinuousNasty(cont);
+			//case ContinuousDimensionInterval cont:
+			//return FromContinuousNasty(cont);
 
-			default:
-			throw CommonExceptions.UnknownDimensionIntervalImplementation;
-			}
+			//default:
+			//throw CommonExceptions.UnknownDimensionIntervalImplementation;
+			//}
 		}
 
 		private ContinuousFeatureTest FromContinuousNasty(ContinuousDimensionInterval cont) {
