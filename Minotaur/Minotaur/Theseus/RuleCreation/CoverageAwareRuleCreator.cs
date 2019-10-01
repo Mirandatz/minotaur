@@ -13,10 +13,10 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly HyperRectangleCreator _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator;
-		private readonly AveragingRuleConsequentCreator _consequentCreator;
+		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator;
 		private readonly int _minimumInstancesToCover;
 
-		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, AveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
+		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
 			_seedSelector = seedSelector;
 			_boxCreator = boxCreator;
 			_coverageComputer = coverageComputer;

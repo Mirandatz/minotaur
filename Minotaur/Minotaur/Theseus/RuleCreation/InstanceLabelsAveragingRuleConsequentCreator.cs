@@ -1,14 +1,14 @@
-namespace Minotaur.Theseus.TestCreation {
+namespace Minotaur.Theseus.RuleCreation {
 	using System;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 
-	public sealed class AveragingRuleConsequentCreator {
+	public sealed class InstanceLabelsAveragingRuleConsequentCreator {
 
 		public Dataset Dataset { get; }
 		private readonly float _threshold;
 
-		public AveragingRuleConsequentCreator(Dataset dataset, float threshold) {
+		public InstanceLabelsAveragingRuleConsequentCreator(Dataset dataset, float threshold) {
 			if (threshold < 0 || threshold > 1)
 				throw new ArgumentOutOfRangeException(nameof(threshold));
 
