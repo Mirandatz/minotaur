@@ -1,9 +1,25 @@
 namespace Minotaur.Theseus {
 	using System;
+	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class FeatureTestDimensionIntervalConverter {
+		public readonly Dataset Dataset;
+
+		public FeatureTestDimensionIntervalConverter(Dataset dataset) {
+			Dataset = dataset;
+		}
+
+		public IDimensionInterval FromFeatureTest(IFeatureTest test) {
+			return test switch
+			{
+				BinaryFeatureTest bft => FromBinaryFeatureTest(bft),
+				ContinuousFeatureTest cft => FromContinuousFeatureTest(cft),
+
+				_ => throw CommonExceptions.UnknownFeatureTestImplementation
+			};
+		}
 
 		public BinaryDimensionInterval FromBinaryFeatureTest(BinaryFeatureTest binaryFeatureTest) {
 			if (binaryFeatureTest.Value == 0) {
@@ -28,6 +44,16 @@ namespace Minotaur.Theseus {
 				dimensionIndex: continuousFeatureTest.FeatureIndex,
 				start: continuousFeatureTest.LowerBound,
 				end: continuousFeatureTest.UpperBound);
+		}
+
+		public IFeatureTest FromDimensionInterval(IDimensionInterval interval) {
+			return interval switch
+			{
+				BinaryDimensionInterval bdi => FromBinaryDimensionInterval(bdi),
+				ContinuousDimensionInterval cdi => FromContinousDimensionInterval(cdi),
+
+				_ => throw CommonExceptions.UnknownDimensionIntervalImplementation
+			};
 		}
 
 		public BinaryFeatureTest FromBinaryDimensionInterval(BinaryDimensionInterval binaryDimensionInterval) {
