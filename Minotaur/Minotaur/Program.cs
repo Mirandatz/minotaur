@@ -17,7 +17,6 @@ namespace Minotaur {
 	using Minotaur.Theseus.IndividualCreation;
 	using Minotaur.Theseus.IndividualMutation;
 	using Minotaur.Theseus.RuleCreation;
-	using Minotaur.Theseus.TestCreation;
 
 	public static class Program {
 
@@ -108,9 +107,7 @@ namespace Minotaur {
 				hyperRectangleCreator: hyperRectangleCreator,
 				hyperRectangleCoverageComputer: hyperRectangleCoverageComputer);
 
-			var testCreator = new TestCreator(trainDataset);
-
-			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(testCreator);
+			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(dataset: trainDataset);
 
 			var consequentCreator = new InstanceLabelsAveragingRuleConsequentCreator(
 				dataset: trainDataset,

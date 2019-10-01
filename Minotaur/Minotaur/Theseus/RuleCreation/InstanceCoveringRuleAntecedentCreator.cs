@@ -4,37 +4,36 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
-	using Minotaur.Theseus.TestCreation;
 
 	public sealed class InstanceCoveringRuleAntecedentCreator {
-		public Dataset Dataset { get; }
-		private readonly TestCreator _testCreator;
 
-		public InstanceCoveringRuleAntecedentCreator(TestCreator testCreator) {
-			_testCreator = testCreator;
-			Dataset = _testCreator.Dataset;
+		public Dataset Dataset { get; }
+
+		public InstanceCoveringRuleAntecedentCreator(Dataset dataset) {
+			Dataset = dataset;
 		}
 
 		public IFeatureTest[] CreateAntecedent(Array<float> seed, ReadOnlySpan<int> nearestInstancesIndices) {
-			var box = MutableHyperRectangle.FromDatasetInstance(
-				seed: seed,
-				featureTypes: Dataset.FeatureTypes);
+			throw new NotImplementedException();
+			//var box = MutableHyperRectangle.FromDatasetInstance(
+			//	seed: seed,
+			//	featureTypes: Dataset.FeatureTypes);
 
-			for (int i = 0; i < nearestInstancesIndices.Length; i++) {
-				var index = nearestInstancesIndices[i];
-				EnlargeRectangleToCovertInstance(
-					mutableHyperRectangle: box,
-					instanceIndex: index);
-			}
+			//for (int i = 0; i < nearestInstancesIndices.Length; i++) {
+			//	var index = nearestInstancesIndices[i];
+			//	EnlargeRectangleToCovertInstance(
+			//		mutableHyperRectangle: box,
+			//		instanceIndex: index);
+			//}
 
-			var featureCount = Dataset.FeatureCount;
-			var tests = new IFeatureTest[featureCount];
-			for (int i = 0; i < tests.Length; i++) {
-				var dimension = box.GetDimensionInterval(i);
-				tests[i] = _testCreator.FromDimensionInterval(dimension);
-			}
+			//var featureCount = Dataset.FeatureCount;
+			//var tests = new IFeatureTest[featureCount];
+			//for (int i = 0; i < tests.Length; i++) {
+			//	var dimension = box.GetDimensionInterval(i);
+			//	tests[i] = _testCreator.FromDimensionInterval(dimension);
+			//}
 
-			return tests;
+			//return tests;
 		}
 
 		private void EnlargeRectangleToCovertInstance(MutableHyperRectangle mutableHyperRectangle, int instanceIndex) {
