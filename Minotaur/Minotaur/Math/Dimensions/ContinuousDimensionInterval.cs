@@ -28,20 +28,10 @@ namespace Minotaur.Math.Dimensions {
 
 		public override int GetHashCode() => HashCode.Combine(DimensionIndex, Start, End);
 
-		public override bool Equals(object? obj) {
-			if (obj is ContinuousDimensionInterval other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public override bool Equals(object? obj) => Equals((ContinuousDimensionInterval) obj!);
 
 		// Implementation of IEquatable
-		public bool Equals(IDimensionInterval dimensionInterval) {
-			if (dimensionInterval is ContinuousDimensionInterval other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public bool Equals(IDimensionInterval other) => Equals((ContinuousDimensionInterval) other);
 
 		public bool Equals(ContinuousDimensionInterval other) {
 			return

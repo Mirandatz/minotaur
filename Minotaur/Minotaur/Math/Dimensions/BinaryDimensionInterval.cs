@@ -19,7 +19,7 @@ namespace Minotaur.Math.Dimensions {
 			ContainsTrue = containsTrue;
 			ContainsFalse = containsFalse;
 		}
-		
+
 		public static BinaryDimensionInterval FromSingleValue(int dimensionIndex, float value) {
 			return (value) switch
 			{
@@ -53,19 +53,9 @@ namespace Minotaur.Math.Dimensions {
 
 		public override int GetHashCode() => HashCode.Combine(DimensionIndex, ContainsFalse, ContainsTrue);
 
-		public override bool Equals(object? obj) {
-			if (obj is BinaryDimensionInterval bdi)
-				return Equals(bdi);
-			else
-				return false;
-		}
+		public override bool Equals(object? obj) => Equals((BinaryDimensionInterval) obj!);
 
-		public bool Equals(IDimensionInterval other) {
-			if (other is BinaryDimensionInterval bdi)
-				return Equals(bdi);
-			else
-				return false;
-		}
+		public bool Equals(IDimensionInterval other) => Equals((BinaryDimensionInterval) other);
 
 		public bool Equals(BinaryDimensionInterval other) {
 			return
