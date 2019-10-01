@@ -5,7 +5,6 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math;
-	using Minotaur.Theseus.TestCreation;
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
 		public Dataset Dataset { get; }
