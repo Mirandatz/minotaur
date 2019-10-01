@@ -18,7 +18,7 @@ namespace Minotaur.Theseus {
 				BinaryFeatureTest bft => FromBinaryFeatureTest(bft),
 				ContinuousFeatureTest cft => FromContinuousFeatureTest(cft),
 
-				_ => throw new InvalidOperationException($"Unknown implementation of {nameof(IFeatureTest)}."),
+				_ => throw CommonExceptions.UnknownFeatureTestImplementation
 			};
 		}
 
@@ -31,7 +31,10 @@ namespace Minotaur.Theseus {
 
 			// @Improve performance
 			case FeatureType.Binary:
-			throw new NotImplementedException();
+			return new BinaryDimensionInterval(
+				dimensionIndex: featureIndex,
+				containsFalse: true,
+				containsTrue: true);
 
 			case FeatureType.Continuous:
 			var min = featureValues[0];
@@ -63,59 +66,34 @@ namespace Minotaur.Theseus {
 			if (!Dataset.IsFeatureIndexValid(dimensionIndex))
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
 
-			throw new NotImplementedException();
+			switch (Dataset.GetFeatureType(dimensionIndex)) {
 
-			//switch (Dataset.GetFeatureType(dimensionIndex)) {
+			case FeatureType.Binary: {
+				return new BinaryDimensionInterval(
+					dimensionIndex: dimensionIndex,
+					containsFalse: true,
+					containsTrue: true);
+			}
 
-			//case FeatureType.Categorical: {
-			//	var values = Dataset.GetSortedUniqueFeatureValues(dimensionIndex);
-			//	return CategoricalDimensionInterval.FromSortedUniqueValues(
-			//		dimensionIndex: dimensionIndex,
-			//		sortedUniqueValues: values);
-			//}
+			case FeatureType.Continuous: {
+				var lowerBound = new DimensionBound(
+					value: float.NegativeInfinity,
+					isInclusive: true);
 
-			//case FeatureType.CategoricalButTriviallyValued: {
-			//	var values = Dataset.GetSortedUniqueFeatureValues(dimensionIndex);
-			//	return CategoricalDimensionInterval.FromSortedUniqueValues(
-			//		dimensionIndex: dimensionIndex,
-			//		sortedUniqueValues: values);
-			//}
+				// @Careful, this feels weird...
+				var upperBound = new DimensionBound(
+					value: float.PositiveInfinity,
+					isInclusive: false);
 
-			//case FeatureType.Continuous: {
-			//	var lowerBound = new DimensionBound(
-			//		value: float.NegativeInfinity,
-			//		isInclusive: true);
+				return new ContinuousDimensionInterval(
+					dimensionIndex: dimensionIndex,
+					start: lowerBound,
+					end: upperBound);
+			}
 
-			//	// @Careful, this feels weird...
-			//	var upperBound = new DimensionBound(
-			//		value: float.PositiveInfinity,
-			//		isInclusive: true);
-
-			//	return new ContinuousDimensionInterval(
-			//		dimensionIndex: dimensionIndex,
-			//		start: lowerBound,
-			//		end: upperBound);
-			//}
-
-			//case FeatureType.ContinuousButTriviallyValued: {
-			//	var lowerBound = new DimensionBound(
-			//		value: float.NegativeInfinity,
-			//		isInclusive: true);
-
-			//	// @Careful, this feels weird...
-			//	var upperBound = new DimensionBound(
-			//		value: float.PositiveInfinity,
-			//		isInclusive: true);
-
-			//	return new ContinuousDimensionInterval(
-			//		dimensionIndex: dimensionIndex,
-			//		start: lowerBound,
-			//		end: upperBound);
-			//}
-
-			//default:
-			//throw new InvalidOperationException(ExceptionMessages.UnknownDimensionIntervalType);
-			//}
+			default:
+			throw CommonExceptions.UnknownDimensionIntervalImplementation;
+			}
 		}
 	}
 }
