@@ -50,7 +50,7 @@ namespace Minotaur.Theseus.TestCreation {
 		private ContinuousFeatureTest FromContinuous(ContinuousDimensionInterval cdi) {
 			var featureIndex = cdi.DimensionIndex;
 			var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex);
-			
+
 			var lowerBound = GetLowerBound(start: cdi.Start, sortedUniqueFeatureValues: featureValues);
 			var upperBound = GetUpperBound(end: cdi.End, sortedUniqueFeatureValues: featureValues);
 
@@ -58,6 +58,7 @@ namespace Minotaur.Theseus.TestCreation {
 				featureIndex: featureIndex,
 				lowerBound: lowerBound,
 				upperBound: upperBound);
+
 		}
 
 		private static float GetLowerBound(DimensionBound start, Array<float> sortedUniqueFeatureValues) {
@@ -65,16 +66,19 @@ namespace Minotaur.Theseus.TestCreation {
 			var isInclusive = start.IsInclusive;
 			var indexOfStart = sortedUniqueFeatureValues.BinarySearch(startValue);
 
+			if (float.IsNegative(startValue))
+				return startValue;
+
 			if (indexOfStart < 0)
 				throw new InvalidOperationException();
 
-			if (!isInclusive) {
-				return sortedUniqueFeatureValues[indexOfStart + 1];
+			if (indexOfStart == 0)
+				return float.NegativeInfinity;
+
+			if (isInclusive) {
+				return startValue;
 			} else {
-				if (indexOfStart == 0)
-					return float.NegativeInfinity;
-				else
-					return startValue;
+				return sortedUniqueFeatureValues[indexOfStart - 1];
 			}
 		}
 
@@ -83,16 +87,19 @@ namespace Minotaur.Theseus.TestCreation {
 			var isInclusive = end.IsInclusive;
 			var indexOfEnd = sortedUniqueFeatureValues.BinarySearch(endValue);
 
+			if (float.IsPositiveInfinity(endValue))
+				return endValue;
+
 			if (indexOfEnd < 0)
 				throw new InvalidOperationException();
 
-			if (!isInclusive) {
-				return sortedUniqueFeatureValues[indexOfEnd - 1];
+			if (indexOfEnd == sortedUniqueFeatureValues.Length - 1)
+				return float.PositiveInfinity;
+
+			if (isInclusive) {
+				return sortedUniqueFeatureValues[indexOfEnd + 1];
 			} else {
-				if (indexOfEnd == sortedUniqueFeatureValues.Length - 1)
-					return float.PositiveInfinity;
-				else
-					return endValue;
+				return endValue;
 			}
 		}
 	}

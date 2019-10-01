@@ -20,16 +20,16 @@ namespace Minotaur.Theseus.RuleCreation {
 			// @Todo: add safety / sanity checks
 
 			var instanceCount = indicesOfInstances.Length;
-			var featureCount = Dataset.FeatureCount;
+			var classCount = Dataset.ClassCount;
 
-			var trueCount = new int[featureCount];
+			var trueCount = new int[classCount];
 
 			for (int i = 0; i < indicesOfInstances.Length; i++) {
 				var index = indicesOfInstances[i];
 				UpdateTrueCount(trueCount, index);
 			}
 
-			return ComputeAverageLabels(instanceCount, featureCount, trueCount);
+			return ComputeAverageLabels(instanceCount, classCount, trueCount);
 		}
 
 		private void UpdateTrueCount(int[] trueCount, int instanceIndex) {

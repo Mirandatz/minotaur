@@ -38,6 +38,13 @@ namespace Minotaur.Math.Dimensions {
 		}
 
 		// Silly overrides
+		public override string ToString() {
+			if (IsInclusive)
+				return $"{Value}, Inclusive";
+			else
+				return $"{Value}, Exclusive";
+		}
+
 		public override int GetHashCode() => HashCode.Combine(Value, IsInclusive);
 
 		public override bool Equals(object? obj) {
