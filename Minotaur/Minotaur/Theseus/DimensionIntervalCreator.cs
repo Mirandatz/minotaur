@@ -31,9 +31,7 @@ namespace Minotaur.Theseus {
 
 			// @Improve performance
 			case FeatureType.Binary:
-			return BinaryDimensionInterval.FromSortedUniqueFeatureValues(
-				dimensionIndex: featureIndex,
-				featureValues: featureValues);
+			throw new NotImplementedException();
 
 			case FeatureType.Continuous:
 			var min = featureValues[0];

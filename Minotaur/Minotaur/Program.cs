@@ -46,7 +46,7 @@ namespace Minotaur {
 				//"--output-directory=C:/Source/minotaur/temp/",
 
 				"--fitness-metrics=fscore",
-				"--fitness-metrics=rule-count",
+				"--fitness-metrics=model-size",
 				//"--fitness-metrics=average-rule-volume",
 
 				"--max-generations=2000",

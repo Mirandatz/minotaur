@@ -1,6 +1,5 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
-	using Minotaur.Collections;
 
 	public sealed class BinaryDimensionInterval: IDimensionInterval, IEquatable<BinaryDimensionInterval> {
 
@@ -9,7 +8,7 @@ namespace Minotaur.Math.Dimensions {
 		public readonly bool ContainsFalse;
 		public readonly bool ContainsTrue;
 
-		private BinaryDimensionInterval(int dimensionIndex, bool containsFalse, bool containsTrue) {
+		public BinaryDimensionInterval(int dimensionIndex, bool containsFalse, bool containsTrue) {
 			if (dimensionIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
 
@@ -20,17 +19,7 @@ namespace Minotaur.Math.Dimensions {
 			ContainsTrue = containsTrue;
 			ContainsFalse = containsFalse;
 		}
-
-		public static BinaryDimensionInterval FromSortedUniqueFeatureValues(int dimensionIndex, Array<float> featureValues) {
-			return featureValues.Length switch
-			{
-				1 => FromSingleValue(dimensionIndex: dimensionIndex, value: featureValues[0]),
-				2 => FromTwoValues(dimensionIndex: dimensionIndex, values: featureValues),
-
-				_ => throw new InvalidOperationException($"You can't create a {nameof(BinaryDimensionInterval)} with non-binary values."),
-			};
-		}
-
+		
 		public static BinaryDimensionInterval FromSingleValue(int dimensionIndex, float value) {
 			return (value) switch
 			{
@@ -38,16 +27,6 @@ namespace Minotaur.Math.Dimensions {
 				1f => new BinaryDimensionInterval(dimensionIndex: dimensionIndex, containsFalse: false, containsTrue: true),
 				_ => throw new InvalidOperationException($"You can't create a {nameof(BinaryDimensionInterval)} with non-binary values.")
 			};
-		}
-
-		private static BinaryDimensionInterval FromTwoValues(int dimensionIndex, Array<float> values) {
-			if (values[0] != 0f || values[1] != 1)
-				throw new InvalidOperationException($"Either {nameof(values)} contains non-binary values or its not sorted.");
-
-			return new BinaryDimensionInterval(
-				dimensionIndex: dimensionIndex,
-				containsFalse: true,
-				containsTrue: true);
 		}
 
 		public bool Contains(float value) {

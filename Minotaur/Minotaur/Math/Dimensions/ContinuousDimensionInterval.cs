@@ -1,6 +1,5 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
-	using System.Text;
 
 	// @Assumption: intervals can not  be empty.
 	public sealed class ContinuousDimensionInterval: IDimensionInterval, IEquatable<ContinuousDimensionInterval> {
@@ -87,22 +86,19 @@ namespace Minotaur.Math.Dimensions {
 
 		// Silly overrides
 		public override string ToString() {
-			var builder = new StringBuilder();
-			if (Start.IsInclusive)
-				builder.Append('[');
-			else
-				builder.Append(']');
-
-			builder.Append(Start.Value);
-			builder.Append(", ");
-			builder.Append(End.Value);
-
-			if (End.IsInclusive)
-				builder.Append(']');
-			else
-				builder.Append('[');
-
-			return builder.ToString();
+			if (Start.IsInclusive) {
+				if (End.IsInclusive) {
+					return $"[{Start.Value}, {End.Value}]";
+				} else {
+					return $"[{Start.Value}, {End.Value}[";
+				}
+			} else {
+				if (End.IsInclusive) {
+					return $"]{Start.Value}, {End.Value}]";
+				} else {
+					return $"]{Start.Value}, {End.Value}[";
+				}
+			}
 		}
 
 		public override int GetHashCode() => HashCode.Combine(DimensionIndex, Start, End);
