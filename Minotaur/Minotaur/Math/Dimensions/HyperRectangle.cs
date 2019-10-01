@@ -60,10 +60,23 @@ namespace Minotaur.Math.Dimensions {
 
 		public override int GetHashCode() => _precomputedHashCode;
 
-		// @Danger, this might now work
-		public override bool Equals(object? obj) => ReferenceEquals(this, obj);
+		public override bool Equals(object? obj) => Equals((HyperRectangle) obj!);
 
-		// @Danger, this might not work
-		public bool Equals(HyperRectangle other) => ReferenceEquals(this, other);
+		public bool Equals(HyperRectangle other) {
+			if (ReferenceEquals(this, other))
+				return true;
+
+			if (Dimensions != other.Dimensions)
+				throw new InvalidOperationException();
+
+			for (int i = 0; i < DimensionCount; i++) {
+				var lhs = Dimensions[i];
+				var rhs = other.Dimensions[i];
+				if (!lhs.Equals(rhs))
+					return false;
+			}
+
+			return true;
+		}
 	}
 }
