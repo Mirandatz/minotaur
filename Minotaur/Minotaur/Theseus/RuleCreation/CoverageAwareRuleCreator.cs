@@ -66,8 +66,8 @@ namespace Minotaur.Theseus.RuleCreation {
 				otherInstancesIndices: coveredInstancesIndices);
 
 			Array.Sort(
-				keys: coveredInstancesIndices,
-				items: coveredInstancesDistancesToSeed);
+				keys: coveredInstancesDistancesToSeed,
+				items: coveredInstancesIndices);
 
 			var relevantInstances = coveredInstancesIndices
 				.AsSpan()
