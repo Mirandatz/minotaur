@@ -5,7 +5,6 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math;
-	using Minotaur.Math.Dimensions;
 	using Minotaur.Theseus.TestCreation;
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
@@ -13,18 +12,18 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly SeedSelector _seedSelector;
 		private readonly HyperRectangleCreator _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
-		private readonly MaximalTestCreator _testCreator;
-		private readonly int _minimumInstancesToCover;
+		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator;
 		private readonly AveragingRuleConsequentCreator _consequentCreator;
+		private readonly int _minimumInstancesToCover;
 
-		public CoverageAwareRuleCreator(Dataset dataset, SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, MaximalTestCreator testCreator, int minimumInstancesToCover, AveragingRuleConsequentCreator consequentCreator) {
-			Dataset = dataset;
+		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, AveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
 			_seedSelector = seedSelector;
 			_boxCreator = boxCreator;
 			_coverageComputer = coverageComputer;
-			_testCreator = testCreator;
-			_minimumInstancesToCover = minimumInstancesToCover;
+			_antecedentCreator = antecedentCreator;
 			_consequentCreator = consequentCreator;
+			_minimumInstancesToCover = minimumInstancesToCover;
+			Dataset = _seedSelector.Dataset;
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
@@ -49,6 +48,7 @@ namespace Minotaur.Theseus.RuleCreation {
 				existingRectangles: existingRectangles,
 				dimensionExpansionOrder: dimensionExpansionOrder);
 
+			// @Sanity check
 			if (!secureRectangle.Contains(seed))
 				throw new InvalidOperationException();
 
@@ -74,9 +74,17 @@ namespace Minotaur.Theseus.RuleCreation {
 				.AsSpan()
 				.Slice(start: 0, length: _minimumInstancesToCover);
 
+			var ruleAntecedent = _antecedentCreator.CreateAntecedent(
+				seed: seed,
+				nearestInstancesIndices: relevantInstances);
+
 			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
 
-			throw new NotImplementedException();
+			rule = new Rule(
+				tests: ruleAntecedent,
+				predictedLabels: ruleConsequent);
+
+			return true;
 		}
 	}
 }
