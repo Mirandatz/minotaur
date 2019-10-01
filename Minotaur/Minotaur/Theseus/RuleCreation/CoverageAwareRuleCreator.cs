@@ -9,15 +9,13 @@ namespace Minotaur.Theseus.RuleCreation {
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
 		public Dataset Dataset { get; }
 		private readonly SeedSelector _seedSelector;
-		private readonly HyperRectangleCreator _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator;
 		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator;
 		private readonly int _minimumInstancesToCover;
 
-		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCreator hyperRectangleCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
+		public CoverageAwareRuleCreator(SeedSelector seedSelector, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
 			_seedSelector = seedSelector;
-			_boxCreator = hyperRectangleCreator;
 			_coverageComputer = coverageComputer;
 			_antecedentCreator = antecedentCreator;
 			_consequentCreator = consequentCreator;
@@ -35,55 +33,57 @@ namespace Minotaur.Theseus.RuleCreation {
 				return false;
 			}
 
-			var seed = Dataset.GetInstanceData(seedIndex);
-			var existingRectangles = _boxCreator.FromRules(existingRules);
+			throw new NotImplementedException();
 
-			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
-				inclusiveStart: 0,
-				exclusiveEnd: Dataset.FeatureCount);
+			//var seed = Dataset.GetInstanceData(seedIndex);
+			//var existingRectangles = _boxCreator.FromRules(existingRules);
 
-			var secureRectangle = _boxCreator.CreateLargestNonIntersectingHyperRectangle(
-				seed: seed,
-				existingRectangles: existingRectangles,
-				dimensionExpansionOrder: dimensionExpansionOrder);
+			//var dimensionExpansionOrder = NaturalRange.CreateShuffled(
+			//	inclusiveStart: 0,
+			//	exclusiveEnd: Dataset.FeatureCount);
 
-			// @Sanity check
-			if (!secureRectangle.Contains(seed))
-				throw new InvalidOperationException();
+			//var secureRectangle = _boxCreator.CreateLargestNonIntersectingHyperRectangle(
+			//	seed: seed,
+			//	existingRectangles: existingRectangles,
+			//	dimensionExpansionOrder: dimensionExpansionOrder);
 
-			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
+			//// @Sanity check
+			//if (!secureRectangle.Contains(seed))
+			//	throw new InvalidOperationException();
 
-			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
+			//var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
 
-			// @Consideration: maybe we could try finding another seed?
-			if (coveredInstancesIndices.Length < _minimumInstancesToCover) {
-				rule = null!;
-				return false;
-			}
+			//var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
 
-			var coveredInstancesDistancesToSeed = Dataset.ComputeDistances(
-				targetInstanceIndex: seedIndex,
-				otherInstancesIndices: coveredInstancesIndices);
+			//// @Consideration: maybe we could try finding another seed?
+			//if (coveredInstancesIndices.Length < _minimumInstancesToCover) {
+			//	rule = null!;
+			//	return false;
+			//}
 
-			Array.Sort(
-				keys: coveredInstancesDistancesToSeed,
-				items: coveredInstancesIndices);
+			//var coveredInstancesDistancesToSeed = Dataset.ComputeDistances(
+			//	targetInstanceIndex: seedIndex,
+			//	otherInstancesIndices: coveredInstancesIndices);
 
-			var relevantInstances = coveredInstancesIndices
-				.AsSpan()
-				.Slice(start: 0, length: _minimumInstancesToCover);
+			//Array.Sort(
+			//	keys: coveredInstancesDistancesToSeed,
+			//	items: coveredInstancesIndices);
 
-			var ruleAntecedent = _antecedentCreator.CreateAntecedent(
-				seed: seed,
-				nearestInstancesIndices: relevantInstances);
+			//var relevantInstances = coveredInstancesIndices
+			//	.AsSpan()
+			//	.Slice(start: 0, length: _minimumInstancesToCover);
 
-			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
+			//var ruleAntecedent = _antecedentCreator.CreateAntecedent(
+			//	seed: seed,
+			//	nearestInstancesIndices: relevantInstances);
 
-			rule = new Rule(
-				tests: ruleAntecedent,
-				predictedLabels: ruleConsequent);
+			//var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
 
-			return true;
+			//rule = new Rule(
+			//	tests: ruleAntecedent,
+			//	predictedLabels: ruleConsequent);
+
+			//return true;
 		}
 	}
 }

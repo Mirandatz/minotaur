@@ -36,17 +36,17 @@ namespace Minotaur.Theseus.RuleCreation {
 			//return tests;
 		}
 
-		private void EnlargeRectangleToCovertInstance(MutableHyperRectangle mutableHyperRectangle, int instanceIndex) {
-			var instance = Dataset.GetInstanceData(instanceIndex);
-			var dimensionCount = mutableHyperRectangle.DimensionCount;
+		//private void EnlargeRectangleToCovertInstance(MutableHyperRectangle mutableHyperRectangle, int instanceIndex) {
+		//	var instance = Dataset.GetInstanceData(instanceIndex);
+		//	var dimensionCount = mutableHyperRectangle.DimensionCount;
 
-			for (int i = 0; i < dimensionCount; i++) {
-				var instanceValue = instance[i];
-				var dimension = mutableHyperRectangle.GetDimensionInterval(i);
-				var enlargedDimension = EnlargeDimensionToContainValue(dimension, instanceValue);
-				mutableHyperRectangle.SetDimensionInterval(enlargedDimension);
-			}
-		}
+		//	for (int i = 0; i < dimensionCount; i++) {
+		//		var instanceValue = instance[i];
+		//		var dimension = mutableHyperRectangle.GetDimensionInterval(i);
+		//		var enlargedDimension = EnlargeDimensionToContainValue(dimension, instanceValue);
+		//		mutableHyperRectangle.SetDimensionInterval(enlargedDimension);
+		//	}
+		//}
 
 		private IDimensionInterval EnlargeDimensionToContainValue(IDimensionInterval dimension, float instanceValue) {
 			return dimension switch
@@ -83,49 +83,50 @@ namespace Minotaur.Theseus.RuleCreation {
 		}
 
 		private ContinuousDimensionInterval EnlargeContinuousDimensionInterval(ContinuousDimensionInterval cdi, float instanceValue) {
+			throw new NotImplementedException();
 
-			var dimensionIndex = cdi.DimensionIndex;
+			//var dimensionIndex = cdi.DimensionIndex;
 
-			var start = cdi.Start;
-			if (instanceValue < start.Value) {
-				var newStart = DimensionBound.CreateStart(instanceValue);
-				return new ContinuousDimensionInterval(
-					dimensionIndex: dimensionIndex,
-					start: newStart,
-					end: cdi.End);
-			}
+			//var start = cdi.Start;
+			//if (instanceValue < start.Value) {
+			//	var newStart = DimensionBound.CreateStart(instanceValue);
+			//	return new ContinuousDimensionInterval(
+			//		dimensionIndex: dimensionIndex,
+			//		start: newStart,
+			//		end: cdi.End);
+			//}
 
-			var end = cdi.End;
-			if (instanceValue >= end.Value) {
-				var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex);
-				var indexOfInstanceValue = featureValues.BinarySearch(instanceValue);
+			//var end = cdi.End;
+			//if (instanceValue >= end.Value) {
+			//	var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex);
+			//	var indexOfInstanceValue = featureValues.BinarySearch(instanceValue);
 
-				// @Sanity check
-				if (indexOfInstanceValue < 0)
-					throw new InvalidOperationException();
+			//	// @Sanity check
+			//	if (indexOfInstanceValue < 0)
+			//		throw new InvalidOperationException();
 
-				if (indexOfInstanceValue < featureValues.Length - 1) {
-					var nextValue = featureValues[indexOfInstanceValue + 1];
-					var newEnd = DimensionBound.CreateEnd(nextValue);
-					return new ContinuousDimensionInterval(
-						dimensionIndex: dimensionIndex,
-						start: cdi.Start,
-						end: newEnd);
-				} else {
-					// If we reached this point, it means indexOfFeatureInstanceValue == featureValues.Length - 1
-					var newEnd = DimensionBound.CreateEnd(float.PositiveInfinity);
-					return new ContinuousDimensionInterval(
-						dimensionIndex: dimensionIndex,
-						start: cdi.Start,
-						end: newEnd);
-				}
-			}
+			//	if (indexOfInstanceValue < featureValues.Length - 1) {
+			//		var nextValue = featureValues[indexOfInstanceValue + 1];
+			//		var newEnd = DimensionBound.CreateEnd(nextValue);
+			//		return new ContinuousDimensionInterval(
+			//			dimensionIndex: dimensionIndex,
+			//			start: cdi.Start,
+			//			end: newEnd);
+			//	} else {
+			//		// If we reached this point, it means indexOfFeatureInstanceValue == featureValues.Length - 1
+			//		var newEnd = DimensionBound.CreateEnd(float.PositiveInfinity);
+			//		return new ContinuousDimensionInterval(
+			//			dimensionIndex: dimensionIndex,
+			//			start: cdi.Start,
+			//			end: newEnd);
+			//	}
+			//}
 
-			// If we reached this point, it is because cdi must contain the instance value
-			if (!cdi.Contains(instanceValue))
-				throw new InvalidOperationException();
+			//// If we reached this point, it is because cdi must contain the instance value
+			//if (!cdi.Contains(instanceValue))
+			//	throw new InvalidOperationException();
 
-			return cdi;
+			//return cdi;
 		}
 	}
 }

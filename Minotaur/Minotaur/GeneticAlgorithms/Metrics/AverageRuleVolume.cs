@@ -75,13 +75,12 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		//	}
 		//}
 
-
 		private double ComputeTestVolume(Rule rule, int testIndex) {
 
 			switch (rule.Tests[testIndex]) {
 
 			case NullFeatureTest _:
-			return Dataset.GetDimensionInterval(testIndex).Volume;
+			throw new NotImplementedException();
 
 			case BinaryFeatureTest _:
 			return 1;

@@ -24,33 +24,33 @@ namespace Minotaur.Theseus {
 		/// <summary>
 		/// This one really needs documentation
 		/// </summary>
-		public static bool IntersectsInAllButOneDimension(
-			MutableHyperRectangle target,
-			HyperRectangle other,
-			int dimensionToSkip
-			) {
-#if DEBUG
-			if (!HyperRectangleCompatibilityChecker.AreCompatible(lhs: target, rhs: other)) {
-				throw new ArgumentException(
-					$"{nameof(target)} " +
-					$"must be compatible (i.e. same number and types of dimensions) " +
-					$"with {nameof(other)}.");
-			}
-#endif
+		//		public static bool IntersectsInAllButOneDimension(
+		//			MutableHyperRectangle target,
+		//			HyperRectangle other,
+		//			int dimensionToSkip
+		//			) {
+		//#if DEBUG
+		//			if (!HyperRectangleCompatibilityChecker.AreCompatible(lhs: target, rhs: other)) {
+		//				throw new ArgumentException(
+		//					$"{nameof(target)} " +
+		//					$"must be compatible (i.e. same number and types of dimensions) " +
+		//					$"with {nameof(other)}.");
+		//			}
+		//#endif
 
-			var dimensionCount = target.DimensionCount;
-			for (int i = 0; i < dimensionCount; i++) {
-				if (i == dimensionToSkip)
-					continue;
+		//			var dimensionCount = target.DimensionCount;
+		//			for (int i = 0; i < dimensionCount; i++) {
+		//				if (i == dimensionToSkip)
+		//					continue;
 
-				var lhs = target.GetDimensionInterval(i);
-				var rhs = other.GetDimensionInterval(i);
-				if (!DimensionIntersects(lhs, rhs))
-					return false;
-			}
+		//				var lhs = target.GetDimensionInterval(i);
+		//				var rhs = other.GetDimensionInterval(i);
+		//				if (!DimensionIntersects(lhs, rhs))
+		//					return false;
+		//			}
 
-			return true;
-		}
+		//			return true;
+		//		}
 
 		private static bool DimensionIntersects(IDimensionInterval lhs, IDimensionInterval rhs) {
 			// Creating them scopes just to make just I'm not using
@@ -73,25 +73,7 @@ namespace Minotaur.Theseus {
 		}
 
 		private static bool IntersectsContinuous(ContinuousDimensionInterval lhsCont, ContinuousDimensionInterval rhsCont) {
-			// @Improve performance?
-			// @Verify correctness
-			var aStart = lhsCont.Start;
-			var aEnd = lhsCont.End;
-
-			var bStart = rhsCont.Start;
-			var bEnd = rhsCont.End;
-
-			if (aStart.Value > bEnd.Value)
-				return false;
-			if (aStart.Value == bEnd.Value)
-				return aStart.IsInclusive && bEnd.IsInclusive;
-
-			if (bStart.Value > aEnd.Value)
-				return false;
-			if (bStart.Value == aEnd.Value)
-				return bStart.IsInclusive && aEnd.IsInclusive;
-
-			return true;
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -8,16 +8,13 @@ namespace Minotaur.Theseus {
 
 	public sealed class SeedSelector {
 		public readonly Dataset Dataset;
-		private readonly HyperRectangleCreator _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 
 		public SeedSelector(
-			HyperRectangleCreator hyperRectangleCreator,
 			HyperRectangleCoverageComputer hyperRectangleCoverageComputer
 			) {
-			_boxCreator = hyperRectangleCreator;
 			_coverageComputer = hyperRectangleCoverageComputer;
-			Dataset = hyperRectangleCreator.Dataset;
+			Dataset = _coverageComputer.Dataset;
 		}
 
 		public bool TryFindSeed(Array<Rule> existingRules, out int datasetInstanceIndex) {
@@ -32,18 +29,19 @@ namespace Minotaur.Theseus {
 				return true;
 			}
 
-			var rectangles = _boxCreator.FromRules(existingRules);
-			var coverages = _coverageComputer.ComputeCoverages(rectangles);
-			var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
-			var potentialSeeds = totalCoverage.IndicesOfUncoveredInstances;
+			throw new NotImplementedException();
+			//var rectangles = _boxCreator.FromRules(existingRules);
+			//var coverages = _coverageComputer.ComputeCoverages(rectangles);
+			//var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
+			//var potentialSeeds = totalCoverage.IndicesOfUncoveredInstances;
 
-			if (potentialSeeds.Length == 0) {
-				datasetInstanceIndex = default;
-				return false;
-			} else {
-				datasetInstanceIndex = Random.Choice(potentialSeeds);
-				return true;
-			}
+			//if (potentialSeeds.Length == 0) {
+			//	datasetInstanceIndex = default;
+			//	return false;
+			//} else {
+			//	datasetInstanceIndex = Random.Choice(potentialSeeds);
+			//	return true;
+			//}
 		}
 	}
 }

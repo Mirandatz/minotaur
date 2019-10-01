@@ -5,11 +5,11 @@ namespace Minotaur.Theseus {
 
 	public sealed class RuleConsistencyChecker {
 
-		public readonly HyperRectangleCreator HyperRectangleCreator;
+		//public readonly HyperRectangleCreator HyperRectangleCreator;
 
-		public RuleConsistencyChecker(HyperRectangleCreator hyperRectangleCreator) {
-			HyperRectangleCreator = hyperRectangleCreator;
-		}
+		//public RuleConsistencyChecker(HyperRectangleCreator hyperRectangleCreator) {
+		//	HyperRectangleCreator = hyperRectangleCreator;
+		//}
 
 		public bool IsConsistent(Individual individual) {
 			var allRulesSpan = individual.Rules.AsSpan();
@@ -41,11 +41,12 @@ namespace Minotaur.Theseus {
 			if (lhs.PredictedLabels.SequenceEquals(rhs.PredictedLabels))
 				return true;
 
-			var lhsBox = HyperRectangleCreator.FromRule(lhs);
-			var rhsBox = HyperRectangleCreator.FromRule(rhs);
-			var boxesOverlap = HyperRectangleIntersector.IntersectsInAllDimensions(lhsBox, rhsBox);
+			throw new NotImplementedException();
+			//var lhsBox = HyperRectangleCreator.FromRule(lhs);
+			//var rhsBox = HyperRectangleCreator.FromRule(rhs);
+			//var boxesOverlap = HyperRectangleIntersector.IntersectsInAllDimensions(lhsBox, rhsBox);
 
-			return !boxesOverlap;
+			//return !boxesOverlap;
 		}
 	}
 }

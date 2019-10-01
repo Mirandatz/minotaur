@@ -22,7 +22,6 @@ namespace Minotaur.Collections.Dataset {
 		private readonly float[][] _sortedFeatureValues;
 		private readonly float[][] _sortedUniqueFeatureValues;
 		private readonly Dictionary<float, int>[] _featureValueFrequencies;
-		private readonly IDimensionInterval[] _dimensionIntervals;
 
 		private Dataset(
 			FeatureType[] featureTypes,
@@ -32,8 +31,7 @@ namespace Minotaur.Collections.Dataset {
 			float[][] sortedFeatureValues,
 			float[][] sortedUniqueFeatureValues,
 			Dictionary<float, int>[] featureValueFrequencies,
-			Matrix<bool> labels,
-			IDimensionInterval[] dimensionIntervals
+			Matrix<bool> labels
 			) {
 			FeatureTypes = featureTypes;
 			Data = data;
@@ -47,7 +45,6 @@ namespace Minotaur.Collections.Dataset {
 			FeatureCount = data.ColumnCount;
 			ClassCount = labels.ColumnCount;
 			InstanceLabels = labels;
-			_dimensionIntervals = dimensionIntervals;
 		}
 
 		public static Dataset CreateFromMutableObjects(
@@ -106,11 +103,6 @@ namespace Minotaur.Collections.Dataset {
 						elementSelector: g => g.Count());
 
 					featureValueFrequencies[featureIndex] = counts;
-
-					dimensionIntervals[featureIndex] = CreateDimensionInterval(
-						featureIndex: featureIndex,
-						featureType: featureTypes[featureIndex],
-						sortedUniqueValues: sortedUniqueFeatureValues[featureIndex]);
 				});
 
 			Task.WaitAll(distanceMatrixTask);
@@ -124,8 +116,7 @@ namespace Minotaur.Collections.Dataset {
 				sortedFeatureValues: sortedFeatureValues,
 				sortedUniqueFeatureValues: sortedUniqueFeatureValues,
 				featureValueFrequencies: featureValueFrequencies,
-				labels: labels,
-				dimensionIntervals: dimensionIntervals);
+				labels: labels);
 
 
 			static void ThrowIfDatasetContainsNonFiniteValues(float[] featureValues) {
@@ -158,39 +149,6 @@ namespace Minotaur.Collections.Dataset {
 
 				default:
 				throw CommonExceptions.UnknownFeatureType;
-				}
-			}
-
-
-			static IDimensionInterval CreateDimensionInterval(int featureIndex, FeatureType featureType, float[] sortedUniqueValues) {
-				return featureType switch
-				{
-					FeatureType.Binary => CreateBinaryDimensionInterval(dimensionIndex: featureIndex, sortedUniqueValues: sortedUniqueValues),
-					FeatureType.Continuous => CreateContinuousDimensionInterval(dimensionIndex: featureIndex, sortedUniqueValues: sortedUniqueValues),
-
-					_ => throw CommonExceptions.UnknownFeatureType
-				};
-
-				static BinaryDimensionInterval CreateBinaryDimensionInterval(int dimensionIndex, float[] sortedUniqueValues) {
-					return sortedUniqueValues.Length switch
-					{
-						1 => BinaryDimensionInterval.FromSingleValue(dimensionIndex: dimensionIndex, value: sortedUniqueValues[0]),
-						2 => new BinaryDimensionInterval(dimensionIndex: dimensionIndex, containsFalse: true, containsTrue: true),
-						_ => throw new InvalidOperationException("This should never happen..."),
-					};
-				}
-
-				static ContinuousDimensionInterval CreateContinuousDimensionInterval(int dimensionIndex, float[] sortedUniqueValues) {
-					var smallestValue = sortedUniqueValues[0];
-					var start = new DimensionBound(value: smallestValue, isInclusive: true);
-
-					var largestValue = sortedUniqueValues[^1];
-					var end = new DimensionBound(value: largestValue, isInclusive: true);
-
-					return new ContinuousDimensionInterval(
-						dimensionIndex: dimensionIndex,
-						start: start,
-						end: end);
 				}
 			}
 		}
@@ -273,14 +231,7 @@ namespace Minotaur.Collections.Dataset {
 
 			return InstanceLabels.GetRow(instanceIndex);
 		}
-
-		public IDimensionInterval GetDimensionInterval(int featureIndex) {
-			if (!IsFeatureIndexValid(featureIndex))
-				throw new ArgumentOutOfRangeException(nameof(featureIndex));
-
-			return _dimensionIntervals[featureIndex];
-		}
-
+		
 		public double[] ComputeDistances(int targetInstanceIndex, Array<int> otherInstancesIndices) {
 			if (!IsInstanceIndexValid(targetInstanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(targetInstanceIndex) + $" must be between [0, {InstanceCount}[.");

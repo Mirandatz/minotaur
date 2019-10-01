@@ -5,11 +5,11 @@ namespace Minotaur.Theseus {
 	using Minotaur.Math.Dimensions;
 
 	public sealed class HyperRectangleCoverageComputer {
-		private readonly Dataset _dataset;
+		public readonly Dataset Dataset;
 		private readonly IConcurrentCache<HyperRectangle, DatasetCoverage> _cache;
 
 		public HyperRectangleCoverageComputer(Dataset dataset, IConcurrentCache<HyperRectangle, DatasetCoverage> cache) {
-			_dataset = dataset;
+			Dataset = dataset;
 			_cache = cache;
 		}
 
@@ -24,16 +24,16 @@ namespace Minotaur.Theseus {
 		}
 
 		private DatasetCoverage UncachedComputeCoverage(HyperRectangle hyperRectangle) {
-			var instanceCount = _dataset.InstanceCount;
+			var instanceCount = Dataset.InstanceCount;
 			var instaceIsCovered = new bool[instanceCount];
 
 			for (int i = 0; i < instaceIsCovered.Length; i++) {
-				var instanceData = _dataset.GetInstanceData(i);
+				var instanceData = Dataset.GetInstanceData(i);
 				instaceIsCovered[i] = hyperRectangle.Contains(instanceData);
 			}
 
 			return new DatasetCoverage(
-				dataset: _dataset,
+				dataset: Dataset,
 				instancesCovered: instaceIsCovered);
 		}
 

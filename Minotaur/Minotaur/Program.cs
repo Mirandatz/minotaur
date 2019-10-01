@@ -87,14 +87,14 @@ namespace Minotaur {
 			PrintTrainDatasetInformation(trainDataset);
 			Console.WriteLine();
 
-			var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
+			//var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
 			var hyperRectangleCreatorCache = IConcurrentCacheSelector.Create<Rule, HyperRectangle>(
 				capacity: settings.HyperRectangleCacheSize);
 
-			var hyperRectangleCreator = new HyperRectangleCreator(
-			  dimensionIntervalCreator: dimensionIntervalCreator,
-			  cache: hyperRectangleCreatorCache);
+			//var hyperRectangleCreator = new HyperRectangleCreator(
+			//  dimensionIntervalCreator: dimensionIntervalCreator,
+			//  cache: hyperRectangleCreatorCache);
 
 			var hyperRectangleCoverageCache = IConcurrentCacheSelector.Create<HyperRectangle, DatasetCoverage>(
 				capacity: 32 * 1024);
@@ -104,7 +104,6 @@ namespace Minotaur {
 				cache: hyperRectangleCoverageCache);
 
 			var seedSelector = new SeedSelector(
-				hyperRectangleCreator: hyperRectangleCreator,
 				hyperRectangleCoverageComputer: hyperRectangleCoverageComputer);
 
 			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(dataset: trainDataset);
@@ -115,7 +114,6 @@ namespace Minotaur {
 
 			var ruleCreator = new CoverageAwareRuleCreator(
 				seedSelector: seedSelector,
-				hyperRectangleCreator: hyperRectangleCreator,
 				coverageComputer: hyperRectangleCoverageComputer,
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,
@@ -174,7 +172,7 @@ namespace Minotaur {
 				individualCreator: individualCreator,
 				settings: settings);
 
-			var consistencyChecker = new RuleConsistencyChecker(hyperRectangleCreator);
+			var consistencyChecker = new RuleConsistencyChecker();
 
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
