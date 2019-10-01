@@ -42,7 +42,7 @@ namespace Minotaur.Theseus {
 				end: new DimensionBound(value: max, isInclusive: true));
 
 			default:
-			throw new InvalidOperationException($"Unknown {nameof(FeatureType)} type.");
+			throw CommonExceptions.UnknownFeatureType;
 			}
 		}
 

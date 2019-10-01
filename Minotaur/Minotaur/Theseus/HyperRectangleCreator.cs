@@ -39,102 +39,86 @@ namespace Minotaur.Theseus {
 				seed: seed,
 				featureTypes: Dataset.FeatureTypes);
 
-			throw new NotImplementedException();
+			for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
+				var dimensionIndex = dimensionExpansionOrder[i];
+				var featureType = Dataset.GetFeatureType(featureIndex: dimensionIndex);
 
-			//for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
-			//	var dimensionIndex = dimensionExpansionOrder[i];
-				//switch (Dataset.GetFeatureType(dimensionIndex)) {
+				switch (featureType) {
 
-				//case FeatureType.Categorical:
-				//EnlargeCategoricalDimension(
-				//	seed: seed,
-				//	mutable: mutable,
-				//	dimensionIndex: dimensionIndex,
-				//	existingRectangles: existingRectangles);
-				//break;
+				case FeatureType.Binary:
+				EnlargeBinaryDimension(
+					seed: seed,
+					mutable: mutable,
+					dimensionIndex: dimensionIndex,
+					existingRectangles: existingRectangles);
+				break;
 
-				//case FeatureType.CategoricalButTriviallyValued:
-				//// Ain't nothing to do, bruh... There is a single
-				//// value in the dataset... Whata pain...
-				//break;
+				case FeatureType.Continuous:
+				EnlargeContinuousDimension(
+					seed: seed,
+					mutable: mutable,
+					dimensionIndex: dimensionIndex,
+					existingRectangles: existingRectangles);
+				break;
 
-				//case FeatureType.Continuous:
-				//EnlargeContinuousDimension(
-				//	seed: seed,
-				//	mutable: mutable,
-				//	dimensionIndex: dimensionIndex,
-				//	existingRectangles: existingRectangles);
-				//break;
+				default:
+				throw CommonExceptions.UnknownFeatureType;
+				}
+			}
 
-				//case FeatureType.ContinuousButTriviallyValued:
-				//EnlargeContinuousDimension(
-				//	seed: seed,
-				//	mutable: mutable,
-				//	dimensionIndex: dimensionIndex,
-				//	existingRectangles: existingRectangles);
-				//break;
-
-				//default:
-				//throw new InvalidOperationException(ExceptionMessages.UnknownFeatureType);
-				//}
-			//}
-
-			//return mutable.ToHyperRectangle();
+			return mutable.ToHyperRectangle();
 		}
 
 		private HyperRectangle CreateMaximalRectangle() {
-			throw new NotImplementedException();
-			//var dimensions = new IDimensionInterval[Dataset.FeatureCount];
-			//for (int i = 0; i < dimensions.Length; i++)
-			//	dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimensionInterval(dimensionIndex: i);
+			var dimensions = new IDimensionInterval[Dataset.FeatureCount];
+			for (int i = 0; i < dimensions.Length; i++)
+				dimensions[i] = _dimensionIntervalCreator.CreateMaximalDimensionInterval(dimensionIndex: i);
 
-			//return new HyperRectangle(dimensions);
+			return new HyperRectangle(dimensions);
 		}
 
-		private void EnlargeCategoricalDimension(
+		private void EnlargeBinaryDimension(
 			Array<float> seed,
 			MutableHyperRectangle mutable,
 			int dimensionIndex,
 			Array<HyperRectangle> existingRectangles
 			) {
 
-			throw new NotImplementedException();
+			// As with continuous dimensions, we start with the 
+			// largest possible dimension values.
+			// For a binary dimension, that is: it includes both
+			// true and false values
+			var containsFalse = true;
+			var containsTrue = true;
 
-			//var possibleValues = Dataset
-			//	.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex)
-			//	.ToHashSet();
+			for (int i = 0; i < existingRectangles.Length; i++) {
+				var otherRectangle = existingRectangles[i];
 
-			//for (int i = 0; i < existingRectangles.Length; i++) {
-			//	var otherRectangle = existingRectangles[i];
+				// In the lords name, the most basic of sanity checks
+				if (otherRectangle.Contains(seed))
+					throw new InvalidOperationException();
 
-			//	// In the lords name, the most basic of sanity checks
-			//	//if (otherRectangle.Contains(seed))
-			//	//	throw new InvalidOperationException();
+				var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
+					target: mutable,
+					other: otherRectangle,
+					dimensionToSkip: dimensionIndex);
 
-			//	var intersects = HyperRectangleIntersector.IntersectsInAllButOneDimension(
-			//		target: mutable,
-			//		other: otherRectangle,
-			//		dimensionToSkip: dimensionIndex);
+				if (!intersects)
+					continue;
 
-			//	var otherDimension = (CategoricalDimensionInterval) otherRectangle.GetDimensionInterval(dimensionIndex);
+				var otherDimension = (BinaryDimensionInterval) otherRectangle.GetDimensionInterval(dimensionIndex);
+				if (otherDimension.ContainsTrue)
+					containsTrue = false;
+				if (otherDimension.ContainsFalse)
+					containsFalse = false;
+			}
 
-			//	if (intersects)
-			//		possibleValues.ExceptWith(otherDimension.SortedValues);
+			var enlargedDimension = new BinaryDimensionInterval(
+				dimensionIndex: dimensionIndex,
+				containsFalse: containsFalse,
+				containsTrue: containsTrue);
 
-			//	// It's not possible to enlarge the dimension
-			//	if (possibleValues.Count == 0)
-			//		return;
-			//}
-
-			//var sortedPossibleValues = possibleValues
-			//	.OrderBy(v => v)
-			//	.ToArray();
-
-			//var enlargedDimension = CategoricalDimensionInterval.FromSortedUniqueValues(
-			//	dimensionIndex: dimensionIndex,
-			//	sortedUniqueValues: sortedPossibleValues);
-
-			//mutable.SetDimensionInterval(enlargedDimension);
+			mutable.SetDimensionInterval(enlargedDimension);
 		}
 
 		private void EnlargeContinuousDimension(
@@ -174,18 +158,6 @@ namespace Minotaur.Theseus {
 					min = Math.Max(min, otherMax);
 				else
 					max = Math.Min(max, otherMin);
-
-				//// If the seed is to the right of the other interval
-				//// we need to adjust the left side of our enlarged rectangle,
-				//// i.e. the min
-				//if (seedValue > otherMax)
-				//	min = Math.Max(min, otherMax);
-
-				//// If the seed is to the left of the other interval,
-				//// we need to adjust the right side of our enlarged rectangle,
-				//// i.e. the max
-				//if (seedValue <= otherMin)
-				//	max = Math.Min(max, otherMin);
 			}
 
 			// @Assumption all continuous intervals have 
