@@ -20,8 +20,8 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			if (float.IsNaN(upperBound))
 				throw new ArgumentOutOfRangeException(nameof(upperBound) + " can't be NaN.");
 
-			if (lowerBound > upperBound)
-				throw new ArgumentException(nameof(upperBound) + " must be equal to or greater than " + nameof(lowerBound));
+			if (lowerBound >= upperBound)
+				throw new ArgumentException(nameof(upperBound) + " must be greater than " + nameof(lowerBound));
 
 			LowerBound = lowerBound;
 			UpperBound = upperBound;
