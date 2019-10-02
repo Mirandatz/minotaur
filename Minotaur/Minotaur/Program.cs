@@ -103,7 +103,12 @@ namespace Minotaur {
 				dataset: trainDataset,
 				cache: hyperRectangleCoverageCache);
 
+			var featureTestIntervalConveter = new FeatureTestDimensionIntervalConverter(trainDataset);
+
+			var ruleAntecedentHyperRectangleConverter = new RuleAntecedentHyperRectangleConverter(featureTestIntervalConveter);
+
 			var seedSelector = new SeedSelector(
+				ruleAntecedentHyperRectangleConverter: ruleAntecedentHyperRectangleConverter,
 				hyperRectangleCoverageComputer: hyperRectangleCoverageComputer);
 
 			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(dataset: trainDataset);
@@ -114,6 +119,7 @@ namespace Minotaur {
 
 			var ruleCreator = new CoverageAwareRuleCreator(
 				seedSelector: seedSelector,
+				ruleConverter: ruleAntecedentHyperRectangleConverter,
 				coverageComputer: hyperRectangleCoverageComputer,
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,

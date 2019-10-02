@@ -3,7 +3,6 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
-	using Minotaur.Math.Dimensions;
 
 	public sealed class SeedSelector {
 		public readonly Dataset Dataset;
@@ -29,14 +28,7 @@ namespace Minotaur.Theseus {
 				return indices;
 			}
 
-			var boxes = new HyperRectangle[existingRules.Length];
-			for (int i = 0; i < boxes.Length; i++) {
-				var rule = existingRules[i];
-				var antecedent = rule.Antecedent;
-				var box = _boxCreator.FromRuleAntecedent(antecedent);
-				boxes[i] = box;
-			}
-
+			var boxes = _boxCreator.FromRules(existingRules);
 			var coverages = _coverageComputer.ComputeCoverages(boxes);
 			var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
 			return totalCoverage.IndicesOfUncoveredInstances;
