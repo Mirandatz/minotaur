@@ -138,6 +138,9 @@ namespace Minotaur.Math.Dimensions {
 			if (float.IsNaN(value))
 				throw new InvalidOperationException();
 
+			if (_ends[dimensionIndex] < value)
+				throw new InvalidOperationException();
+
 			_starts[dimensionIndex] = value;
 		}
 
@@ -145,6 +148,9 @@ namespace Minotaur.Math.Dimensions {
 			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
 				throw new InvalidOperationException();
 			if (float.IsNaN(value))
+				throw new InvalidOperationException();
+
+			if (_starts[dimensionIndex] > value)
 				throw new InvalidOperationException();
 
 			_ends[dimensionIndex] = value;
