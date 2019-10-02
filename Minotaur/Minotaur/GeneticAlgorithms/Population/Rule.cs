@@ -21,6 +21,9 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		private readonly int _precomputedHashCode;
 
 		public Rule(Array<IFeatureTest> antecedent, Array<bool> consequent) {
+			if (antecedent.ContainsNulls())
+				throw new ArgumentException(nameof(antecedent) + " can't contain nulls.");
+
 			Antecedent = antecedent;
 			Consequent = consequent;
 

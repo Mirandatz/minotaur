@@ -21,17 +21,12 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		public readonly int HashCode;
 
 		public Individual(Array<Rule> rules, Array<bool> defaultLabels) {
-			if (rules is null)
-				throw new ArgumentNullException(nameof(rules));
-			if (defaultLabels is null)
-				throw new ArgumentNullException(nameof(defaultLabels));
 			if (rules.Length < MinimumRuleCount)
 				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
 			if (rules.ContainsNulls())
 				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
 			if (defaultLabels.Length == 0)
 				throw new ArgumentException(nameof(defaultLabels) + " can't be empty.");
-
 
 			Rules = rules;
 			DefaultLabels = defaultLabels;
@@ -56,9 +51,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		}
 
 		public Matrix<bool> Predict(Dataset dataset) {
-			if (dataset == null)
-				throw new ArgumentNullException(nameof(dataset));
-
 			var instanceCount = dataset.InstanceCount;
 			var classCount = dataset.ClassCount;
 			var allPredictions = new MutableMatrix<bool>(
@@ -78,13 +70,13 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public override int GetHashCode() => HashCode;
 
-		public override bool Equals(object? obj) {
-			if (obj is Individual other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public override bool Equals(object? obj) => Equals((Individual) obj!);
 
+		/// <remarks>
+		/// Individuals are compared using reference equality instead
+		/// of "semantic equality" in order to allow the existance of
+		/// "clones" in the genetic algorithm population.
+		/// </remarks>
 		public bool Equals(Individual other) => ReferenceEquals(this, other);
 	}
 }
