@@ -23,14 +23,13 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			Value = value;
 		}
 
-		public bool Covers(float featureValue) {
+		public bool Matches(Array<float> instance) {
+			var featureValue = instance[FeatureIndex];
 			if (featureValue != 0 && featureValue != 1)
-				throw new ArgumentOutOfRangeException(nameof(featureValue));
+				throw new ArgumentException(nameof(instance) + " contains non-binary values for a binary feature.");
 
 			return Value == featureValue;
 		}
-
-		public bool Matches(Array<float> instance) => Covers(instance[FeatureIndex]);
 
 		public override string ToString() => $"f[{FeatureIndex}]={Value}";
 
