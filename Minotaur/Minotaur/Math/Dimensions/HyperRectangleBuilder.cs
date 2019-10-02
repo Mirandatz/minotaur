@@ -32,6 +32,53 @@ namespace Minotaur.Math.Dimensions {
 			}
 		}
 
+		public static HyperRectangleBuilder InitializeWithSeed(Dataset dataset, int seedIndex) {
+			var builder = new HyperRectangleBuilder(dataset);
+			var seed = dataset.GetFeatureValues(seedIndex);
+			var featureCount = dataset.FeatureCount;
+
+			for (int i = 0; i < featureCount; i++) {
+				switch (dataset.GetFeatureType(i)) {
+
+				case FeatureType.Binary: {
+					if (seed[i] == 0f) {
+						builder.UpdateBinaryDimensionIntervalValue(
+							dimensionIndex: i,
+							status: BinaryDimensionIntervalStatus.ContainsOnlyFalse);
+
+						break;
+					}
+
+					if (seed[i] == 1f) {
+						builder.UpdateBinaryDimensionIntervalValue(
+							dimensionIndex: i,
+							status: BinaryDimensionIntervalStatus.ContainsOnlyTrue);
+						break;
+					}
+
+					throw new InvalidOperationException();
+				}
+
+				case FeatureType.Continuous: {
+					builder.UpdateContinuousDimensionIntervalStart(
+						dimensionIndex: i,
+						value: seed[i]);
+
+					builder.UpdateContinuousDimensionIntervalEnd(
+						dimensionIndex: i,
+						value: seed[i]);
+
+					break;
+				}
+
+				default:
+				throw CommonExceptions.UnknownFeatureType;
+				}
+			}
+
+			return builder;
+		}
+
 		public static HyperRectangleBuilder InitializeWithLargestRectangle(Dataset dataset) {
 			var builder = new HyperRectangleBuilder(dataset);
 			var featureCount = dataset.FeatureCount;
@@ -80,7 +127,7 @@ namespace Minotaur.Math.Dimensions {
 
 			_ends[dimensionIndex] = value;
 		}
-		
+
 		public HyperRectangle Build() {
 			var dimensionCount = Dataset.FeatureCount;
 			var intervals = new IDimensionInterval[dimensionCount];
