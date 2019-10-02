@@ -103,6 +103,28 @@ namespace Minotaur.Math.Dimensions {
 			return builder;
 		}
 
+		public (bool ContainsFalse, bool ContainsTrue) GetCategoricalDimensionPreview(int dimensionIndex) {
+			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Binary)
+				throw new InvalidOperationException();
+
+			return _binaryIntervalStatus[dimensionIndex] switch
+			{
+				BinaryDimensionIntervalStatus.ContainsOnlyFalse => (ContainsFalse: true, ContainsTrue: false),
+				BinaryDimensionIntervalStatus.ContainsOnlyTrue => (ContainsFalse: false, ContainsTrue: true),
+				BinaryDimensionIntervalStatus.ContainsTrueAndFalse => (ContainsFalse: true, ContainsTrue: true),
+
+				BinaryDimensionIntervalStatus.Undefined => throw new InvalidOperationException(),
+				_ => throw new InvalidOperationException()
+			};
+		}
+
+		public (float Start, float End) GetContinuousDimensionPreview(int dimensionIndex) {
+			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
+				throw new InvalidOperationException();
+
+			return (Start: _starts[dimensionIndex], End: _ends[dimensionIndex]);
+		}
+
 		public void UpdateBinaryDimensionIntervalValue(int dimensionIndex, BinaryDimensionIntervalStatus status) {
 			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Binary)
 				throw new InvalidOperationException();

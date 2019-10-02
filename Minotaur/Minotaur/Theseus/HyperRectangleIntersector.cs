@@ -1,18 +1,27 @@
 namespace Minotaur.Theseus {
 	using System;
+	using Minotaur.Collections.Dataset;
 	using Minotaur.Math.Dimensions;
 
-	public static class HyperRectangleIntersector {
+	public sealed class HyperRectangleIntersector {
 
-		public static bool IntersectsInAllDimensions(HyperRectangle lhs, HyperRectangle rhs) {
-			if (lhs.DimensionCount != rhs.DimensionCount)
-				throw new ArgumentException();
+		public readonly Dataset Dataset;
 
-			var dimensionCount = lhs.DimensionCount;
+		public HyperRectangleIntersector(Dataset dataset) {
+			Dataset = dataset;
+		}
+
+		public bool IntersectsInAllButOneDimension(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionToSkip) {
+			var dimensionCount = Dataset.FeatureCount;
+
 			for (int i = 0; i < dimensionCount; i++) {
-				var intersects = DimensionIntersects(
-					lhs: lhs.GetDimensionInterval(i),
-					rhs: rhs.GetDimensionInterval(i));
+				if (i == dimensionToSkip)
+					continue;
+
+				var intersects = Intersects(
+					builder: builder,
+					rect: rect,
+					dimensionIndex: i);
 
 				if (!intersects)
 					return false;
@@ -21,58 +30,32 @@ namespace Minotaur.Theseus {
 			return true;
 		}
 
-		/// <summary>
-		/// This one really needs documentation
-		/// </summary>
-		//		public static bool IntersectsInAllButOneDimension(
-		//			MutableHyperRectangle target,
-		//			HyperRectangle other,
-		//			int dimensionToSkip
-		//			) {
-		//#if DEBUG
-		//			if (!HyperRectangleCompatibilityChecker.AreCompatible(lhs: target, rhs: other)) {
-		//				throw new ArgumentException(
-		//					$"{nameof(target)} " +
-		//					$"must be compatible (i.e. same number and types of dimensions) " +
-		//					$"with {nameof(other)}.");
-		//			}
-		//#endif
-
-		//			var dimensionCount = target.DimensionCount;
-		//			for (int i = 0; i < dimensionCount; i++) {
-		//				if (i == dimensionToSkip)
-		//					continue;
-
-		//				var lhs = target.GetDimensionInterval(i);
-		//				var rhs = other.GetDimensionInterval(i);
-		//				if (!DimensionIntersects(lhs, rhs))
-		//					return false;
-		//			}
-
-		//			return true;
-		//		}
-
-		private static bool DimensionIntersects(IDimensionInterval lhs, IDimensionInterval rhs) {
-			// Creating them scopes just to make just I'm not using
-			// wrong variables... They have such similar names, nom saying?
+		private bool Intersects(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
+			return Dataset.GetFeatureType(dimensionIndex) switch
 			{
-				var lhsCat = lhs as BinaryDimensionInterval;
-				var rhsCat = rhs as BinaryDimensionInterval;
-				if (!(lhsCat is null) && !(rhsCat is null))
-					throw new NotImplementedException();
-			}
+				FeatureType.Binary => IntersectsBinary(builder, rect, dimensionIndex),
+				FeatureType.Continuous => IntersectsContinuous(builder, rect, dimensionIndex),
 
-			{
-				var lhsCont = lhs as ContinuousDimensionInterval;
-				var rhsCont = rhs as ContinuousDimensionInterval;
-				if (!(lhsCont is null) && !(rhsCont is null))
-					return IntersectsContinuous(lhsCont, rhsCont);
-			}
-
-			throw new InvalidOperationException("This line should never be reached.");
+				_ => throw CommonExceptions.UnknownFeatureType
+			};
 		}
 
-		private static bool IntersectsContinuous(ContinuousDimensionInterval lhsCont, ContinuousDimensionInterval rhsCont) {
+		private bool IntersectsBinary(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
+			(var containsFalse, var containsTrue) = builder.GetCategoricalDimensionPreview(dimensionIndex);
+			var interval = (BinaryDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
+
+			if (interval.ContainsFalse && containsFalse)
+				return true;
+			if (interval.ContainsTrue && containsTrue)
+				return true;
+
+			return false;
+		}
+
+		private bool IntersectsContinuous(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
+			(var start, var end) = builder.GetContinuousDimensionPreview(dimensionIndex);
+			var interval = (ContinuousDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
+
 			throw new NotImplementedException();
 		}
 	}
