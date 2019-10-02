@@ -1,47 +1,45 @@
 namespace Minotaur.Theseus {
 	using System;
-	using System.Threading.Tasks;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
-	using Random = Minotaur.Random.ThreadStaticRandom;
+	using Minotaur.Math.Dimensions;
 
 	public sealed class SeedSelector {
 		public readonly Dataset Dataset;
+		private readonly RuleAntecedentHyperRectangleConverter _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 
-		public SeedSelector(
-			HyperRectangleCoverageComputer hyperRectangleCoverageComputer
-			) {
+		public SeedSelector(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter, HyperRectangleCoverageComputer hyperRectangleCoverageComputer) {
+			_boxCreator = ruleAntecedentHyperRectangleConverter;
 			_coverageComputer = hyperRectangleCoverageComputer;
-			Dataset = _coverageComputer.Dataset;
+			Dataset = _boxCreator.Dataset;
 		}
 
-		public bool TryFindSeed(Array<Rule> existingRules, out int datasetInstanceIndex) {
+		public Array<int> FindSeedsIndices(Array<Rule> existingRules) {
 			if (existingRules.ContainsNulls())
 				throw new ArgumentException(nameof(existingRules) + " can't contain nulls.");
 
 			if (existingRules.IsEmpty) {
-				datasetInstanceIndex = Random.Int(
-					inclusiveMin: 0,
-					exclusiveMax: Dataset.InstanceCount);
+				var instanceCount = Dataset.InstanceCount;
+				var indices = new int[instanceCount];
+				for (int i = 0; i < indices.Length; i++)
+					indices[i] = i;
 
-				return true;
+				return indices;
 			}
 
-			throw new NotImplementedException();
-			//var rectangles = _boxCreator.FromRules(existingRules);
-			//var coverages = _coverageComputer.ComputeCoverages(rectangles);
-			//var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
-			//var potentialSeeds = totalCoverage.IndicesOfUncoveredInstances;
+			var boxes = new HyperRectangle[existingRules.Length];
+			for (int i = 0; i < boxes.Length; i++) {
+				var rule = existingRules[i];
+				var antecedent = rule.Antecedent;
+				var box = _boxCreator.FromRuleAntecedent(antecedent);
+				boxes[i] = box;
+			}
 
-			//if (potentialSeeds.Length == 0) {
-			//	datasetInstanceIndex = default;
-			//	return false;
-			//} else {
-			//	datasetInstanceIndex = Random.Choice(potentialSeeds);
-			//	return true;
-			//}
+			var coverages = _coverageComputer.ComputeCoverages(boxes);
+			var totalCoverage = DatasetCoverage.CombineCoveragesBinaryOr(coverages);
+			return totalCoverage.IndicesOfUncoveredInstances;
 		}
 	}
 }
