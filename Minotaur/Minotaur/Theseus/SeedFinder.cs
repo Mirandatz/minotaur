@@ -4,12 +4,12 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 
-	public sealed class SeedSelector {
+	public sealed class SeedFinder {
 		public readonly Dataset Dataset;
 		private readonly RuleAntecedentHyperRectangleConverter _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 
-		public SeedSelector(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter, HyperRectangleCoverageComputer hyperRectangleCoverageComputer) {
+		public SeedFinder(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter, HyperRectangleCoverageComputer hyperRectangleCoverageComputer) {
 			_boxCreator = ruleAntecedentHyperRectangleConverter;
 			_coverageComputer = hyperRectangleCoverageComputer;
 			Dataset = _boxCreator.Dataset;

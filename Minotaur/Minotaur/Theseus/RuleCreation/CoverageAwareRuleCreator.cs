@@ -8,14 +8,14 @@ namespace Minotaur.Theseus.RuleCreation {
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
 		public Dataset Dataset { get; }
-		private readonly SeedSelector _seedSelector;
+		private readonly SeedFinder _seedSelector;
 		private readonly RuleAntecedentHyperRectangleConverter _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator;
 		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator;
 		private readonly int _minimumInstancesToCover;
 
-		public CoverageAwareRuleCreator(SeedSelector seedSelector, RuleAntecedentHyperRectangleConverter ruleConverter, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
+		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter ruleConverter, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
 			_seedSelector = seedSelector;
 			_boxCreator = ruleConverter;
 			_coverageComputer = coverageComputer;
