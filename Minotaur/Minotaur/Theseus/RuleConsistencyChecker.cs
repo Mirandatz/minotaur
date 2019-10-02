@@ -38,7 +38,7 @@ namespace Minotaur.Theseus {
 		}
 
 		public bool AreConsistent(Rule lhs, Rule rhs) {
-			if (lhs.PredictedLabels.SequenceEquals(rhs.PredictedLabels))
+			if (lhs.Consequent.SequenceEquals(rhs.Consequent))
 				return true;
 
 			throw new NotImplementedException();

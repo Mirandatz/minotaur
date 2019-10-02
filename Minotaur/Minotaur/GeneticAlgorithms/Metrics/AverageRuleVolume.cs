@@ -29,7 +29,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		private double ComputeRuleVolume(Rule rule) {
 			double volume = 1;
 
-			var tests = rule.Tests;
+			var tests = rule.Antecedent;
 			for (int i = 0; i < tests.Length; i++)
 				volume *= ComputeTestVolume(rule, i);
 
@@ -77,7 +77,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 
 		private double ComputeTestVolume(Rule rule, int testIndex) {
 
-			switch (rule.Tests[testIndex]) {
+			switch (rule.Antecedent[testIndex]) {
 
 			case NullFeatureTest _:
 			throw new NotImplementedException();

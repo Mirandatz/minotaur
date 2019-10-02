@@ -251,12 +251,8 @@ namespace Minotaur.Collections {
 	public static class IEquatableArrayExtensions {
 
 		public static bool SequenceEquals<T>(this Array<T> self, Array<T> other) where T : IEquatable<T> {
-			// We check ReferenceEquals before checking for nulls because we don't expect to
-			// compare to nulls (ever)
 			if (ReferenceEquals(self, other))
 				return true;
-			if (other == null)
-				return false;
 
 			if (self.Length != other.Length)
 				return false;
@@ -265,13 +261,8 @@ namespace Minotaur.Collections {
 				var lhs = self[i];
 				var rhs = other[i];
 
-				if (lhs == null) {
-					if (rhs != null)
-						return false;
-				} else {
-					if (!lhs.Equals(rhs))
-						return false;
-				}
+				if (!lhs.Equals(rhs))
+					return false;
 			}
 
 			return true;

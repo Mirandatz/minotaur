@@ -20,7 +20,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 
 		private int RuleSize(Rule rule) {
 			var ruleSize = 0;
-			var tests = rule.Tests;
+			var tests = rule.Antecedent;
 
 			for (int i = 0; i < tests.Length; i++)
 				ruleSize += tests[i].TestSize;
