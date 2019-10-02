@@ -9,9 +9,9 @@ namespace Minotaur.Theseus {
 		private readonly RuleAntecedentHyperRectangleConverter _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 
-		public SeedFinder(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter, HyperRectangleCoverageComputer hyperRectangleCoverageComputer) {
-			_boxCreator = ruleAntecedentHyperRectangleConverter;
-			_coverageComputer = hyperRectangleCoverageComputer;
+		public SeedFinder(RuleAntecedentHyperRectangleConverter ruleConverter, HyperRectangleCoverageComputer coverageComputer) {
+			_boxCreator = ruleConverter;
+			_coverageComputer = coverageComputer;
 			Dataset = _boxCreator.Dataset;
 		}
 

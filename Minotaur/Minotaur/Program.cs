@@ -108,8 +108,8 @@ namespace Minotaur {
 			var ruleAntecedentHyperRectangleConverter = new RuleAntecedentHyperRectangleConverter(featureTestIntervalConveter);
 
 			var seedSelector = new SeedFinder(
-				ruleAntecedentHyperRectangleConverter: ruleAntecedentHyperRectangleConverter,
-				hyperRectangleCoverageComputer: hyperRectangleCoverageComputer);
+				ruleConverter: ruleAntecedentHyperRectangleConverter,
+				coverageComputer: hyperRectangleCoverageComputer);
 
 			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(dataset: trainDataset);
 

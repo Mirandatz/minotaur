@@ -4,7 +4,7 @@ namespace Minotaur.Math.Dimensions {
 
 	public sealed class HyperRectangleBuilder {
 
-		private enum BinaryDimensionIntervalStatus {
+		public enum BinaryDimensionIntervalStatus {
 			Undefined,
 			ContainsOnlyTrue,
 			ContainsOnlyFalse,
@@ -17,7 +17,7 @@ namespace Minotaur.Math.Dimensions {
 		private readonly float[] _starts;
 		private readonly float[] _ends;
 
-		public HyperRectangleBuilder(Dataset dataset) {
+		private HyperRectangleBuilder(Dataset dataset) {
 			Dataset = dataset;
 
 			var featureCount = Dataset.FeatureCount;
@@ -32,68 +32,55 @@ namespace Minotaur.Math.Dimensions {
 			}
 		}
 
-		public void UpdateIntervalValue(int dimensionIndex, float value) {
+		public static HyperRectangleBuilder InitializeWithLargestRectangle(Dataset dataset) {
+			var builder = new HyperRectangleBuilder(dataset);
+			var featureCount = dataset.FeatureCount;
+
+			for (int i = 0; i < featureCount; i++) {
+				switch (dataset.GetFeatureType(i)) {
+
+				case FeatureType.Binary:
+				builder._binaryIntervalStatus[i] = BinaryDimensionIntervalStatus.ContainsTrueAndFalse;
+				break;
+
+				case FeatureType.Continuous:
+				builder._starts[i] = float.NegativeInfinity;
+				builder._ends[i] = float.PositiveInfinity;
+				break;
+
+				default:
+				throw CommonExceptions.UnknownFeatureType;
+				}
+			}
+
+			return builder;
+		}
+
+		public void UpdateBinaryDimensionIntervalValue(int dimensionIndex, BinaryDimensionIntervalStatus status) {
+			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Binary)
+				throw new InvalidOperationException();
+
+			_binaryIntervalStatus[dimensionIndex] = status;
+		}
+
+		public void UpdateContinuousDimensionIntervalStart(int dimensionIndex, float value) {
+			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
+				throw new InvalidOperationException();
 			if (float.IsNaN(value))
-				throw new ArgumentOutOfRangeException(nameof(value));
+				throw new InvalidOperationException();
 
-			switch (Dataset.GetFeatureType(dimensionIndex)) {
-
-			case FeatureType.Binary:
-			UpdateBinaryIntervalValue(dimensionIndex, value);
-			break;
-
-			case FeatureType.Continuous:
-			UpdateContinousIntervalValue(dimensionIndex, value);
-			break;
-
-			default:
-			throw CommonExceptions.UnknownFeatureType;
-			}
+			_starts[dimensionIndex] = value;
 		}
 
-		private void UpdateBinaryIntervalValue(int dimensionIndex, float value) {
-			if (value != 0f && value != 1f)
-				throw new ArgumentOutOfRangeException(nameof(value));
+		public void UpdateContinuousDimensionIntervalEnd(int dimensionIndex, float value) {
+			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
+				throw new InvalidOperationException();
+			if (float.IsNaN(value))
+				throw new InvalidOperationException();
 
-			switch (_binaryIntervalStatus[dimensionIndex]) {
-
-			case BinaryDimensionIntervalStatus.Undefined:
-			if (value == 0f)
-				_binaryIntervalStatus[dimensionIndex] = BinaryDimensionIntervalStatus.ContainsOnlyFalse;
-			else
-				_binaryIntervalStatus[dimensionIndex] = BinaryDimensionIntervalStatus.ContainsOnlyTrue;
-			break;
-
-			case BinaryDimensionIntervalStatus.ContainsOnlyTrue:
-			if (value == 0f)
-				_binaryIntervalStatus[dimensionIndex] = BinaryDimensionIntervalStatus.ContainsTrueAndFalse;
-			break;
-
-			case BinaryDimensionIntervalStatus.ContainsOnlyFalse:
-			if (value == 1f)
-				_binaryIntervalStatus[dimensionIndex] = BinaryDimensionIntervalStatus.ContainsTrueAndFalse;
-			break;
-
-			case BinaryDimensionIntervalStatus.ContainsTrueAndFalse:
-			break;
-
-			default:
-			throw new InvalidOperationException();
-			}
+			_ends[dimensionIndex] = value;
 		}
-
-		private void UpdateContinousIntervalValue(int dimensionIndex, float value) {
-			var start = _starts[dimensionIndex];
-			if (float.IsNaN(start) || value < start) {
-				_starts[dimensionIndex] = value;
-				return;
-			}
-
-			var end = _ends[dimensionIndex];
-			if (float.IsNaN(end) || value > end)
-				_ends[dimensionIndex] = value;
-		}
-
+		
 		public HyperRectangle Build() {
 			var dimensionCount = Dataset.FeatureCount;
 			var intervals = new IDimensionInterval[dimensionCount];
@@ -144,6 +131,9 @@ namespace Minotaur.Math.Dimensions {
 
 			var end = _ends[dimensionIndex];
 			if (float.IsNaN(end))
+				throw new InvalidOperationException();
+
+			if (start >= end)
 				throw new InvalidOperationException();
 
 			return new ContinuousDimensionInterval(

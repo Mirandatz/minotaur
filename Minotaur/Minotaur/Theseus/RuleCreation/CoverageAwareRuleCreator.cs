@@ -5,6 +5,7 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math;
+	using Random = Random.ThreadStaticRandom;
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
 		public Dataset Dataset { get; }
@@ -26,6 +27,7 @@ namespace Minotaur.Theseus.RuleCreation {
 		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
+
 			var seedsIndices = _seedSelector.FindSeedsIndices(existingRules);
 
 			if (seedsIndices.IsEmpty) {
@@ -33,20 +35,16 @@ namespace Minotaur.Theseus.RuleCreation {
 				return false;
 			}
 
-			throw new NotImplementedException();
-
 			// This may fail just because we chose a bad seed or even because
 			// we chose a bad dimension expansion order
 
-			//var boxes = _boxCreator.FromRules(existingRules);
-			//var dimensionExpansionOrder = NaturalRange.CreateShuffled(
-			//	inclusiveStart: 0,
-			//	exclusiveEnd: Dataset.FeatureCount);
+			var boxes = _boxCreator.FromRules(existingRules);
+			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
+				inclusiveStart: 0,
+				exclusiveEnd: Dataset.FeatureCount);
 
-			//var seed = Dataset.GetInstanceData(seedIndex);
-			//var existingRectangles = _boxCreator.FromRules(existingRules);
-
-
+			var seedIndex = Random.Choice(seedsIndices);
+			throw new NotImplementedException();
 
 			//var secureRectangle = _boxCreator.CreateLargestNonIntersectingHyperRectangle(
 			//	seed: seed,
