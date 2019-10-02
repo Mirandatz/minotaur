@@ -14,41 +14,32 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		/// </remarks>
 		public readonly float Value;
 
-		private readonly int _precomputedHashCode;
-
 		public BinaryFeatureTest(int featureIndex, float value) {
 			if (featureIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be >= 0");
+				throw new ArgumentOutOfRangeException(nameof(featureIndex));
 			if (value != 0 && value != 1)
 				throw new ArgumentOutOfRangeException(nameof(value));
 
 			FeatureIndex = featureIndex;
 			Value = value;
-
-			_precomputedHashCode = HashCode.Combine(featureIndex, value);
 		}
 
-		public bool Covers(float featureValue) => Value == featureValue;
+		public bool Covers(float featureValue) {
+			if (featureValue != 0 && featureValue != 1)
+				throw new ArgumentOutOfRangeException(nameof(featureValue));
 
-		public bool Matches(Array<float> instance) => instance[FeatureIndex] == Value;
+			return Value == featureValue;
+		}
+
+		public bool Matches(Array<float> instance) => Covers(instance[FeatureIndex]);
 
 		public override string ToString() => $"f[{FeatureIndex}]={Value}";
 
-		public override int GetHashCode() => _precomputedHashCode;
+		public override int GetHashCode() => HashCode.Combine(FeatureIndex, Value);
 
-		public override bool Equals(object? obj) {
-			if (obj is BinaryFeatureTest other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public override bool Equals(object? obj) => Equals((BinaryFeatureTest) obj!);
 
-		public bool Equals(IFeatureTest test) {
-			if (test is BinaryFeatureTest other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public bool Equals(IFeatureTest test) => Equals((BinaryFeatureTest) test);
 
 		public bool Equals(BinaryFeatureTest other) {
 			return
