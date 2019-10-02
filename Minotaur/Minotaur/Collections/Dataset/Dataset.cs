@@ -231,7 +231,7 @@ namespace Minotaur.Collections.Dataset {
 
 			return InstanceLabels.GetRow(instanceIndex);
 		}
-		
+
 		public double[] ComputeDistances(int targetInstanceIndex, Array<int> otherInstancesIndices) {
 			if (!IsInstanceIndexValid(targetInstanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(targetInstanceIndex) + $" must be between [0, {InstanceCount}[.");
@@ -251,6 +251,16 @@ namespace Minotaur.Collections.Dataset {
 
 			return distances;
 
+		}
+
+		public (float Minimum, float Maximum) GetMinimumAndMaximumFeatureValues(int featureIndex) {
+			if (!IsFeatureIndexValid(featureIndex))
+				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
+
+			// @Performance: store the minimum and maximum values as fields?
+
+			var values = _sortedUniqueFeatureValues[featureIndex];
+			return (Minimum: values[0], Maximum: values[^1]);
 		}
 	}
 }
