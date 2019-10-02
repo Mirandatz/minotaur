@@ -5,7 +5,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 	public sealed class BinaryFeatureTest: IFeatureTest, IEquatable<BinaryFeatureTest> {
 
 		public int FeatureIndex { get; }
-
 		public int TestSize => 1;
 
 		///<remarks>

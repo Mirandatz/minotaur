@@ -4,13 +4,11 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 	public sealed class ContinuousFeatureTest: IFeatureTest, IEquatable<ContinuousFeatureTest> {
 
+		public int FeatureIndex { get; }
 		public readonly float LowerBound;
 		public readonly float UpperBound;
-		public int FeatureIndex { get; }
 
 		public int TestSize => 2;
-
-		private readonly int _precomputedHashCode;
 
 		public ContinuousFeatureTest(int featureIndex, float lowerBound, float upperBound) {
 			if (featureIndex < 0)
@@ -26,8 +24,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			LowerBound = lowerBound;
 			UpperBound = upperBound;
 			FeatureIndex = featureIndex;
-
-			_precomputedHashCode = HashCode.Combine(LowerBound, UpperBound, FeatureIndex);
 		}
 
 		public static ContinuousFeatureTest FromUnsortedBounds(
@@ -35,13 +31,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			float firstBound,
 			float secondBound
 			) {
-			if (featureIndex < 0)
-				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be >= 0");
-			if (float.IsNaN(firstBound))
-				throw new ArgumentOutOfRangeException(nameof(firstBound) + " can't be NaN.");
-			if (float.IsNaN(secondBound))
-				throw new ArgumentOutOfRangeException(nameof(secondBound) + " can't be NaN.");
-
 			if (firstBound < secondBound) {
 				return new ContinuousFeatureTest(
 					featureIndex: featureIndex,
@@ -68,21 +57,11 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public override string ToString() => $"{LowerBound} <= f[{FeatureIndex}] < {UpperBound}";
 
-		public override int GetHashCode() => _precomputedHashCode;
+		public override int GetHashCode() => HashCode.Combine(FeatureIndex, LowerBound, UpperBound);
 
-		public override bool Equals(object? obj) {
-			if (obj is ContinuousFeatureTest other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public override bool Equals(object? obj) => Equals((ContinuousFeatureTest) obj!);
 
-		public bool Equals(IFeatureTest test) {
-			if (test is ContinuousFeatureTest other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public bool Equals(IFeatureTest test) => Equals((ContinuousFeatureTest) test);
 
 		public bool Equals(ContinuousFeatureTest other) {
 			return
