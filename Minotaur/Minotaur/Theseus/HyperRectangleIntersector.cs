@@ -1,5 +1,4 @@
 namespace Minotaur.Theseus {
-	using System;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math.Dimensions;
 
@@ -56,7 +55,14 @@ namespace Minotaur.Theseus {
 			(var start, var end) = builder.GetContinuousDimensionPreview(dimensionIndex);
 			var interval = (ContinuousDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
 
-			throw new NotImplementedException();
+			// @Danger: this might be wrong...
+
+			if (end <= interval.Start)
+				return false;
+			if (start >= interval.End)
+				return false;
+
+			return true;
 		}
 	}
 }
