@@ -12,10 +12,6 @@ namespace Minotaur.Theseus {
 			for (int i = 0; i < featureCount; i++) {
 
 				switch (dataset.GetFeatureType(i)) {
-				case FeatureType.Binary:
-				volume *= 2;
-				break;
-
 
 				case FeatureType.Continuous:
 				var featureValues = dataset.GetSortedUniqueFeatureValues(i);

@@ -20,9 +20,14 @@ namespace Minotaur.Theseus {
 			if (dimensionExpansionOrder.Length != Dataset.FeatureCount)
 				throw new InvalidOperationException();
 
-			var builder = HyperRectangleBuilder.InitializeWithLargestRectangle(Dataset);
-			if (existingHyperRectangles.IsEmpty)
-				return builder.Build();
+			if (existingHyperRectangles.IsEmpty) {
+				var tempBuilder = HyperRectangleBuilder.InitializeWithLargestRectangle(Dataset);
+				return tempBuilder.Build();
+			}
+
+			var builder = HyperRectangleBuilder.InitializeWithSeed(
+				dataset: Dataset,
+				seedIndex: seedIndex);
 
 			var seed = Dataset.GetInstanceData(seedIndex);
 
@@ -30,13 +35,6 @@ namespace Minotaur.Theseus {
 				var dimensionIndex = dimensionExpansionOrder[i];
 
 				switch (Dataset.GetFeatureType(dimensionIndex)) {
-
-				case FeatureType.Binary:
-				UpdateBinaryDimension(
-					builder: builder,
-					existingHyperRectangles: existingHyperRectangles,
-					dimensionIndex: dimensionIndex);
-				break;
 
 				case FeatureType.Continuous:
 				UpdateContinuousDimension(
@@ -52,54 +50,6 @@ namespace Minotaur.Theseus {
 			}
 
 			return builder.Build();
-		}
-
-		private void UpdateBinaryDimension(HyperRectangleBuilder builder, Array<HyperRectangle> existingHyperRectangles, int dimensionIndex) {
-			var status = BinaryDimensionIntervalStatus.ContainsTrueAndFalse;
-
-			for (int i = 0; i < existingHyperRectangles.Length; i++) {
-				var currentRectangle = existingHyperRectangles[i];
-
-				var intersects = _intersector.IntersectsInAllButOneDimension(
-					builder: builder,
-					rect: currentRectangle,
-					dimensionToSkip: dimensionIndex);
-
-				if (!intersects)
-					continue;
-
-				var dimension = (BinaryDimensionInterval) currentRectangle.GetDimensionInterval(dimensionIndex);
-
-				switch (status) {
-				case BinaryDimensionIntervalStatus.ContainsOnlyTrue:
-				if (dimension.ContainsTrue)
-					throw new InvalidOperationException();
-				break;
-
-
-				case BinaryDimensionIntervalStatus.ContainsOnlyFalse:
-				if (dimension.ContainsFalse)
-					throw new InvalidOperationException();
-				break;
-
-				case BinaryDimensionIntervalStatus.ContainsTrueAndFalse:
-				if (dimension.ContainsTrue && dimension.ContainsFalse)
-					throw new InvalidOperationException();
-				if (dimension.ContainsFalse)
-					status = BinaryDimensionIntervalStatus.ContainsOnlyTrue;
-				if (dimension.ContainsTrue)
-					status = BinaryDimensionIntervalStatus.ContainsOnlyFalse;
-				break;
-
-				case BinaryDimensionIntervalStatus.Undefined:
-				throw new InvalidOperationException();
-
-				default:
-				throw new InvalidOperationException();
-				}
-
-				builder.UpdateBinaryDimensionIntervalValue(dimensionIndex: dimensionIndex, status: status);
-			}
 		}
 
 		private void UpdateContinuousDimension(HyperRectangleBuilder builder, Array<HyperRectangle> existingHyperRectangles, int dimensionIndex, Array<float> seed) {

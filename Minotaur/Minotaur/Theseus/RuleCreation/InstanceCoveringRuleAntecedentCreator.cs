@@ -29,7 +29,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			}
 
 			var box = builder.Build();
-			return CreateAntecedentFromHyperRectangle(box);
+			return _converter.FromHyperRectangle(box);
 		}
 
 		private void EnlargeToCoverInstance(HyperRectangleBuilder builder, int instanceIndex) {
@@ -38,13 +38,6 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			for (int i = 0; i < dimensionCount; i++) {
 				switch (Dataset.GetFeatureType(i)) {
-
-				case FeatureType.Binary:
-				EnlargeBinaryDimensionInterval(
-					builder: builder,
-					instance: instance,
-					dimensionIndex: i);
-				break;
 
 				case FeatureType.Continuous:
 				EnlargeContinuousInterval(
@@ -59,47 +52,6 @@ namespace Minotaur.Theseus.RuleCreation {
 			}
 		}
 
-		private void EnlargeBinaryDimensionInterval(HyperRectangleBuilder builder, Array<float> instance, int dimensionIndex) {
-			var (ContainsFalse, ContainsTrue) = builder.GetBinaryDimensionPreview(dimensionIndex);
-			var targetValue = instance[dimensionIndex];
-
-			switch (targetValue) {
-
-			case 0f: {
-				if (ContainsFalse)
-					break;
-
-				if (ContainsTrue) {
-					builder.UpdateBinaryDimensionIntervalValue(
-						dimensionIndex: dimensionIndex,
-						status: BinaryDimensionIntervalStatus.ContainsTrueAndFalse);
-				} else {
-					throw new InvalidOperationException();
-				}
-
-				break;
-			}
-
-			case 1f: {
-				if (ContainsTrue)
-					break;
-
-				if (ContainsFalse) {
-					builder.UpdateBinaryDimensionIntervalValue(
-						dimensionIndex: dimensionIndex,
-						status: BinaryDimensionIntervalStatus.ContainsTrueAndFalse);
-				} else {
-					throw new InvalidOperationException();
-				}
-
-				break;
-			}
-
-			default:
-			throw new InvalidOperationException();
-			}
-		}
-
 		private void EnlargeContinuousInterval(HyperRectangleBuilder builder, Array<float> instance, int dimensionIndex) {
 			var (Start, End) = builder.GetContinuousDimensionPreview(dimensionIndex);
 			var target = instance[dimensionIndex];
@@ -111,7 +63,7 @@ namespace Minotaur.Theseus.RuleCreation {
 				return;
 			}
 
-			if (target > End) {
+			if (target >= End) {
 				var possibleValues = Dataset.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex);
 				var indexOfStart = possibleValues.BinarySearch(target);
 				if (indexOfStart == possibleValues.Length - 1) {

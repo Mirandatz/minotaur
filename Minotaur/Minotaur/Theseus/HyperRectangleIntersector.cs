@@ -1,4 +1,5 @@
 namespace Minotaur.Theseus {
+	using System;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math.Dimensions;
 
@@ -32,23 +33,10 @@ namespace Minotaur.Theseus {
 		private bool Intersects(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
 			return Dataset.GetFeatureType(dimensionIndex) switch
 			{
-				FeatureType.Binary => IntersectsBinary(builder, rect, dimensionIndex),
 				FeatureType.Continuous => IntersectsContinuous(builder, rect, dimensionIndex),
 
 				_ => throw CommonExceptions.UnknownFeatureType
 			};
-		}
-
-		private bool IntersectsBinary(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
-			(var containsFalse, var containsTrue) = builder.GetBinaryDimensionPreview(dimensionIndex);
-			var interval = (BinaryDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
-
-			if (interval.ContainsFalse && containsFalse)
-				return true;
-			if (interval.ContainsTrue && containsTrue)
-				return true;
-
-			return false;
 		}
 
 		private bool IntersectsContinuous(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
@@ -56,10 +44,34 @@ namespace Minotaur.Theseus {
 			var interval = (ContinuousDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
 
 			// @Danger: this might be wrong...
-
 			if (end <= interval.Start)
 				return false;
 			if (start >= interval.End)
+				return false;
+
+			return true;
+		}
+
+		public bool IntersectsInAllDimension(HyperRectangle lhsBox, HyperRectangle rhsBox) {
+			if (lhsBox.DimensionCount != rhsBox.DimensionCount)
+				throw new InvalidOperationException();
+
+			var dimensionCount = lhsBox.DimensionCount;
+			for (int i = 0; i < dimensionCount; i++) {
+				var lhsInterval = (ContinuousDimensionInterval) lhsBox.GetDimensionInterval(i);
+				var rhsInterval = (ContinuousDimensionInterval) rhsBox.GetDimensionInterval(i);
+				if (!ContinuousDimensionIntervalIntersects(lhsInterval, rhsInterval))
+					return false;
+			}
+
+			return true;
+		}
+
+		private bool ContinuousDimensionIntervalIntersects(ContinuousDimensionInterval lhsInterval, ContinuousDimensionInterval rhsInterval) {
+			// @Danger: this might be wrong...
+			if (lhsInterval.Start >= rhsInterval.End)
+				return false;
+			if (rhsInterval.End <= lhsInterval.Start)
 				return false;
 
 			return true;

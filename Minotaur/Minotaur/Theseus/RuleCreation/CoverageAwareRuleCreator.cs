@@ -53,8 +53,13 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			var seed = Dataset.GetInstanceData(seedIndex);
 			// @Sanity check
-			if (!secureRectangle.Contains(seed))
+			if (!secureRectangle.Contains(seed)) {
+				secureRectangle = _boxCreator.CreateLargestNonIntersectingRectangle(
+				seedIndex: seedIndex,
+				existingHyperRectangles: boxes,
+				dimensionExpansionOrder: dimensionExpansionOrder);
 				throw new InvalidOperationException();
+			}
 
 			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
 			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();

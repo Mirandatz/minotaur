@@ -111,7 +111,7 @@ namespace Minotaur {
 				ruleConverter: ruleAntecedentHyperRectangleConverter,
 				coverageComputer: hyperRectangleCoverageComputer);
 
-			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(dataset: trainDataset);
+			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(ruleAntecedentHyperRectangleConverter: ruleAntecedentHyperRectangleConverter);
 
 			var consequentCreator = new InstanceLabelsAveragingRuleConsequentCreator(
 				dataset: trainDataset,
@@ -182,7 +182,9 @@ namespace Minotaur {
 				individualCreator: individualCreator,
 				settings: settings);
 
-			var consistencyChecker = new RuleConsistencyChecker();
+			var consistencyChecker = new RuleConsistencyChecker(
+				ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
+				hyperRectangleIntersector: hyperRectangleIntersector);
 
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
