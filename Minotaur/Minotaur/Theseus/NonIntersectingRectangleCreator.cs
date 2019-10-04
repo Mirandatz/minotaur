@@ -21,11 +21,11 @@ namespace Minotaur.Theseus {
 				throw new InvalidOperationException();
 
 			if (existingHyperRectangles.IsEmpty) {
-				var tempBuilder = HyperRectangleBuilder.InitializeWithLargestRectangle(Dataset);
+				var tempBuilder = InitializeWithLargestRectangle(Dataset);
 				return tempBuilder.Build();
 			}
 
-			var builder = HyperRectangleBuilder.InitializeWithSeed(
+			var builder = InitializeWithSeed(
 				dataset: Dataset,
 				seedIndex: seedIndex);
 

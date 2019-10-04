@@ -26,7 +26,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			return (_mutationChooser.GetRandomChoice()) switch
 			{
 				IndividualMutationType.AddRule => TryAddRule(original, out mutated!),
-				IndividualMutationType.ModifyRule => TryModifyRule(original, out mutated),
+				IndividualMutationType.ModifyRule => TryModifyRule(original, out mutated!),
 				IndividualMutationType.RemoveRule => TryRemoveRule(original, out mutated!),
 
 				_ => throw CommonExceptions.UnknownFeatureType,
@@ -59,7 +59,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			return true;
 		}
 
-		private bool TryModifyRule(Individual original, out Individual mutated) {
+		private bool TryModifyRule(Individual original, [MaybeNullWhen(false)] out Individual mutated) {
 			var oldRules = original.Rules;
 
 			// @Todo: investigate the possibility of actually "modifying" a rule,
@@ -94,9 +94,12 @@ namespace Minotaur.Theseus.IndividualMutation {
 				existingRules: withoutCandidate,
 				newRule: out var newRule);
 
-			if (!canCreate)
-				throw new InvalidOperationException("This should, like... Never happen.");
-
+			if (!canCreate) {
+				//	throw new InvalidOperationException("This should, like... Never happen.");
+				Console.WriteLine("Failed to recreate rule");
+				mutated = null!;
+				return false;
+			}
 			var newRules = oldRules.Swap(
 				index: candidateIndex,
 				newItem: newRule);

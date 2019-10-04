@@ -43,13 +43,11 @@ namespace Minotaur.Theseus {
 			(var start, var end) = builder.GetContinuousDimensionPreview(dimensionIndex);
 			var interval = (ContinuousDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
 
-			// @Danger: this might be wrong...
-			if (start >= interval.End)
-				return false;
-			if (end <= interval.Start)
-				return false;
-
-			return true;
+			return Intersects(
+				aStart: start,
+				aEnd: end,
+				bStart: interval.Start,
+				bEnd: interval.End);
 		}
 
 		public bool IntersectsInAllDimension(HyperRectangle lhsBox, HyperRectangle rhsBox) {
@@ -68,10 +66,23 @@ namespace Minotaur.Theseus {
 		}
 
 		private bool ContinuousDimensionIntervalIntersects(ContinuousDimensionInterval lhsInterval, ContinuousDimensionInterval rhsInterval) {
+			return Intersects(
+				aStart: lhsInterval.Start,
+				aEnd: lhsInterval.End,
+				bStart: rhsInterval.Start,
+				bEnd: rhsInterval.End);
+		}
+
+		private static bool Intersects(float aStart, float aEnd, float bStart, float bEnd) {
+			if (aStart > aEnd)
+				throw new InvalidOperationException();
+			if (bStart > bEnd)
+				throw new InvalidOperationException();
+
 			// @Danger: this might be wrong...
-			if (lhsInterval.Start >= rhsInterval.End)
+			if (aStart >= bEnd)
 				return false;
-			if (lhsInterval.End <= rhsInterval.Start)
+			if (aEnd <= bStart)
 				return false;
 
 			return true;

@@ -1,6 +1,7 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -39,19 +40,24 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			// This may fail just because we chose a bad seed or even because
 			// we chose a bad dimension expansion order
+			var seedIndex = Random.Choice(seedsIndices);
+			var seed = Dataset.GetInstanceData(seedIndex);
 
 			var boxes = _boxConverter.FromRules(existingRules);
+
+			// @Sanity check
+			if (boxes.Any(b => b.Contains(seed)))
+				throw new InvalidOperationException();
+
 			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
 				inclusiveStart: 0,
 				exclusiveEnd: Dataset.FeatureCount);
 
-			var seedIndex = Random.Choice(seedsIndices);
 			var secureRectangle = _boxCreator.CreateLargestNonIntersectingRectangle(
 				seedIndex: seedIndex,
 				existingHyperRectangles: boxes,
 				dimensionExpansionOrder: dimensionExpansionOrder);
 
-			var seed = Dataset.GetInstanceData(seedIndex);
 			// @Sanity check
 			if (!secureRectangle.Contains(seed)) {
 				secureRectangle = _boxCreator.CreateLargestNonIntersectingRectangle(
