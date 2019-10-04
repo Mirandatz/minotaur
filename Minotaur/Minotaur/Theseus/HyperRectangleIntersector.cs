@@ -44,9 +44,9 @@ namespace Minotaur.Theseus {
 			var interval = (ContinuousDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
 
 			// @Danger: this might be wrong...
-			if (end <= interval.Start)
-				return false;
 			if (start >= interval.End)
+				return false;
+			if (end <= interval.Start)
 				return false;
 
 			return true;
@@ -71,7 +71,7 @@ namespace Minotaur.Theseus {
 			// @Danger: this might be wrong...
 			if (lhsInterval.Start >= rhsInterval.End)
 				return false;
-			if (rhsInterval.End <= lhsInterval.Start)
+			if (lhsInterval.End <= rhsInterval.Start)
 				return false;
 
 			return true;
