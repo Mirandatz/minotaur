@@ -8,23 +8,14 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
-		public Dataset Dataset { get; }
-		private readonly SeedFinder _seedSelector;
-		private readonly RuleAntecedentHyperRectangleConverter _boxCreator;
-		private readonly HyperRectangleCoverageComputer _coverageComputer;
-		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator;
-		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator;
+		public Dataset Dataset { get; } = null!
+		private readonly SeedFinder _seedSelector = null!;
+		private readonly RuleAntecedentHyperRectangleConverter _boxConverter = null!;
+		private readonly NonIntersectingRectangleCreator _boxCreator = null!;
+		private readonly HyperRectangleCoverageComputer _coverageComputer = null!;
+		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator = null!;
+		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator = null!;
 		private readonly int _minimumInstancesToCover;
-
-		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter ruleConverter, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
-			_seedSelector = seedSelector;
-			_boxCreator = ruleConverter;
-			_coverageComputer = coverageComputer;
-			_antecedentCreator = antecedentCreator;
-			_consequentCreator = consequentCreator;
-			_minimumInstancesToCover = minimumInstancesToCover;
-			Dataset = _boxCreator.Dataset;
-		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
 
@@ -38,12 +29,17 @@ namespace Minotaur.Theseus.RuleCreation {
 			// This may fail just because we chose a bad seed or even because
 			// we chose a bad dimension expansion order
 
-			var boxes = _boxCreator.FromRules(existingRules);
+			var boxes = _boxConverter.FromRules(existingRules);
 			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
 				inclusiveStart: 0,
 				exclusiveEnd: Dataset.FeatureCount);
 
 			var seedIndex = Random.Choice(seedsIndices);
+			var secureRectangle = _boxCreator.CreateLargestNonIntersectingRectangle(
+				seedIndex: seedIndex,
+				existingHyperRectangles: boxes,
+				dimensionExpansionOrder: dimensionExpansionOrder);
+
 			throw new NotImplementedException();
 
 			//var secureRectangle = _boxCreator.CreateLargestNonIntersectingHyperRectangle(
