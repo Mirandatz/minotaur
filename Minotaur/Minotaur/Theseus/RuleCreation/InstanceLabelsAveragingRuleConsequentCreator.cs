@@ -19,16 +19,14 @@ namespace Minotaur.Theseus.RuleCreation {
 		public Array<bool> CreateConsequent(ReadOnlySpan<int> indicesOfInstances) {
 			// @Todo: add safety / sanity checks
 
-			var instanceCount = indicesOfInstances.Length;
 			var classCount = Dataset.ClassCount;
-
 			var trueCount = new int[classCount];
-
 			for (int i = 0; i < indicesOfInstances.Length; i++) {
 				var index = indicesOfInstances[i];
 				UpdateTrueCount(trueCount, index);
 			}
 
+			var instanceCount = indicesOfInstances.Length;
 			return ComputeAverageLabels(instanceCount, classCount, trueCount);
 		}
 

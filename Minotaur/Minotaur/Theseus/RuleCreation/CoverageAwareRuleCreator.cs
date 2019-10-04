@@ -8,14 +8,25 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
-		public Dataset Dataset { get; } = null!
-		private readonly SeedFinder _seedSelector = null!;
-		private readonly RuleAntecedentHyperRectangleConverter _boxConverter = null!;
-		private readonly NonIntersectingRectangleCreator _boxCreator = null!;
-		private readonly HyperRectangleCoverageComputer _coverageComputer = null!;
-		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator = null!;
-		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator = null!;
+		public Dataset Dataset { get; }
+		private readonly SeedFinder _seedSelector;
+		private readonly RuleAntecedentHyperRectangleConverter _boxConverter;
+		private readonly NonIntersectingRectangleCreator _boxCreator;
+		private readonly HyperRectangleCoverageComputer _coverageComputer;
+		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator;
+		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator;
 		private readonly int _minimumInstancesToCover;
+
+		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, int minimumInstancesToCover) {
+			_seedSelector = seedSelector;
+			_boxConverter = boxConverter;
+			_boxCreator = boxCreator;
+			_coverageComputer = coverageComputer;
+			_antecedentCreator = antecedentCreator;
+			_consequentCreator = consequentCreator;
+			_minimumInstancesToCover = minimumInstancesToCover;
+			Dataset = _seedSelector.Dataset;
+		}
 
 		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
 
@@ -40,50 +51,42 @@ namespace Minotaur.Theseus.RuleCreation {
 				existingHyperRectangles: boxes,
 				dimensionExpansionOrder: dimensionExpansionOrder);
 
-			throw new NotImplementedException();
+			var seed = Dataset.GetInstanceData(seedIndex);
+			// @Sanity check
+			if (!secureRectangle.Contains(seed))
+				throw new InvalidOperationException();
 
-			//var secureRectangle = _boxCreator.CreateLargestNonIntersectingHyperRectangle(
-			//	seed: seed,
-			//	existingRectangles: existingRectangles,
-			//	dimensionExpansionOrder: dimensionExpansionOrder);
+			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
+			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
+			// @Consideration: maybe we could try finding another seed?
+			if (coveredInstancesIndices.Length < _minimumInstancesToCover) {
+				rule = null!;
+				return false;
+			}
 
-			//// @Sanity check
-			//if (!secureRectangle.Contains(seed))
-			//	throw new InvalidOperationException();
+			var coveredInstancesDistancesToSeed = Dataset.ComputeDistances(
+				targetInstanceIndex: seedIndex,
+				otherInstancesIndices: coveredInstancesIndices);
 
-			//var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
+			Array.Sort(
+				keys: coveredInstancesDistancesToSeed,
+				items: coveredInstancesIndices);
 
-			//var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
+			var relevantInstances = coveredInstancesIndices
+				.AsSpan()
+				.Slice(start: 0, length: _minimumInstancesToCover);
 
-			//// @Consideration: maybe we could try finding another seed?
-			//if (coveredInstancesIndices.Length < _minimumInstancesToCover) {
-			//	rule = null!;
-			//	return false;
-			//}
+			var ruleAntecedent = _antecedentCreator.CreateAntecedent(
+				seed: seed,
+				nearestInstancesIndices: relevantInstances);
 
-			//var coveredInstancesDistancesToSeed = Dataset.ComputeDistances(
-			//	targetInstanceIndex: seedIndex,
-			//	otherInstancesIndices: coveredInstancesIndices);
+			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
 
-			//Array.Sort(
-			//	keys: coveredInstancesDistancesToSeed,
-			//	items: coveredInstancesIndices);
+			rule = new Rule(
+				antecedent: ruleAntecedent,
+				consequent: ruleConsequent);
 
-			//var relevantInstances = coveredInstancesIndices
-			//	.AsSpan()
-			//	.Slice(start: 0, length: _minimumInstancesToCover);
-
-			//var ruleAntecedent = _antecedentCreator.CreateAntecedent(
-			//	seed: seed,
-			//	nearestInstancesIndices: relevantInstances);
-
-			//var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
-
-			//rule = new Rule(
-			//	tests: ruleAntecedent,
-			//	predictedLabels: ruleConsequent);
-
-			//return true;
+			return true;
 		}
 	}
 }

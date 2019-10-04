@@ -24,7 +24,7 @@ namespace Minotaur.Theseus {
 			if (existingHyperRectangles.IsEmpty)
 				return builder.Build();
 
-			var seed = Dataset.GetFeatureValues(seedIndex);
+			var seed = Dataset.GetInstanceData(seedIndex);
 
 			for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
 				var dimensionIndex = dimensionExpansionOrder[i];

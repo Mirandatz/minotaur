@@ -117,9 +117,13 @@ namespace Minotaur {
 				dataset: trainDataset,
 				threshold: 0.5f);
 
+			var hyperRectangleIntersector = new HyperRectangleIntersector(trainDataset);
+			var nonIntersectingHyperRectangleCreator = new NonIntersectingRectangleCreator(hyperRectangleIntersector);
+
 			var ruleCreator = new CoverageAwareRuleCreator(
 				seedSelector: seedSelector,
-				ruleConverter: ruleAntecedentHyperRectangleConverter,
+				boxConverter: ruleAntecedentHyperRectangleConverter,
+				boxCreator: nonIntersectingHyperRectangleCreator,
 				coverageComputer: hyperRectangleCoverageComputer,
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,

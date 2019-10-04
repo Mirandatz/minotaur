@@ -66,7 +66,7 @@ namespace Minotaur.Math.Dimensions {
 			if (ReferenceEquals(this, other))
 				return true;
 
-			if (Dimensions != other.Dimensions)
+			if (Dimensions.Length != other.Dimensions.Length)
 				throw new InvalidOperationException();
 
 			for (int i = 0; i < DimensionCount; i++) {

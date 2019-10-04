@@ -34,7 +34,7 @@ namespace Minotaur.Math.Dimensions {
 
 		public static HyperRectangleBuilder InitializeWithSeed(Dataset dataset, int seedIndex) {
 			var builder = new HyperRectangleBuilder(dataset);
-			var seed = dataset.GetFeatureValues(seedIndex);
+			var seed = dataset.GetInstanceData(seedIndex);
 			var featureCount = dataset.FeatureCount;
 
 			for (int i = 0; i < featureCount; i++) {
