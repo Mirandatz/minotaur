@@ -77,7 +77,7 @@ namespace Minotaur.Theseus.RuleCreation {
 				.Slice(start: 0, length: _minimumInstancesToCover);
 
 			var ruleAntecedent = _antecedentCreator.CreateAntecedent(
-				seed: seed,
+				seedIndex: seedIndex,
 				nearestInstancesIndices: relevantInstances);
 
 			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);

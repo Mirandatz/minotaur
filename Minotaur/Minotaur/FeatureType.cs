@@ -7,7 +7,7 @@ namespace Minotaur {
 	/// should be treated.
 	/// For a miriad of reasons, categorical attributes must be one-hot-encoded.
 	public enum FeatureType {
-		Binary,
+		NotImplemented,
 		Continuous
 	}
 }

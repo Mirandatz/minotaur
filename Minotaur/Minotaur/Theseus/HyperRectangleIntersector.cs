@@ -40,7 +40,7 @@ namespace Minotaur.Theseus {
 		}
 
 		private bool IntersectsBinary(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
-			(var containsFalse, var containsTrue) = builder.GetCategoricalDimensionPreview(dimensionIndex);
+			(var containsFalse, var containsTrue) = builder.GetBinaryDimensionPreview(dimensionIndex);
 			var interval = (BinaryDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
 
 			if (interval.ContainsFalse && containsFalse)

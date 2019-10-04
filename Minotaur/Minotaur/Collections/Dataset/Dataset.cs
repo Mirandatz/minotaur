@@ -90,7 +90,6 @@ namespace Minotaur.Collections.Dataset {
 					sortedUniqueFeatureValues[featureIndex] = sufv;
 
 					ThrowIfTrainDatasetContainsFeaturesWithSingleValue(isTrainDataset, featureIndex, sufv);
-					ThrowIfDatasetContainsNonBinaryValuesForBinaryFeatures(featureIndex, featureTypes, sufv);
 
 					sortedFeatureValues[featureIndex] = currentFeatureValues
 					.OrderBy(v => v)
@@ -128,27 +127,6 @@ namespace Minotaur.Collections.Dataset {
 				if (isTrainDataset && sufv.Length == 1) {
 					var message = $"Feature (0-indexed) {featureIndex} contains a single value in the train dataset.";
 					throw new InvalidOperationException(message);
-				}
-			}
-
-			static void ThrowIfDatasetContainsNonBinaryValuesForBinaryFeatures(int featureIndex, FeatureType[] featureTypes, float[] sufv) {
-				var featureType = featureTypes[featureIndex];
-
-				// Using a switch to future-proof against addition of new values to FeatureType
-				switch (featureType) {
-
-				case FeatureType.Binary: {
-					if (sufv.Any(v => v != 0 && v != 1))
-						throw new InvalidOperationException($"Dataset contains non-binary values for binary feature {featureIndex}.");
-
-					break;
-				}
-
-				case FeatureType.Continuous:
-				break;
-
-				default:
-				throw CommonExceptions.UnknownFeatureType;
 				}
 			}
 		}

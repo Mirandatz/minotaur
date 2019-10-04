@@ -3,17 +3,8 @@ namespace Minotaur.Math.Dimensions {
 	using Minotaur.Collections.Dataset;
 
 	public sealed class HyperRectangleBuilder {
-
-		public enum BinaryDimensionIntervalStatus {
-			Undefined,
-			ContainsOnlyTrue,
-			ContainsOnlyFalse,
-			ContainsTrueAndFalse
-		}
-
+		
 		public readonly Dataset Dataset;
-
-		private readonly BinaryDimensionIntervalStatus[] _binaryIntervalStatus;
 		private readonly float[] _starts;
 		private readonly float[] _ends;
 
@@ -21,12 +12,10 @@ namespace Minotaur.Math.Dimensions {
 			Dataset = dataset;
 
 			var featureCount = Dataset.FeatureCount;
-			_binaryIntervalStatus = new BinaryDimensionIntervalStatus[featureCount];
 			_starts = new float[featureCount];
 			_ends = new float[featureCount];
 
 			for (int i = 0; i < featureCount; i++) {
-				_binaryIntervalStatus[i] = BinaryDimensionIntervalStatus.Undefined;
 				_starts[i] = float.NaN;
 				_ends[i] = float.NaN;
 			}
@@ -39,26 +28,7 @@ namespace Minotaur.Math.Dimensions {
 
 			for (int i = 0; i < featureCount; i++) {
 				switch (dataset.GetFeatureType(i)) {
-
-				case FeatureType.Binary: {
-					if (seed[i] == 0f) {
-						builder.UpdateBinaryDimensionIntervalValue(
-							dimensionIndex: i,
-							status: BinaryDimensionIntervalStatus.ContainsOnlyFalse);
-
-						break;
-					}
-
-					if (seed[i] == 1f) {
-						builder.UpdateBinaryDimensionIntervalValue(
-							dimensionIndex: i,
-							status: BinaryDimensionIntervalStatus.ContainsOnlyTrue);
-						break;
-					}
-
-					throw new InvalidOperationException();
-				}
-
+				
 				case FeatureType.Continuous: {
 					builder.UpdateContinuousDimensionIntervalStart(
 						dimensionIndex: i,
@@ -103,7 +73,7 @@ namespace Minotaur.Math.Dimensions {
 			return builder;
 		}
 
-		public (bool ContainsFalse, bool ContainsTrue) GetCategoricalDimensionPreview(int dimensionIndex) {
+		public (bool ContainsFalse, bool ContainsTrue) GetBinaryDimensionPreview(int dimensionIndex) {
 			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Binary)
 				throw new InvalidOperationException();
 
