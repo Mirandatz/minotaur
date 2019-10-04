@@ -42,7 +42,6 @@ namespace Minotaur.Collections.Dataset {
 
 			return sanitizedText switch
 			{
-				"binary" => FeatureType.Binary,
 				"continuous" => FeatureType.Continuous,
 
 				_ => throw new InvalidOperationException($"Error on line {i}: unable to parse {originalText}"),

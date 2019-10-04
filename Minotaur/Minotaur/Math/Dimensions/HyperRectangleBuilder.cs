@@ -56,10 +56,6 @@ namespace Minotaur.Math.Dimensions {
 			for (int i = 0; i < featureCount; i++) {
 				switch (dataset.GetFeatureType(i)) {
 
-				case FeatureType.Binary:
-				builder._binaryIntervalStatus[i] = BinaryDimensionIntervalStatus.ContainsTrueAndFalse;
-				break;
-
 				case FeatureType.Continuous:
 				builder._starts[i] = float.NegativeInfinity;
 				builder._ends[i] = float.PositiveInfinity;
@@ -73,35 +69,13 @@ namespace Minotaur.Math.Dimensions {
 			return builder;
 		}
 
-		public (bool ContainsFalse, bool ContainsTrue) GetBinaryDimensionPreview(int dimensionIndex) {
-			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Binary)
-				throw new InvalidOperationException();
-
-			return _binaryIntervalStatus[dimensionIndex] switch
-			{
-				BinaryDimensionIntervalStatus.ContainsOnlyFalse => (ContainsFalse: true, ContainsTrue: false),
-				BinaryDimensionIntervalStatus.ContainsOnlyTrue => (ContainsFalse: false, ContainsTrue: true),
-				BinaryDimensionIntervalStatus.ContainsTrueAndFalse => (ContainsFalse: true, ContainsTrue: true),
-
-				BinaryDimensionIntervalStatus.Undefined => throw new InvalidOperationException(),
-				_ => throw new InvalidOperationException()
-			};
-		}
-
 		public (float Start, float End) GetContinuousDimensionPreview(int dimensionIndex) {
 			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
 				throw new InvalidOperationException();
 
 			return (Start: _starts[dimensionIndex], End: _ends[dimensionIndex]);
 		}
-
-		public void UpdateBinaryDimensionIntervalValue(int dimensionIndex, BinaryDimensionIntervalStatus status) {
-			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Binary)
-				throw new InvalidOperationException();
-
-			_binaryIntervalStatus[dimensionIndex] = status;
-		}
-
+		
 		public void UpdateContinuousDimensionIntervalStart(int dimensionIndex, float value) {
 			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
 				throw new InvalidOperationException();
@@ -138,34 +112,9 @@ namespace Minotaur.Math.Dimensions {
 		private IDimensionInterval BuildInterval(int dimensionIndex) {
 			return (Dataset.GetFeatureType(dimensionIndex)) switch
 			{
-				FeatureType.Binary => BuildBinaryInterval(dimensionIndex),
 				FeatureType.Continuous => BuildContinuousInterval(dimensionIndex),
 
 				_ => throw CommonExceptions.UnknownFeatureType
-			};
-		}
-
-		private BinaryDimensionInterval BuildBinaryInterval(int dimensionIndex) {
-
-			return (_binaryIntervalStatus[dimensionIndex]) switch
-			{
-				BinaryDimensionIntervalStatus.ContainsOnlyTrue => new BinaryDimensionInterval(
-					dimensionIndex: dimensionIndex,
-					containsFalse: false,
-					containsTrue: true),
-
-				BinaryDimensionIntervalStatus.ContainsOnlyFalse => new BinaryDimensionInterval(
-					dimensionIndex: dimensionIndex,
-					containsFalse: true,
-					containsTrue: false),
-
-				BinaryDimensionIntervalStatus.ContainsTrueAndFalse => new BinaryDimensionInterval(
-					dimensionIndex: dimensionIndex,
-					containsFalse: true,
-					containsTrue: true),
-
-				BinaryDimensionIntervalStatus.Undefined => throw new InvalidOperationException(),
-				_ => throw new InvalidOperationException()
 			};
 		}
 
