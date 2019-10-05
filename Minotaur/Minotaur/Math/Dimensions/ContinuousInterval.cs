@@ -2,14 +2,14 @@ namespace Minotaur.Math.Dimensions {
 	using System;
 
 	// @Assumption: intervals can not  be empty.
-	public sealed class ContinuousDimensionInterval: IInterval, IEquatable<ContinuousDimensionInterval> {
+	public sealed class ContinuousInterval: IInterval, IEquatable<ContinuousInterval> {
 
 		public int DimensionIndex { get; }
 		public double Volume => End - Start;
 		public readonly float Start;
 		public readonly float End;
 
-		public ContinuousDimensionInterval(int dimensionIndex, float start, float end) {
+		public ContinuousInterval(int dimensionIndex, float start, float end) {
 			if (dimensionIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex) + " must be >= 0.");
 
@@ -28,12 +28,12 @@ namespace Minotaur.Math.Dimensions {
 
 		public override int GetHashCode() => HashCode.Combine(DimensionIndex, Start, End);
 
-		public override bool Equals(object? obj) => Equals((ContinuousDimensionInterval) obj!);
+		public override bool Equals(object? obj) => Equals((ContinuousInterval) obj!);
 
 		// Implementation of IEquatable
-		public bool Equals(IInterval other) => Equals((ContinuousDimensionInterval) other);
+		public bool Equals(IInterval other) => Equals((ContinuousInterval) other);
 
-		public bool Equals(ContinuousDimensionInterval other) {
+		public bool Equals(ContinuousInterval other) {
 			return
 				DimensionIndex == other.DimensionIndex &&
 				Start == other.Start &&

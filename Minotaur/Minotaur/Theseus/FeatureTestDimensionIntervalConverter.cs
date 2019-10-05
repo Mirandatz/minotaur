@@ -14,29 +14,10 @@ namespace Minotaur.Theseus {
 		public IInterval FromFeatureTest(IFeatureTest test) {
 			return test switch
 			{
-				BinaryFeatureTest bft => FromBinaryFeatureTest(bft),
 				ContinuousFeatureTest cft => FromContinuousFeatureTest(cft),
 
 				_ => throw CommonExceptions.UnknownFeatureTestImplementation
 			};
-		}
-
-		public BinaryDimensionInterval FromBinaryFeatureTest(BinaryFeatureTest binaryFeatureTest) {
-			if (binaryFeatureTest.Value == 0) {
-				return new BinaryDimensionInterval(
-					dimensionIndex: binaryFeatureTest.FeatureIndex,
-					containsFalse: true,
-					containsTrue: false);
-			}
-
-			if (binaryFeatureTest.Value == 1) {
-				return new BinaryDimensionInterval(
-					dimensionIndex: binaryFeatureTest.FeatureIndex,
-					containsFalse: false,
-					containsTrue: true);
-			}
-
-			throw new InvalidOperationException();
 		}
 
 		public ContinuousInterval FromContinuousFeatureTest(ContinuousFeatureTest continuousFeatureTest) {
@@ -49,21 +30,10 @@ namespace Minotaur.Theseus {
 		public IFeatureTest FromDimensionInterval(IInterval interval) {
 			return interval switch
 			{
-				BinaryDimensionInterval bdi => FromBinaryDimensionInterval(bdi),
 				ContinuousInterval cdi => FromContinousDimensionInterval(cdi),
 
 				_ => throw CommonExceptions.UnknownDimensionIntervalImplementation
 			};
-		}
-
-		public BinaryFeatureTest FromBinaryDimensionInterval(BinaryDimensionInterval binaryDimensionInterval) {
-			if (binaryDimensionInterval.ContainsFalse && binaryDimensionInterval.ContainsTrue)
-				throw new ArgumentException();
-
-			if (binaryDimensionInterval.ContainsFalse)
-				return new BinaryFeatureTest(featureIndex: binaryDimensionInterval.DimensionIndex, value: 0f);
-			else
-				return new BinaryFeatureTest(featureIndex: binaryDimensionInterval.DimensionIndex, value: 1f);
 		}
 
 		public ContinuousFeatureTest FromContinousDimensionInterval(ContinuousInterval continuousDimensionInterval) {

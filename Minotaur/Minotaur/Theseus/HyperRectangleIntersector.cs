@@ -41,7 +41,7 @@ namespace Minotaur.Theseus {
 
 		private bool IntersectsContinuous(HyperRectangleBuilder builder, HyperRectangle rect, int dimensionIndex) {
 			(var start, var end) = builder.GetContinuousDimensionPreview(dimensionIndex);
-			var interval = (ContinuousDimensionInterval) rect.GetDimensionInterval(dimensionIndex);
+			var interval = (ContinuousInterval) rect.GetDimensionInterval(dimensionIndex);
 
 			return Intersects(
 				aStart: start,
@@ -56,8 +56,8 @@ namespace Minotaur.Theseus {
 
 			var dimensionCount = lhsBox.DimensionCount;
 			for (int i = 0; i < dimensionCount; i++) {
-				var lhsInterval = (ContinuousDimensionInterval) lhsBox.GetDimensionInterval(i);
-				var rhsInterval = (ContinuousDimensionInterval) rhsBox.GetDimensionInterval(i);
+				var lhsInterval = (ContinuousInterval) lhsBox.GetDimensionInterval(i);
+				var rhsInterval = (ContinuousInterval) rhsBox.GetDimensionInterval(i);
 				if (!ContinuousDimensionIntervalIntersects(lhsInterval, rhsInterval))
 					return false;
 			}
@@ -65,7 +65,7 @@ namespace Minotaur.Theseus {
 			return true;
 		}
 
-		private bool ContinuousDimensionIntervalIntersects(ContinuousDimensionInterval lhsInterval, ContinuousDimensionInterval rhsInterval) {
+		private bool ContinuousDimensionIntervalIntersects(ContinuousInterval lhsInterval, ContinuousInterval rhsInterval) {
 			return Intersects(
 				aStart: lhsInterval.Start,
 				aEnd: lhsInterval.End,
