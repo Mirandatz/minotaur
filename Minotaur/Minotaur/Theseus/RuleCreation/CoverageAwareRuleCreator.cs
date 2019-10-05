@@ -58,10 +58,17 @@ namespace Minotaur.Theseus.RuleCreation {
 				inclusiveStart: 0,
 				exclusiveEnd: Dataset.FeatureCount);
 
-			var secureRectangle = _boxCreator.CreateLargestNonIntersectingRectangle(
+
+
+			if (!_boxCreator.TryCreateLargestNonIntersectingRectangle(
 				seedIndex: seedIndex,
 				existingHyperRectangles: boxes,
-				dimensionExpansionOrder: dimensionExpansionOrder);
+				dimensionExpansionOrder: dimensionExpansionOrder,
+				result: out var secureRectangle)) {
+
+				rule = null!;
+				return false;
+			}
 
 			// @Sanity check
 			for (int i = 0; i < boxes.Length; i++) {
@@ -73,7 +80,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
 			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
 
-			if(coveredInstancesIndices.Length == 0) {
+			if (coveredInstancesIndices.Length == 0) {
 				rule = null!;
 				return false;
 			}
@@ -91,9 +98,11 @@ namespace Minotaur.Theseus.RuleCreation {
 				.AsSpan()
 				.Slice(start: 0, length: instancesToCover);
 
-			var ruleAntecedent = _antecedentCreator.CreateAntecedent(
-				seedIndex: seedIndex,
-				nearestInstancesIndices: relevantInstances);
+
+			if (!_antecedentCreator.CreateAntecedent(seedIndex: seedIndex, nearestInstancesIndices: relevantInstances, out var ruleAntecedent)) {
+				rule = null!;
+				return false;
+			}
 
 			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
 

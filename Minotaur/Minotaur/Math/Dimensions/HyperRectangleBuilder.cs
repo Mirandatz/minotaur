@@ -1,9 +1,10 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections.Dataset;
 
 	public sealed class HyperRectangleBuilder {
-		
+
 		public readonly Dataset Dataset;
 		private readonly float[] _starts;
 		private readonly float[] _ends;
@@ -28,7 +29,7 @@ namespace Minotaur.Math.Dimensions {
 
 			for (int i = 0; i < featureCount; i++) {
 				switch (dataset.GetFeatureType(i)) {
-				
+
 				case FeatureType.Continuous: {
 					builder.UpdateContinuousDimensionIntervalStart(
 						dimensionIndex: i,
@@ -75,7 +76,7 @@ namespace Minotaur.Math.Dimensions {
 
 			return (Start: _starts[dimensionIndex], End: _ends[dimensionIndex]);
 		}
-		
+
 		public void UpdateContinuousDimensionIntervalStart(int dimensionIndex, float value) {
 			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
 				throw new InvalidOperationException();
@@ -100,25 +101,38 @@ namespace Minotaur.Math.Dimensions {
 			_ends[dimensionIndex] = value;
 		}
 
-		public HyperRectangle Build() {
+		public bool TryBuild([MaybeNullWhen(false)] out HyperRectangle hyperRectangle) {
 			var dimensionCount = Dataset.FeatureCount;
 			var intervals = new IInterval[dimensionCount];
-			for (int i = 0; i < intervals.Length; i++)
-				intervals[i] = BuildInterval(i);
 
-			return new HyperRectangle(intervals);
+			for (int i = 0; i < intervals.Length; i++) {
+				if (!TryBuildInterval(i, out var interval)) {
+					hyperRectangle = null!;
+					return false;
+				} else {
+					intervals[i] = interval;
+				}
+			}
+
+			hyperRectangle = new HyperRectangle(intervals);
+			return true;
 		}
 
-		private IInterval BuildInterval(int dimensionIndex) {
-			return (Dataset.GetFeatureType(dimensionIndex)) switch
-			{
-				FeatureType.Continuous => BuildContinuousInterval(dimensionIndex),
+		private bool TryBuildInterval(int dimensionIndex, [MaybeNullWhen(false)] out IInterval interval) {
+			if (Dataset.GetFeatureType(dimensionIndex) != FeatureType.Continuous)
+				throw new NotImplementedException();
 
-				_ => throw CommonExceptions.UnknownFeatureType
-			};
+
+			if (TryBuildContinuousInterval(dimensionIndex: dimensionIndex, interval: out var temp)) {
+				interval = temp;
+				return true;
+			} else {
+				interval = null!;
+				return false;
+			}
 		}
 
-		private ContinuousInterval BuildContinuousInterval(int dimensionIndex) {
+		private bool TryBuildContinuousInterval(int dimensionIndex, [MaybeNullWhen(false)] out IInterval interval) {
 			var start = _starts[dimensionIndex];
 			if (float.IsNaN(start))
 				throw new InvalidOperationException();
@@ -127,13 +141,16 @@ namespace Minotaur.Math.Dimensions {
 			if (float.IsNaN(end))
 				throw new InvalidOperationException();
 
-			if (start >= end)
-				throw new InvalidOperationException();
-
-			return new ContinuousInterval(
+			if (start >= end) {
+				interval = null!;
+				return false;
+			}
+			interval = new ContinuousInterval(
 				dimensionIndex: dimensionIndex,
 				start: start,
 				end: end);
+
+			return true;
 		}
 	}
 }

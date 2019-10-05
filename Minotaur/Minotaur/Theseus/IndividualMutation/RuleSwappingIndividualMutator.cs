@@ -96,7 +96,6 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 			if (!canCreate) {
 				//	throw new InvalidOperationException("This should, like... Never happen.");
-				Console.WriteLine("Failed to recreate rule");
 				mutated = null!;
 				return false;
 			}

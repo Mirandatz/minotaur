@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -16,7 +17,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			Dataset = _converter.Dataset;
 		}
 
-		public IFeatureTest[] CreateAntecedent(int seedIndex, ReadOnlySpan<int> nearestInstancesIndices) {
+		public bool CreateAntecedent(int seedIndex, ReadOnlySpan<int> nearestInstancesIndices, [MaybeNullWhen(false)] out IFeatureTest[] featureTests) {
 			var builder = HyperRectangleBuilder.InitializeWithSeed(
 				dataset: Dataset,
 				seedIndex: seedIndex);
@@ -28,8 +29,13 @@ namespace Minotaur.Theseus.RuleCreation {
 					instanceIndex: index);
 			}
 
-			var box = builder.Build();
-			return _converter.FromHyperRectangle(box);
+			if (!builder.TryBuild(out var box)) {
+				featureTests = null!;
+				return false;
+			} else {
+				featureTests = _converter.FromHyperRectangle(box);
+				return true;
+			}
 		}
 
 		private void EnlargeToCoverInstance(HyperRectangleBuilder builder, int instanceIndex) {

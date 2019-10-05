@@ -16,13 +16,18 @@ namespace Minotaur.Theseus {
 			Dataset = _intersector.Dataset;
 		}
 
-		public HyperRectangle CreateLargestNonIntersectingRectangle(int seedIndex, Array<HyperRectangle> existingHyperRectangles, NaturalRange dimensionExpansionOrder) {
+		public bool TryCreateLargestNonIntersectingRectangle(int seedIndex, Array<HyperRectangle> existingHyperRectangles, NaturalRange dimensionExpansionOrder, out HyperRectangle result) {
 			if (dimensionExpansionOrder.Length != Dataset.FeatureCount)
 				throw new InvalidOperationException();
 
 			if (existingHyperRectangles.IsEmpty) {
 				var tempBuilder = InitializeWithLargestRectangle(Dataset);
-				return tempBuilder.Build();
+				if (tempBuilder.TryBuild(out var hyperRectangle)) {
+					result = hyperRectangle;
+					return true;
+				} else {
+					throw new InvalidOperationException();
+				}
 			}
 
 			var builder = InitializeWithSeed(
@@ -49,7 +54,13 @@ namespace Minotaur.Theseus {
 				}
 			}
 
-			return builder.Build();
+			if (builder.TryBuild(out var box)) {
+				result = box;
+				return true;
+			} else {
+				result = null!;
+				return false;
+			}
 		}
 
 		private void UpdateContinuousDimension(HyperRectangleBuilder builder, Array<HyperRectangle> existingHyperRectangles, int dimensionIndex, Array<float> seed) {
