@@ -118,7 +118,7 @@ namespace Minotaur.Math.Dimensions {
 			};
 		}
 
-		private ContinuousDimensionInterval BuildContinuousInterval(int dimensionIndex) {
+		private ContinuousInterval BuildContinuousInterval(int dimensionIndex) {
 			var start = _starts[dimensionIndex];
 			if (float.IsNaN(start))
 				throw new InvalidOperationException();
@@ -130,7 +130,7 @@ namespace Minotaur.Math.Dimensions {
 			if (start >= end)
 				throw new InvalidOperationException();
 
-			return new ContinuousDimensionInterval(
+			return new ContinuousInterval(
 				dimensionIndex: dimensionIndex,
 				start: start,
 				end: end);

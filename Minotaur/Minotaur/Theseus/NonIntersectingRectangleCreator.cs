@@ -67,7 +67,7 @@ namespace Minotaur.Theseus {
 				if (!intersects)
 					continue;
 
-				var dimension = (ContinuousDimensionInterval) currentRectangle.GetDimensionInterval(dimensionIndex);
+				var dimension = (ContinuousInterval) currentRectangle.GetDimensionInterval(dimensionIndex);
 				var otherEnd = dimension.End;
 				var otherStart = dimension.Start;
 

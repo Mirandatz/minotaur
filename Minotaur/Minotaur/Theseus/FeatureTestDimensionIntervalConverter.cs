@@ -39,8 +39,8 @@ namespace Minotaur.Theseus {
 			throw new InvalidOperationException();
 		}
 
-		public ContinuousDimensionInterval FromContinuousFeatureTest(ContinuousFeatureTest continuousFeatureTest) {
-			return new ContinuousDimensionInterval(
+		public ContinuousInterval FromContinuousFeatureTest(ContinuousFeatureTest continuousFeatureTest) {
+			return new ContinuousInterval(
 				dimensionIndex: continuousFeatureTest.FeatureIndex,
 				start: continuousFeatureTest.LowerBound,
 				end: continuousFeatureTest.UpperBound);
@@ -50,7 +50,7 @@ namespace Minotaur.Theseus {
 			return interval switch
 			{
 				BinaryDimensionInterval bdi => FromBinaryDimensionInterval(bdi),
-				ContinuousDimensionInterval cdi => FromContinousDimensionInterval(cdi),
+				ContinuousInterval cdi => FromContinousDimensionInterval(cdi),
 
 				_ => throw CommonExceptions.UnknownDimensionIntervalImplementation
 			};
@@ -66,7 +66,7 @@ namespace Minotaur.Theseus {
 				return new BinaryFeatureTest(featureIndex: binaryDimensionInterval.DimensionIndex, value: 1f);
 		}
 
-		public ContinuousFeatureTest FromContinousDimensionInterval(ContinuousDimensionInterval continuousDimensionInterval) {
+		public ContinuousFeatureTest FromContinousDimensionInterval(ContinuousInterval continuousDimensionInterval) {
 			return new ContinuousFeatureTest(
 				featureIndex: continuousDimensionInterval.DimensionIndex,
 				lowerBound: continuousDimensionInterval.Start,
