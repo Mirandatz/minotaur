@@ -1,7 +1,7 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
 
-	public sealed class BinaryDimensionInterval: IDimensionInterval, IEquatable<BinaryDimensionInterval> {
+	public sealed class BinaryDimensionInterval: IInterval, IEquatable<BinaryDimensionInterval> {
 
 		public double Volume => 1;
 		public int DimensionIndex { get; }
@@ -55,7 +55,7 @@ namespace Minotaur.Math.Dimensions {
 
 		public override bool Equals(object? obj) => Equals((BinaryDimensionInterval) obj!);
 
-		public bool Equals(IDimensionInterval other) => Equals((BinaryDimensionInterval) other);
+		public bool Equals(IInterval other) => Equals((BinaryDimensionInterval) other);
 
 		public bool Equals(BinaryDimensionInterval other) {
 			return

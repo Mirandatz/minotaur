@@ -11,7 +11,7 @@ namespace Minotaur.Theseus {
 			Dataset = dataset;
 		}
 
-		public IDimensionInterval FromFeatureTest(IFeatureTest test) {
+		public IInterval FromFeatureTest(IFeatureTest test) {
 			return test switch
 			{
 				BinaryFeatureTest bft => FromBinaryFeatureTest(bft),
@@ -46,7 +46,7 @@ namespace Minotaur.Theseus {
 				end: continuousFeatureTest.UpperBound);
 		}
 
-		public IFeatureTest FromDimensionInterval(IDimensionInterval interval) {
+		public IFeatureTest FromDimensionInterval(IInterval interval) {
 			return interval switch
 			{
 				BinaryDimensionInterval bdi => FromBinaryDimensionInterval(bdi),

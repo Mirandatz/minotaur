@@ -69,7 +69,7 @@ namespace Minotaur.Collections.Dataset {
 			var sortedFeatureValues = new float[featuresCount][];
 			var sortedUniqueFeatureValues = new float[featuresCount][];
 			var featureValueFrequencies = new Dictionary<float, int>[featuresCount];
-			var dimensionIntervals = new IDimensionInterval[featuresCount];
+			var dimensionIntervals = new IInterval[featuresCount];
 
 			var distanceMatrixTask = Task.Run(() => Distance.ComputeEuclideanDistanceMatrix(data));
 

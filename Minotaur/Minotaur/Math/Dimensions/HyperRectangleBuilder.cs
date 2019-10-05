@@ -102,14 +102,14 @@ namespace Minotaur.Math.Dimensions {
 
 		public HyperRectangle Build() {
 			var dimensionCount = Dataset.FeatureCount;
-			var intervals = new IDimensionInterval[dimensionCount];
+			var intervals = new IInterval[dimensionCount];
 			for (int i = 0; i < intervals.Length; i++)
 				intervals[i] = BuildInterval(i);
 
 			return new HyperRectangle(intervals);
 		}
 
-		private IDimensionInterval BuildInterval(int dimensionIndex) {
+		private IInterval BuildInterval(int dimensionIndex) {
 			return (Dataset.GetFeatureType(dimensionIndex)) switch
 			{
 				FeatureType.Continuous => BuildContinuousInterval(dimensionIndex),

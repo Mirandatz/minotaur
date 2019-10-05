@@ -43,7 +43,7 @@ namespace Minotaur.Theseus {
 		}
 
 		public HyperRectangle FromRuleAntecedent(Array<IFeatureTest> ruleAntecedent) {
-			var intervals = new IDimensionInterval[ruleAntecedent.Length];
+			var intervals = new IInterval[ruleAntecedent.Length];
 
 			for (int i = 0; i < intervals.Length; i++) {
 				var test = ruleAntecedent[i];

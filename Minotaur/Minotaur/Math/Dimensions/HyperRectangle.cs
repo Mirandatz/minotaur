@@ -5,11 +5,11 @@ namespace Minotaur.Math.Dimensions {
 	public sealed class HyperRectangle: IEquatable<HyperRectangle> {
 
 		public readonly int DimensionCount;
-		public readonly Array<IDimensionInterval> Dimensions;
+		public readonly Array<IInterval> Dimensions;
 
 		private readonly int _precomputedHashCode;
 
-		public HyperRectangle(Array<IDimensionInterval> dimensions) {
+		public HyperRectangle(Array<IInterval> dimensions) {
 			Dimensions = dimensions.Clone();
 			DimensionCount = Dimensions.Length;
 
@@ -26,7 +26,7 @@ namespace Minotaur.Math.Dimensions {
 
 				if (dimension.DimensionIndex != i) {
 					throw new ArgumentException($"" +
-						$"There is a mismatch between {nameof(IDimensionInterval.DimensionIndex)}" +
+						$"There is a mismatch between {nameof(IInterval.DimensionIndex)}" +
 						$"at position {i}.");
 				}
 
@@ -51,7 +51,7 @@ namespace Minotaur.Math.Dimensions {
 			return true;
 		}
 
-		public IDimensionInterval GetDimensionInterval(int dimensionIndex) {
+		public IInterval GetDimensionInterval(int dimensionIndex) {
 			if (dimensionIndex < 0 || dimensionIndex >= Dimensions.Length)
 				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
 
