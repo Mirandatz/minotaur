@@ -82,9 +82,6 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			case NullFeatureTest _:
 			throw new NotImplementedException();
 
-			case BinaryFeatureTest _:
-			return 1;
-
 			case ContinuousFeatureTest cont: {
 				var lower = cont.LowerBound;
 				var upper = cont.UpperBound;

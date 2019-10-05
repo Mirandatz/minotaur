@@ -89,8 +89,8 @@ namespace Minotaur {
 
 			//var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
 
-			var hyperRectangleCreatorCache = IConcurrentCacheSelector.Create<Rule, HyperRectangle>(
-				capacity: settings.HyperRectangleCacheSize);
+			//var hyperRectangleCreatorCache = IConcurrentCacheSelector.Create<Rule, HyperRectangle>(
+			//	capacity: settings.HyperRectangleCacheSize);
 
 			//var hyperRectangleCreator = new HyperRectangleCreator(
 			//  dimensionIntervalCreator: dimensionIntervalCreator,
@@ -127,6 +127,7 @@ namespace Minotaur {
 				coverageComputer: hyperRectangleCoverageComputer,
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,
+				hyperRectangleIntersector: hyperRectangleIntersector,
 				minimumInstancesToCover: 3);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
