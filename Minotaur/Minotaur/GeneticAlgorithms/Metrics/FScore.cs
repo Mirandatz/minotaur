@@ -13,13 +13,10 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		public string Name => nameof(FScore);
 
 		public FScore(Dataset dataset) {
-			_dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			_dataset = dataset;
 		}
 
 		public float Evaluate(Individual individual) {
-			if (individual == null)
-				throw new ArgumentNullException(nameof(individual));
-
 			var predictions = individual.Predict(_dataset);
 			var confusionMatrix = PseudoConfusionMatrix.Create(
 				actual: _dataset.InstanceLabels,

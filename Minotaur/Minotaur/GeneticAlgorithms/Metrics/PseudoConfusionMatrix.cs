@@ -18,16 +18,16 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		public readonly float FalseNegative;
 
 		private PseudoConfusionMatrix(float truePositive, float falsePositive, float trueNegative, float falseNegative) {
-			if (float.IsNaN(truePositive) || float.IsInfinity(truePositive) || truePositive < 0 || truePositive > 1)
+			if (!(truePositive >= 0 && truePositive <= 1))
 				throw new ArgumentOutOfRangeException(nameof(truePositive) + " must be between [0, 1]");
 
-			if (float.IsNaN(falsePositive) || float.IsInfinity(falsePositive) || falsePositive < 0 || falsePositive > 1)
+			if (!(falsePositive >= 0 && falsePositive <= 1))
 				throw new ArgumentOutOfRangeException(nameof(falsePositive) + " must be between [0, 1]");
 
-			if (float.IsNaN(trueNegative) || float.IsInfinity(trueNegative) || trueNegative < 0 || trueNegative > 1)
+			if (!(trueNegative >= 0 && trueNegative <= 1))
 				throw new ArgumentOutOfRangeException(nameof(trueNegative) + " must be between [0, 1]");
 
-			if (float.IsNaN(falseNegative) || float.IsInfinity(falseNegative) || falseNegative < 0 || falseNegative > 1)
+			if (!(falseNegative >= 0 && falseNegative <= 1))
 				throw new ArgumentOutOfRangeException(nameof(falseNegative) + " must be between [0, 1]");
 
 			TruePositive = truePositive;
@@ -37,10 +37,6 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		}
 
 		public static PseudoConfusionMatrix Create(Matrix<bool> actual, Matrix<bool> predicted) {
-			if (actual == null)
-				throw new ArgumentNullException(nameof(actual));
-			if (predicted == null)
-				throw new ArgumentNullException(nameof(predicted));
 			if (actual.ColumnCount != predicted.ColumnCount)
 				throw new ArgumentException("Both arguments must have the same number of columns.");
 			if (actual.RowCount != predicted.RowCount)

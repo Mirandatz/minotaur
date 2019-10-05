@@ -1,5 +1,4 @@
 namespace Minotaur.GeneticAlgorithms.Metrics {
-	using System;
 	using Minotaur.GeneticAlgorithms.Population;
 
 	public sealed class ModelSize: IMetric {
@@ -7,9 +6,6 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		public string Name => nameof(ModelSize);
 
 		public float Evaluate(Individual individual) {
-			if (individual is null)
-				throw new ArgumentNullException(nameof(individual));
-
 			var modelSize = 0;
 			var rules = individual.Rules;
 			for (int i = 0; i < rules.Length; i++)

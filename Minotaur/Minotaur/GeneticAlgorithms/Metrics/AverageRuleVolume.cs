@@ -4,10 +4,10 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 
 	public sealed class AverageRuleVolume: IMetric {
 
-		public readonly Dataset Dataset;
+		private readonly Dataset _dataset;
 
 		public AverageRuleVolume(Dataset dataset) {
-			Dataset = dataset;
+			_dataset = dataset;
 		}
 
 		public string Name => nameof(AverageRuleVolume);
@@ -34,7 +34,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 
 		private double ComputeTestVolume(Rule rule, int testIndex) {
 			var test = rule.Antecedent[testIndex];
-			var featureType = Dataset.GetFeatureType(featureIndex: testIndex);
+			var featureType = _dataset.GetFeatureType(featureIndex: testIndex);
 
 			return featureType switch
 			{
@@ -49,7 +49,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 				var lower = cft.LowerBound;
 				var upper = cft.UpperBound;
 
-				var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex: testIndex);
+				var featureValues = _dataset.GetSortedUniqueFeatureValues(featureIndex: testIndex);
 
 				if (float.IsNegativeInfinity(lower))
 					lower = featureValues[0];
@@ -61,7 +61,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			}
 
 			if (test is NullFeatureTest) {
-				var (min, max) = Dataset.GetMinimumAndMaximumFeatureValues(featureIndex: testIndex);
+				var (min, max) = _dataset.GetMinimumAndMaximumFeatureValues(featureIndex: testIndex);
 				return max - min;
 			}
 
