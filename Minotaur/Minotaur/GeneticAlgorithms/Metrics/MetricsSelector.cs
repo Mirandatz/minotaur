@@ -9,10 +9,6 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			Dataset dataset,
 			Array<string> metricsNames
 			) {
-			if (dataset is null)
-				throw new ArgumentNullException(nameof(dataset));
-			if (metricsNames is null)
-				throw new ArgumentNullException(nameof(metricsNames));
 			if (metricsNames.IsEmpty)
 				throw new ArgumentException(nameof(metricsNames) + " can't be empty.");
 
