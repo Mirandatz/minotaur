@@ -21,19 +21,9 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		public override int GetHashCode() => FeatureIndex;
 
-		public override bool Equals(object? obj) {
-			if (obj is NullFeatureTest other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public override bool Equals(object? obj) => Equals((NullFeatureTest) obj!);
 
-		public bool Equals(IFeatureTest test) {
-			if (test is NullFeatureTest other)
-				return Equals(other);
-			else
-				return false;
-		}
+		public bool Equals(IFeatureTest test) => Equals((NullFeatureTest) test);
 
 		public bool Equals(NullFeatureTest other) => FeatureIndex == other.FeatureIndex;
 	}
