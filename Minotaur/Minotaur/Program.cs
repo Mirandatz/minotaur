@@ -29,19 +29,19 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
-				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
-				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
-				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
-				"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+				//"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
+				//"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
+				//"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
+				//"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
+				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
 
-				//"--train-data=C:/Source/dataset-making/train-data.csv",
-				//"--train-labels=C:/Source/dataset-making/train-labels.csv",
+				"--train-data=C:/Source/dataset-making/train-data.csv",
+				"--train-labels=C:/Source/dataset-making/train-labels.csv",
 
-				//"--test-data=C:/Source/dataset-making/test-data.csv",
-				//"--test-labels=C:/Source/dataset-making/test-labels.csv",
+				"--test-data=C:/Source/dataset-making/test-data.csv",
+				"--test-labels=C:/Source/dataset-making/test-labels.csv",
 
-				//"--feature-types=C:/Source/dataset-making/feature-types.csv",
+				"--feature-types=C:/Source/dataset-making/feature-types.csv",
 
 				//"--output-directory=C:/Source/minotaur/temp/",
 
@@ -49,11 +49,11 @@ namespace Minotaur {
 				"--fitness-metrics=model-size",
 				//"--fitness-metrics=average-rule-volume",
 
-				"--max-generations=2000",
-				"--max-failed-mutations-per-generation=2000",
+				"--max-generations=20000",
+				"--max-failed-mutations-per-generation=20000",
 
-				"--population-size=50",
-				"--mutants-per-generation=100",
+				"--population-size=100",
+				"--mutants-per-generation=200",
 				"--maximum-initial-rule-count=50",
 
 				$"--hyperrectangle-cache-size={1024*32}",
