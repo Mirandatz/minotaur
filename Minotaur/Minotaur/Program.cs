@@ -47,7 +47,7 @@ namespace Minotaur {
 
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
-				//"--fitness-metrics=average-rule-volume",
+				"--fitness-metrics=average-rule-volume",
 
 				"--max-generations=20000",
 				"--max-failed-mutations-per-generation=20000",

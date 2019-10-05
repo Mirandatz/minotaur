@@ -1,5 +1,4 @@
 namespace Minotaur.GeneticAlgorithms.Metrics {
-	using System;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 
@@ -8,15 +7,12 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		public readonly Dataset Dataset;
 
 		public AverageRuleVolume(Dataset dataset) {
-			Dataset = dataset ?? throw new ArgumentNullException(nameof(dataset));
+			Dataset = dataset;
 		}
 
 		public string Name => nameof(AverageRuleVolume);
 
 		public float EvaluateAsMaximizationTask(Individual individual) {
-			if (individual is null)
-				throw new ArgumentNullException(nameof(individual));
-
 			var rules = individual.Rules;
 			double sumOfVolumes = 1;
 
@@ -36,55 +32,22 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			return volume;
 		}
 
-		//private double ComputeTestVolume(Rule rule, int testIndex) {
-
-		//	switch (Dataset.GetFeatureType(testIndex)) {
-
-		//	case FeatureType.Categorical:
-		//	return 1;
-
-		//	case FeatureType.CategoricalButTriviallyValued:
-		//	return 1;
-
-		//	case FeatureType.Continuous: {
-		//		var featureValues = Dataset.GetSortedUniqueFeatureValues(
-		//			featureIndex: testIndex);
-
-		//		var test = (ContinuousFeatureTest) rule.Tests[testIndex];
-
-		//		var testMin = test.LowerBound;
-		//		var datasetMin = featureValues[0];
-
-		//		var testMax = test.UpperBound;
-		//		var datasetMax = featureValues[featureValues.Length - 1];
-
-		//		var delta = Math.Min(testMax, datasetMax) - Math.Max(testMin, datasetMin);
-		//		if (delta == 0) {
-		//			return 1;
-		//			//	throw new InvalidOperationException();
-		//		}
-
-		//		return delta;
-		//	}
-
-		//	case FeatureType.ContinuousButTriviallyValued:
-		//	return 1;
-
-		//	default:
-		//	throw new InvalidOperationException($"Unknown or unsupported value for {nameof(FeatureType)}.");
-		//	}
-		//}
-
 		private double ComputeTestVolume(Rule rule, int testIndex) {
+			var test = rule.Antecedent[testIndex];
+			var featureType = Dataset.GetFeatureType(featureIndex: testIndex);
 
-			switch (rule.Antecedent[testIndex]) {
+			return featureType switch
+			{
+				FeatureType.Continuous => ComputeContinuousFeatureTestVolume(test, testIndex),
 
-			case NullFeatureTest _:
-			throw new NotImplementedException();
+				_ => throw CommonExceptions.UnknownFeatureType
+			};
+		}
 
-			case ContinuousFeatureTest cont: {
-				var lower = cont.LowerBound;
-				var upper = cont.UpperBound;
+		private double ComputeContinuousFeatureTestVolume(IFeatureTest test, int testIndex) {
+			if (test is ContinuousFeatureTest cft) {
+				var lower = cft.LowerBound;
+				var upper = cft.UpperBound;
 
 				var featureValues = Dataset.GetSortedUniqueFeatureValues(featureIndex: testIndex);
 
@@ -97,9 +60,12 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 				return upper - lower;
 			}
 
-			default:
-			throw CommonExceptions.UnknownFeatureType;
+			if (test is NullFeatureTest) {
+				var (min, max) = Dataset.GetMinimumAndMaximumFeatureValues(featureIndex: testIndex);
+				return max - min;
 			}
+
+			throw CommonExceptions.UnknownFeatureTestImplementation;
 		}
 	}
 }
