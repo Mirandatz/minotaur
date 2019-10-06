@@ -21,11 +21,12 @@ namespace Minotaur.Theseus {
 
 			if (existingHyperRectangles.IsEmpty) {
 				var tempBuilder = HyperRectangleBuilder.InitializeWithLargestRectangle(Dataset);
-				if (tempBuilder.TryBuild(out var hyperRectangle)) {
-					return hyperRectangle;
-				} else {
+				var hyperRectangle = tempBuilder.TryBuild();
+
+				if (hyperRectangle is null)
 					throw new InvalidOperationException();
-				}
+				else
+					return hyperRectangle;
 			}
 
 			var builder = HyperRectangleBuilder.InitializeWithSeed(
@@ -52,11 +53,7 @@ namespace Minotaur.Theseus {
 				}
 			}
 
-			if (builder.TryBuild(out var box)) {
-				return box;
-			} else {
-				return null;
-			}
+			return builder.TryBuild();
 		}
 
 		private void UpdateContinuousDimension(HyperRectangleBuilder builder, Array<HyperRectangle> existingHyperRectangles, int dimensionIndex, Array<float> seed) {

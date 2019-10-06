@@ -29,11 +29,11 @@ namespace Minotaur.Theseus.RuleCreation {
 					instanceIndex: index);
 			}
 
-			if (!builder.TryBuild(out var box)) {
+			var box = builder.TryBuild();
+			if (box is null)
 				return null;
-			} else {
-				return _converter.FromHyperRectangle(box);
-			}
+
+			return _converter.FromHyperRectangle(box);
 		}
 
 		private void EnlargeToCoverInstance(HyperRectangleBuilder builder, int instanceIndex) {

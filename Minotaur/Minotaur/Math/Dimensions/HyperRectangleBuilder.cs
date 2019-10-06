@@ -101,21 +101,19 @@ namespace Minotaur.Math.Dimensions {
 			_ends[dimensionIndex] = value;
 		}
 
-		public bool TryBuild([MaybeNullWhen(false)] out HyperRectangle hyperRectangle) {
+		public HyperRectangle? TryBuild() {
 			var dimensionCount = Dataset.FeatureCount;
 			var intervals = new IInterval[dimensionCount];
 
 			for (int i = 0; i < intervals.Length; i++) {
 				if (!TryBuildInterval(i, out var interval)) {
-					hyperRectangle = null!;
-					return false;
+					return null;
 				} else {
 					intervals[i] = interval;
 				}
 			}
 
-			hyperRectangle = new HyperRectangle(intervals);
-			return true;
+			return new HyperRectangle(intervals);
 		}
 
 		private bool TryBuildInterval(int dimensionIndex, [MaybeNullWhen(false)] out IInterval interval) {
