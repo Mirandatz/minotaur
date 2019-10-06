@@ -5,6 +5,6 @@ namespace Minotaur.Theseus.RuleCreation {
 
 	public interface IRuleCreator {
 		Dataset Dataset { get; }
-		bool TryCreateRule(Array<Rule> existingRules, out Rule newRule);
+		Rule? TryCreateRule(Array<Rule> existingRules);
 	}
 }

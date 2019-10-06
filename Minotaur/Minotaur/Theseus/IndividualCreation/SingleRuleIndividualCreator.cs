@@ -14,7 +14,8 @@ namespace Minotaur.Theseus.IndividualCreation {
 		}
 
 		public Individual Create() {
-			if (!_ruleCreator.TryCreateRule(existingRules: Array.Empty<Rule>(), out var rule))
+			var rule = _ruleCreator.TryCreateRule(existingRules: Array.Empty<Rule>());
+			if (rule is null)
 				throw new InvalidOperationException("This operation should never fail.");
 
 			var defaultLabels = new bool[Dataset.ClassCount];

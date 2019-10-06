@@ -17,7 +17,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			Dataset = _converter.Dataset;
 		}
 
-		public bool CreateAntecedent(int seedIndex, ReadOnlySpan<int> nearestInstancesIndices, [MaybeNullWhen(false)] out IFeatureTest[] featureTests) {
+		public IFeatureTest[]? CreateAntecedent(int seedIndex, ReadOnlySpan<int> nearestInstancesIndices) {
 			var builder = HyperRectangleBuilder.InitializeWithSeed(
 				dataset: Dataset,
 				seedIndex: seedIndex);
@@ -30,11 +30,9 @@ namespace Minotaur.Theseus.RuleCreation {
 			}
 
 			if (!builder.TryBuild(out var box)) {
-				featureTests = null!;
-				return false;
+				return null;
 			} else {
-				featureTests = _converter.FromHyperRectangle(box);
-				return true;
+				return _converter.FromHyperRectangle(box);
 			}
 		}
 

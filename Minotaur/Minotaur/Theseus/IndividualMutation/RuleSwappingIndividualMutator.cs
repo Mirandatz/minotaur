@@ -34,11 +34,8 @@ namespace Minotaur.Theseus.IndividualMutation {
 		private Individual? TryAddRule(Individual original) {
 			var oldRules = original.Rules;
 
-			var createdNewRule = _ruleCreator.TryCreateRule(
-				existingRules: oldRules,
-				newRule: out var newRule);
-
-			if (!createdNewRule)
+			var newRule = _ruleCreator.TryCreateRule(existingRules: oldRules);
+			if (newRule is null)
 				return null;
 
 			var newRules = new Rule[original.Rules.Length + 1];
@@ -84,11 +81,8 @@ namespace Minotaur.Theseus.IndividualMutation {
 			// So if we get false as return from this method call,
 			// we throwing bruh... coz that indicates
 			// there's something wrong somewhere
-			var canCreate = _ruleCreator.TryCreateRule(
-				existingRules: withoutCandidate,
-				newRule: out var newRule);
-
-			if (!canCreate)
+			var newRule = _ruleCreator.TryCreateRule(existingRules: withoutCandidate);
+			if (newRule is null)
 				return null;
 
 			var newRules = oldRules.Swap(

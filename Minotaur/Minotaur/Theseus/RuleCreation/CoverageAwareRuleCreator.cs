@@ -1,7 +1,5 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
-	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -31,14 +29,11 @@ namespace Minotaur.Theseus.RuleCreation {
 			Dataset = _seedSelector.Dataset;
 		}
 
-		public bool TryCreateRule(Array<Rule> existingRules, [MaybeNullWhen(false)] out Rule rule) {
-
+		public Rule? TryCreateRule(Array<Rule> existingRules) {
 			var seedsIndices = _seedSelector.FindSeedsIndices(existingRules);
 
-			if (seedsIndices.IsEmpty) {
-				rule = default!;
-				return false;
-			}
+			if (seedsIndices.IsEmpty)
+				return null;
 
 			// This may fail just because we chose a bad seed or even because
 			// we chose a bad dimension expansion order
@@ -58,16 +53,13 @@ namespace Minotaur.Theseus.RuleCreation {
 				inclusiveStart: 0,
 				exclusiveEnd: Dataset.FeatureCount);
 
-
-
 			if (!_boxCreator.TryCreateLargestNonIntersectingRectangle(
 				seedIndex: seedIndex,
 				existingHyperRectangles: boxes,
 				dimensionExpansionOrder: dimensionExpansionOrder,
 				result: out var secureRectangle)) {
 
-				rule = null!;
-				return false;
+				return null;
 			}
 
 			// @Sanity check
@@ -80,10 +72,8 @@ namespace Minotaur.Theseus.RuleCreation {
 			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
 			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
 
-			if (coveredInstancesIndices.Length == 0) {
-				rule = null!;
-				return false;
-			}
+			if (coveredInstancesIndices.Length == 0)
+				return null;
 
 			var coveredInstancesDistancesToSeed = Dataset.ComputeDistances(
 				targetInstanceIndex: seedIndex,
@@ -98,19 +88,18 @@ namespace Minotaur.Theseus.RuleCreation {
 				.AsSpan()
 				.Slice(start: 0, length: instancesToCover);
 
+			var ruleAntecedent = _antecedentCreator.CreateAntecedent(
+				seedIndex: seedIndex,
+				nearestInstancesIndices: relevantInstances);
 
-			if (!_antecedentCreator.CreateAntecedent(seedIndex: seedIndex, nearestInstancesIndices: relevantInstances, out var ruleAntecedent)) {
-				rule = null!;
-				return false;
-			}
+			if (ruleAntecedent is null)
+				return null;
 
 			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
 
-			rule = new Rule(
+			return new Rule(
 				antecedent: ruleAntecedent,
 				consequent: ruleConsequent);
-
-			return true;
 		}
 	}
 }
