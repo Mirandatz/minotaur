@@ -29,37 +29,25 @@ namespace Minotaur.Theseus {
 		}
 
 		public static double ComputeRuleVolume(Dataset dataset, Rule rule) {
+			var featureCount = dataset.FeatureCount;
+			double volume = 1;
 
-			throw new NotImplementedException();
+			for (int i = 0; i < featureCount; i++) {
+				switch (dataset.GetFeatureType(i)) {
 
-			//var featureCount = dataset.FeatureCount;
+				case FeatureType.Continuous:
+				var test = (ContinuousFeatureTest) rule.Antecedent[i];
+				var min = test.LowerBound;
+				var max = test.UpperBound;
+				volume *= (max - min);
+				break;
 
-			//double volume = 1;
+				default:
+				throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
+				}
+			}
 
-			//for (int i = 0; i < featureCount; i++) {
-			//	switch (dataset.GetFeatureType(i)) {
-			//	case FeatureType.Categorical:
-			//	break;
-
-			//	case FeatureType.CategoricalButTriviallyValued:
-			//	break;
-
-			//	case FeatureType.Continuous:
-			//	var test = (ContinuousFeatureTest) rule.Tests[i];
-			//	var min = test.LowerBound;
-			//	var max = test.UpperBound;
-			//	volume *= (max - min);
-			//	break;
-
-			//	case FeatureType.ContinuousButTriviallyValued:
-			//	break;
-
-			//	default:
-			//	throw new InvalidOperationException($"Unknown / unsupported value of {nameof(FeatureType)}.");
-			//	}
-			//}
-
-			//return volume;
+			return volume;
 		}
 	}
 }

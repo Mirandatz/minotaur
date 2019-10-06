@@ -6,33 +6,37 @@ namespace Minotaur.Theseus {
 	using Minotaur.ExtensionMethods.SystemArray;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
+	using Minotaur.Theseus.IndividualBreeding;
 	using Minotaur.Theseus.IndividualMutation;
 
 	public sealed class EvolutionEngine {
 
-		public readonly PopulationMutator PopulationMutator;
-		public readonly IFittestSelector FittestSelector;
-		public readonly FitnessReportMaker FitnessReportMaker;
-		public readonly RuleConsistencyChecker ConsistencyChecker;
+		private readonly PopulationBreeder _populationBreeder;
+		private readonly PopulationMutator _populationMutator;
+		private readonly IFittestSelector _fittestSelector;
+		private readonly FitnessReportMaker _fitnessReportMaker;
+		private readonly RuleConsistencyChecker _consistencyChecker;
 
-		public readonly int MaximumGenerations;
+		private readonly int _maximumGenerations;
 
 		public EvolutionEngine(
+			PopulationBreeder populationBreeder,
 			PopulationMutator populationMutator,
 			FitnessReportMaker fitnessReportMaker,
 			IFittestSelector fittestSelector,
 			RuleConsistencyChecker consistencyChecker,
 			int maximumGenerations
 			) {
-			PopulationMutator = populationMutator;
-			FitnessReportMaker = fitnessReportMaker;
-			FittestSelector = fittestSelector;
-			ConsistencyChecker = consistencyChecker;
+			_populationBreeder = populationBreeder;
+			_populationMutator = populationMutator;
+			_fitnessReportMaker = fitnessReportMaker;
+			_fittestSelector = fittestSelector;
+			_consistencyChecker = consistencyChecker;
 
 			if (maximumGenerations <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumGenerations));
 
-			MaximumGenerations = maximumGenerations;
+			_maximumGenerations = maximumGenerations;
 		}
 
 		public EvolutionReport
@@ -46,10 +50,13 @@ namespace Minotaur.Theseus {
 			var reasonForStoppingEvolution = string.Empty;
 
 			int generationsRan;
-			for (generationsRan = 0; generationsRan < MaximumGenerations; generationsRan++) {
-				Console.Write($"\rRunning generation {generationsRan}/{MaximumGenerations}");
+			for (generationsRan = 0; generationsRan < _maximumGenerations; generationsRan++) {
+				Console.Write($"\rRunning generation {generationsRan}/{_maximumGenerations}");
 
-				if (!PopulationMutator.TryMutate(population, out var mutants)) {
+				var children = _populationBreeder.Breed(population);
+				var populationWithChildren = population.Concatenate(children);
+
+				if (!_populationMutator.TryMutate(populationWithChildren, out var mutants)) {
 					reasonForStoppingEvolution = "" +
 						"reached maximum number of failed mutation attempts " +
 						"for a single generation";
@@ -69,11 +76,11 @@ namespace Minotaur.Theseus {
 
 				if (generationsRan % 10 == 0) {
 					Console.WriteLine();
-					Console.WriteLine(FitnessReportMaker.MakeReport(population));
+					Console.WriteLine(_fitnessReportMaker.MakeReport(population));
 				}
 
-				var populationWithMutants = population.Concatenate(mutants);
-				var fittest = FittestSelector.SelectFittest(populationWithMutants);
+				var populationWithMutants = populationWithChildren.Concatenate(mutants);
+				var fittest = _fittestSelector.SelectFittest(populationWithMutants);
 				population = fittest;
 			}
 
@@ -81,7 +88,7 @@ namespace Minotaur.Theseus {
 			// after we finish the lone we oughta WriteLine
 			Console.WriteLine();
 
-			if (generationsRan == MaximumGenerations)
+			if (generationsRan == _maximumGenerations)
 				reasonForStoppingEvolution = "reached maximum number of generations";
 
 			return new EvolutionReport(

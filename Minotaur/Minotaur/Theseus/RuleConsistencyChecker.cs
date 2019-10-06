@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus {
 	using System;
+	using System.Collections.Generic;
 	using Minotaur.Collections;
 	using Minotaur.GeneticAlgorithms.Population;
 
@@ -24,6 +25,16 @@ namespace Minotaur.Theseus {
 				var currentRule = allRulesSpan[i];
 
 				if (!AreConsistent(existingRules: previousRules, newRule: currentRule))
+					return false;
+			}
+
+			return true;
+		}
+
+		public bool AreConsistent(List<Rule> consistentRules, Rule newRule) {
+			var ruleCount = consistentRules.Count;
+			for (int i = 0; i < ruleCount; i++) {
+				if (!AreConsistent(consistentRules[i], newRule))
 					return false;
 			}
 

@@ -14,6 +14,7 @@ namespace Minotaur {
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
+	using Minotaur.Theseus.IndividualBreeding;
 	using Minotaur.Theseus.IndividualCreation;
 	using Minotaur.Theseus.IndividualMutation;
 	using Minotaur.Theseus.RuleCreation;
@@ -47,7 +48,7 @@ namespace Minotaur {
 
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=model-size",
-				"--fitness-metrics=average-rule-volume",
+				//"--fitness-metrics=average-rule-volume",
 
 				"--max-generations=20000",
 				"--max-failed-mutations-per-generation=20000",
@@ -67,8 +68,8 @@ namespace Minotaur {
 				//"--rule-mutation-modify-test-weight=80",
 				//"--rule-mutation-modify-consequent-weight=20",
 
-				"--individual-mutation-add-rule-weight=900",
-				"--individual-mutation-modify-rule-weight=30",
+				"--individual-mutation-add-rule-weight=2",
+				"--individual-mutation-modify-rule-weight=2",
 				"--individual-mutation-remove-rule-weight=2",
 			};
 		}
@@ -189,7 +190,16 @@ namespace Minotaur {
 
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
+			var individualBreeder = new IndividualBreeder(
+				dataset: trainDataset,
+				ruleConsistencyChecker: consistencyChecker);
+
+			var populationBreeder = new PopulationBreeder(
+				individualBreeder: individualBreeder,
+				childrenPerGeneration: 0);
+
 			var evolutionEngine = new EvolutionEngine(
+				populationBreeder: populationBreeder,
 				populationMutator: populationMutator,
 				fitnessReportMaker: fitnessReportMaker,
 				fittestSelector: fittestSelector,
