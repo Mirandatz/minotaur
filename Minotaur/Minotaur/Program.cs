@@ -30,19 +30,19 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				//"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
-				//"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
-				//"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
-				//"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
-				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-train-data.csv",
+				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-train-labels.csv",
+				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-test-data.csv",
+				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-test-labels.csv",
+				"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
 
-				"--train-data=C:/Source/dataset-making/train-data.csv",
-				"--train-labels=C:/Source/dataset-making/train-labels.csv",
+				//"--train-data=C:/Source/dataset-making/train-data.csv",
+				//"--train-labels=C:/Source/dataset-making/train-labels.csv",
 
-				"--test-data=C:/Source/dataset-making/test-data.csv",
-				"--test-labels=C:/Source/dataset-making/test-labels.csv",
+				//"--test-data=C:/Source/dataset-making/test-data.csv",
+				//"--test-labels=C:/Source/dataset-making/test-labels.csv",
 
-				"--feature-types=C:/Source/dataset-making/feature-types.csv",
+				//"--feature-types=C:/Source/dataset-making/feature-types.csv",
 
 				//"--output-directory=C:/Source/minotaur/temp/",
 
@@ -50,12 +50,11 @@ namespace Minotaur {
 				"--fitness-metrics=model-size",
 				//"--fitness-metrics=average-rule-volume",
 
-				"--max-generations=20000",
+				"--max-generations=300",
 				"--max-failed-mutations-per-generation=20000",
 
 				"--population-size=100",
 				"--mutants-per-generation=200",
-				"--maximum-initial-rule-count=50",
 
 				$"--hyperrectangle-cache-size={1024*32}",
 				$"--rule-coverage-cache-size={1024*32}",
@@ -68,9 +67,9 @@ namespace Minotaur {
 				//"--rule-mutation-modify-test-weight=80",
 				//"--rule-mutation-modify-consequent-weight=20",
 
-				"--individual-mutation-add-rule-weight=2",
-				"--individual-mutation-modify-rule-weight=2",
-				"--individual-mutation-remove-rule-weight=2",
+				"--individual-mutation-add-rule-weight=5",
+				"--individual-mutation-modify-rule-weight=20",
+				"--individual-mutation-remove-rule-weight=10",
 			};
 		}
 
@@ -129,7 +128,7 @@ namespace Minotaur {
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,
 				hyperRectangleIntersector: hyperRectangleIntersector,
-				minimumInstancesToCover: 3);
+				targetNumberOfInstancesToCover: 250);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {

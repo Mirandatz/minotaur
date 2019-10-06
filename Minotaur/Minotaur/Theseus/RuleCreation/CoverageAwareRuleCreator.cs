@@ -17,14 +17,14 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly HyperRectangleIntersector _rectangleIntersector;
 		private readonly int _targetNumberOfInstancesToCover;
 
-		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int minimumInstancesToCover) {
+		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int targetNumberOfInstancesToCover) {
 			_seedSelector = seedSelector;
 			_boxConverter = boxConverter;
 			_boxCreator = boxCreator;
 			_coverageComputer = coverageComputer;
 			_antecedentCreator = antecedentCreator;
 			_consequentCreator = consequentCreator;
-			_targetNumberOfInstancesToCover = minimumInstancesToCover;
+			_targetNumberOfInstancesToCover = targetNumberOfInstancesToCover;
 			_rectangleIntersector = hyperRectangleIntersector;
 			Dataset = _seedSelector.Dataset;
 		}

@@ -106,23 +106,11 @@ namespace Minotaur {
 			)]
 		[Range(0, int.MaxValue)]
 		public int FitnessCacheSize { get; }
-
-		//[Required]
-		//[Option(ShortName = "", LongName = "maximum-plateau-length",
-		//	Description =
-		//	"Every gereration the algorithm checks if the average fitness improved, i.e., if" +
-		//	"the current average fitness pareto dominates the previous one." +
-		//	"If the average fitness haven't improved in --maximum-plateau-length generations," +
-		//	"the evolutionary algorithm stops."
-		//	)]
-		//[Range(1, int.MaxValue)]
-		//public int MaximumPlateauLength { get; }
-
+		
 		[Required]
 		[Option(ShortName = "", LongName = "population-size", Description = "The number of individuals in the initial and final populations.")]
 		[Range(1, int.MaxValue)]
 		public int PopulationSize { get; }
-
 
 		[Required]
 		[Option(ShortName = "", LongName = "mutants-per-generation",
@@ -145,12 +133,12 @@ namespace Minotaur {
 		[AllowedValues("nsga2", "lexicographic")]
 		public string SelectionAlgorithm { get; } = string.Empty;
 
-		[Required]
-		[Option(ShortName = "", LongName = "maximum-initial-rule-count",
-			Description = "The maximum number of rules a individual can have during creation."
-			)]
-		[Range(1, int.MaxValue)]
-		public int MaximumInitialRuleCount { get; }
+		//[Required]
+		//[Option(ShortName = "", LongName = "maximum-initial-rule-count",
+		//	Description = "The maximum number of rules a individual can have during creation."
+		//	)]
+		//[Range(1, int.MaxValue)]
+		//public int MaximumInitialRuleCount { get; }
 
 		[Required]
 		[Option(ShortName = "", LongName = "individual-mutation-add-rule-weight",

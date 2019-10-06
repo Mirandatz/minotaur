@@ -21,7 +21,7 @@ namespace Minotaur.Theseus.IndividualBreeding {
 			// @Performance
 			var combinedRules = lhs.Rules
 				.Concat(rhs.Rules)
-				.OrderBy(r => VolumeComputer.ComputeRuleVolume(_dataset, r))
+				.OrderBy(r => -1 * VolumeComputer.ComputeRuleVolume(_dataset, r))
 				.ToArray();
 
 			var consistentRules = new List<Rule>(combinedRules.Length);
@@ -31,6 +31,8 @@ namespace Minotaur.Theseus.IndividualBreeding {
 				var currentRule = combinedRules[i];
 				if (_consistencyChecker.AreConsistent(consistentRules, currentRule)) {
 					consistentRules.Add(currentRule);
+				} else {
+					break;
 				}
 			}
 
