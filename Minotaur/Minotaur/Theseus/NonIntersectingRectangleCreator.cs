@@ -4,7 +4,6 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
-	using static Minotaur.Math.Dimensions.HyperRectangleBuilder;
 
 	public sealed class NonIntersectingRectangleCreator {
 
@@ -16,21 +15,20 @@ namespace Minotaur.Theseus {
 			Dataset = _intersector.Dataset;
 		}
 
-		public bool TryCreateLargestNonIntersectingRectangle(int seedIndex, Array<HyperRectangle> existingHyperRectangles, NaturalRange dimensionExpansionOrder, out HyperRectangle result) {
+		public HyperRectangle? TryCreateLargestNonIntersectingRectangle(int seedIndex, Array<HyperRectangle> existingHyperRectangles, NaturalRange dimensionExpansionOrder) {
 			if (dimensionExpansionOrder.Length != Dataset.FeatureCount)
 				throw new InvalidOperationException();
 
 			if (existingHyperRectangles.IsEmpty) {
-				var tempBuilder = InitializeWithLargestRectangle(Dataset);
+				var tempBuilder = HyperRectangleBuilder.InitializeWithLargestRectangle(Dataset);
 				if (tempBuilder.TryBuild(out var hyperRectangle)) {
-					result = hyperRectangle;
-					return true;
+					return hyperRectangle;
 				} else {
 					throw new InvalidOperationException();
 				}
 			}
 
-			var builder = InitializeWithSeed(
+			var builder = HyperRectangleBuilder.InitializeWithSeed(
 				dataset: Dataset,
 				seedIndex: seedIndex);
 
@@ -55,11 +53,9 @@ namespace Minotaur.Theseus {
 			}
 
 			if (builder.TryBuild(out var box)) {
-				result = box;
-				return true;
+				return box;
 			} else {
-				result = null!;
-				return false;
+				return null;
 			}
 		}
 

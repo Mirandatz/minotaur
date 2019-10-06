@@ -53,14 +53,13 @@ namespace Minotaur.Theseus.RuleCreation {
 				inclusiveStart: 0,
 				exclusiveEnd: Dataset.FeatureCount);
 
-			if (!_boxCreator.TryCreateLargestNonIntersectingRectangle(
+			var secureRectangle = _boxCreator.TryCreateLargestNonIntersectingRectangle(
 				seedIndex: seedIndex,
 				existingHyperRectangles: boxes,
-				dimensionExpansionOrder: dimensionExpansionOrder,
-				result: out var secureRectangle)) {
+				dimensionExpansionOrder: dimensionExpansionOrder);
 
+			if (secureRectangle is null)
 				return null;
-			}
 
 			// @Sanity check
 			for (int i = 0; i < boxes.Length; i++) {
