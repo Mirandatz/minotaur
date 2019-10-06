@@ -63,7 +63,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 			var failedAttempts = 0L;
 			var mutants = new Individual[MutantsPerGeneration];
 
-			Parallel.For(
+			_ = Parallel.For(
 				fromInclusive: 0,
 				toExclusive: mutants.Length,
 				parallelOptions: options,
@@ -76,15 +76,12 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 						var mutationCandidate = Random.Choice(population);
 
-						var sucess = IndividualMutator.TryMutate(
-							original: mutationCandidate,
-							out var mutated);
-
-						if (sucess) {
+						var mutated = IndividualMutator.TryMutate(original: mutationCandidate);
+						if (mutated is null) {
+							updatedFailedAttempts = Interlocked.Increment(ref failedAttempts);
+						} else {
 							mutants[index] = mutated;
 							break;
-						} else {
-							updatedFailedAttempts = Interlocked.Increment(ref failedAttempts);
 						}
 					}
 				});

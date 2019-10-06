@@ -1,6 +1,4 @@
 namespace Minotaur.Theseus.IndividualMutation {
-	using System;
-	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Random;
@@ -22,28 +20,26 @@ namespace Minotaur.Theseus.IndividualMutation {
 			Dataset = _ruleCreator.Dataset;
 		}
 
-		public bool TryMutate(Individual original, [MaybeNullWhen(false)] out Individual mutated) {
+		public Individual? TryMutate(Individual original) {
 			return (_mutationChooser.GetRandomChoice()) switch
 			{
-				IndividualMutationType.AddRule => TryAddRule(original, out mutated!),
-				IndividualMutationType.ModifyRule => TryModifyRule(original, out mutated!),
-				IndividualMutationType.RemoveRule => TryRemoveRule(original, out mutated!),
+				IndividualMutationType.AddRule => TryAddRule(original),
+				IndividualMutationType.ModifyRule => TryModifyRule(original),
+				IndividualMutationType.RemoveRule => TryRemoveRule(original),
 
 				_ => throw CommonExceptions.UnknownFeatureType,
 			};
 		}
 
-		private bool TryAddRule(Individual original, [MaybeNullWhen(false)]  out Individual mutated) {
+		private Individual? TryAddRule(Individual original) {
 			var oldRules = original.Rules;
 
 			var createdNewRule = _ruleCreator.TryCreateRule(
 				existingRules: oldRules,
 				newRule: out var newRule);
 
-			if (!createdNewRule) {
-				mutated = null!;
-				return false;
-			}
+			if (!createdNewRule)
+				return null;
 
 			var newRules = new Rule[original.Rules.Length + 1];
 
@@ -52,14 +48,12 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 			newRules[^1] = newRule;
 
-			mutated = new Individual(
+			return new Individual(
 				rules: newRules,
 				defaultLabels: original.DefaultLabels);
-
-			return true;
 		}
 
-		private bool TryModifyRule(Individual original, [MaybeNullWhen(false)] out Individual mutated) {
+		private Individual? TryModifyRule(Individual original) {
 			var oldRules = original.Rules;
 
 			// @Todo: investigate the possibility of actually "modifying" a rule,
@@ -94,30 +88,24 @@ namespace Minotaur.Theseus.IndividualMutation {
 				existingRules: withoutCandidate,
 				newRule: out var newRule);
 
-			if (!canCreate) {
-				//	throw new InvalidOperationException("This should, like... Never happen.");
-				mutated = null!;
-				return false;
-			}
+			if (!canCreate)
+				return null;
+
 			var newRules = oldRules.Swap(
 				index: candidateIndex,
 				newItem: newRule);
 
-			mutated = new Individual(
+			return new Individual(
 				rules: newRules,
 				defaultLabels: original.DefaultLabels);
-
-			return true;
 		}
 
-		private bool TryRemoveRule(Individual original, [MaybeNullWhen(false)] out Individual mutated) {
+		private Individual? TryRemoveRule(Individual original) {
 			var oldRules = original.Rules;
 
 			// Can't have individuals with no rules
-			if (oldRules.Length == 1) {
-				mutated = null!;
-				return false;
-			}
+			if (oldRules.Length == 1)
+				return null;
 
 			var indexToRemove = Random.Int(
 				inclusiveMin: 0,
@@ -125,11 +113,9 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 			var newRules = oldRules.Remove(indexToRemove);
 
-			mutated = new Individual(
+			return new Individual(
 				rules: newRules,
 				defaultLabels: original.DefaultLabels);
-
-			return true;
 		}
 	}
 }
