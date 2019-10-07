@@ -67,7 +67,7 @@ namespace Minotaur.Theseus {
 				// Saniy check
 				Parallel.For(0, population.Length, i => {
 					var individual = population[i];
-					var isConsistent = ConsistencyChecker.IsConsistent(individual);
+					var isConsistent = _consistencyChecker.IsConsistent(individual);
 					if (!isConsistent) {
 						throw new InvalidOperationException();
 					}
