@@ -1,5 +1,3 @@
-- Write tests (loads) for BiasedOptionChooser
-- Improve exception messages
+- Write a 'how to compile and run' guide
+- Improve command line arguments documentation
 - Add loads of "safety checks"
-- Polish code
-- Do "todo" stuff
