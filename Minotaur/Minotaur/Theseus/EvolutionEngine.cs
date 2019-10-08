@@ -6,7 +6,6 @@ namespace Minotaur.Theseus {
 	using Minotaur.ExtensionMethods.SystemArray;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
-	using Minotaur.Theseus.IndividualBreeding;
 	using Minotaur.Theseus.IndividualMutation;
 
 	public sealed class EvolutionEngine {
@@ -39,9 +38,6 @@ namespace Minotaur.Theseus {
 		public EvolutionReport
 			Run(IEnumerable<Individual> initialPopulation
 			) {
-			if (initialPopulation is null)
-				throw new ArgumentNullException(nameof(initialPopulation));
-
 			// @Improve performance
 			var population = initialPopulation.ToArray();
 			var reasonForStoppingEvolution = string.Empty;
@@ -57,7 +53,6 @@ namespace Minotaur.Theseus {
 					break;
 				}
 
-#if DEBUG
 				// Saniy check
 				Parallel.For(0, population.Length, i => {
 					var individual = population[i];
@@ -66,7 +61,6 @@ namespace Minotaur.Theseus {
 						throw new InvalidOperationException();
 					}
 				});
-#endif
 
 				if (generationsRan % 10 == 0) {
 					Console.WriteLine();

@@ -1,6 +1,8 @@
 namespace Minotaur {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
 	using System.Text.Json;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -14,7 +16,6 @@ namespace Minotaur {
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
-	using Minotaur.Theseus.IndividualBreeding;
 	using Minotaur.Theseus.IndividualCreation;
 	using Minotaur.Theseus.IndividualMutation;
 	using Minotaur.Theseus.RuleCreation;
@@ -35,6 +36,8 @@ namespace Minotaur {
 				"--test-data=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/test-data.csv",
 				"--test-labels=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/test-labels.csv",
 				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+
+				"--max-generations=200",
 
 				"--output-directory=C:/Source/minotaur-output/",
 
@@ -159,6 +162,11 @@ namespace Minotaur {
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 			Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
 
+			SerializePopulationAndFitnesses(
+				settings: settings,
+				finalPopulation: evolutionReport.FinalPopulation,
+				testFitnessEvaluator: testFitnessEvaluator);
+
 			return 0;
 		}
 
@@ -221,6 +229,47 @@ namespace Minotaur {
 			});
 
 			Console.WriteLine("Yep, it is.");
+		}
+
+		private static void SerializePopulationAndFitnesses(ProgramSettings settings, Array<Individual> finalPopulation, FitnessEvaluator testFitnessEvaluator) {
+			Console.Write("Serializing final population's individuals and their fitnesseses... ");
+
+			var populationAsArray = finalPopulation.ToArray();
+			var testFitness = testFitnessEvaluator.EvaluateAsMaximizationTask(finalPopulation);
+			Array.Sort(
+				keys: testFitness,
+				items: populationAsArray,
+				comparer: new LexicographicalFitnessComparer());
+
+			var populationSortedDescending = populationAsArray
+				.Reverse()
+				.Select(ind => ind.ToString())
+				.ToArray();
+
+			var lineSeparator = Environment.NewLine + "===============================================================================" + Environment.NewLine;
+
+			var serializedPopulation = string.Join(
+				separator: lineSeparator,
+				value: populationSortedDescending);
+
+			File.WriteAllText(
+				path: Path.Combine(settings.OutputDirectory, "final-population-individuals.txt"),
+				contents: serializedPopulation);
+
+			var fitnessesSortedDescending = testFitness
+				.Reverse()
+				.Select(fit => fit.ToString())
+				.ToArray();
+
+			var serializedFitness = string.Join(
+				separator: lineSeparator,
+				value: fitnessesSortedDescending);
+
+			File.WriteAllText(
+				path: Path.Combine(settings.OutputDirectory, "final-population-fitnesses.txt"),
+				contents: serializedFitness);
+
+			Console.WriteLine("Done.");
 		}
 	}
 }
