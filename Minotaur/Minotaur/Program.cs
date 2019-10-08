@@ -30,46 +30,13 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-train-data.csv",
-				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-train-labels.csv",
-				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-test-data.csv",
-				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-1-test-labels.csv",
-				"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+				"--train-data=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/train-data.csv",
+				"--train-labels=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/train-labels.csv",
+				"--test-data=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/test-data.csv",
+				"--test-labels=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/test-labels.csv",
+				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
 
-				//"--train-data=C:/Source/dataset-making/train-data.csv",
-				//"--train-labels=C:/Source/dataset-making/train-labels.csv",
-
-				//"--test-data=C:/Source/dataset-making/test-data.csv",
-				//"--test-labels=C:/Source/dataset-making/test-labels.csv",
-
-				//"--feature-types=C:/Source/dataset-making/feature-types.csv",
-
-				//"--output-directory=C:/Source/minotaur/temp/",
-
-				"--fitness-metrics=fscore",
-				"--fitness-metrics=model-size",
-				//"--fitness-metrics=average-rule-volume",
-
-				"--max-generations=300",
-				"--max-failed-mutations-per-generation=20000",
-
-				"--population-size=100",
-				"--mutants-per-generation=200",
-
-				$"--hyperrectangle-cache-size={1024*32}",
-				$"--rule-coverage-cache-size={1024*32}",
-				$"--individual-fitness-cache-size={1024}",
-
-				"--fittest-selection=nsga2",
-
-				//"--rule-mutation-add-test-weight=10",
-				//"--rule-mutation-remove-test-weight=0.5",
-				//"--rule-mutation-modify-test-weight=80",
-				//"--rule-mutation-modify-consequent-weight=20",
-
-				"--individual-mutation-add-rule-weight=5",
-				"--individual-mutation-modify-rule-weight=20",
-				"--individual-mutation-remove-rule-weight=10",
+				"--output-directory=C:/Source/minotaur-output/",
 			};
 		}
 
@@ -80,8 +47,7 @@ namespace Minotaur {
 				trainDataFilename: settings.TrainDataFilename,
 				trainLabelsFilename: settings.TrainLabelsFilename,
 				testDataFilename: settings.TestDataFilename,
-				testLabelsFilename: settings.TestLabelsFilename,
-				featureTypesFilename: settings.FeatureTypesFilename);
+				testLabelsFilename: settings.TestLabelsFilename);
 
 			Console.WriteLine();
 			PrintTrainDatasetInformation(trainDataset);

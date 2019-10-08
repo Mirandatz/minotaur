@@ -52,8 +52,7 @@ namespace Minotaur.Collections.Dataset {
 			string trainDataFilename,
 			string trainLabelsFilename,
 			string testDataFilename,
-			string testLabelsFilename,
-			string featureTypesFilename
+			string testLabelsFilename
 			) {
 			Console.Write("Loading datasets... ");
 
@@ -63,25 +62,26 @@ namespace Minotaur.Collections.Dataset {
 			var testData = Task.Run(() => DatasetLoader.LoadData(testDataFilename));
 			var testLabels = Task.Run(() => DatasetLoader.LoadLabels(testLabelsFilename));
 
-			var featureTypes = Task.Run(() => DatasetLoader.LoadFeatureTypes(featureTypesFilename));
-
 			Task.WaitAll(
 				trainData,
 				trainLabels,
 				testData,
-				testLabels,
-				featureTypes);
+				testLabels);
 
 			Console.WriteLine("Done.");
 
+			var featureTypes = new FeatureType[trainData.Result.ColumnCount];
+			for (int i = 0; i < featureTypes.Length; i++)
+				featureTypes[i] = FeatureType.Continuous;
+
 			var trainDataset = Dataset.CreateFromMutableObjects(
-				mutableFeatureTypes: featureTypes.Result,
+				mutableFeatureTypes: featureTypes,
 				mutableData: trainData.Result,
 				mutableLabels: trainLabels.Result,
 				isTrainDataset: true);
 
 			var testDataset = Dataset.CreateFromMutableObjects(
-				mutableFeatureTypes: featureTypes.Result,
+				mutableFeatureTypes: featureTypes,
 				mutableData: testData.Result,
 				mutableLabels: testLabels.Result,
 				isTrainDataset: false);

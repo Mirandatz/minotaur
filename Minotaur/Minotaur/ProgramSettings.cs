@@ -46,28 +46,27 @@ namespace Minotaur {
 			)]
 		public string TestLabelsFilename { get; } = string.Empty;
 
-		[Required]
-		[FileExists]
-		[Option(ShortName = "",
-			LongName = "feature-types",
-			Description =
-			"Path to the text file containg the types of the features. " +
-			"A feature may be 'continuous' or 'categorical'. " +
-			"The file must contain one feature type per line. " +
-			"The file must also contain exactly N lines, " +
-			"being N the number of columns in train-data and test-data."
-			)]
-		public string FeatureTypesFilename { get; } = string.Empty;
-
 		//[Required]
+		//[FileExists]
 		//[Option(ShortName = "",
-		//	LongName = "output-directory",
-		//	Description = "Directory to write the output files."
+		//	LongName = "feature-types",
+		//	Description =
+		//	"Path to the text file containg the types of the features. " +
+		//	"A feature may be 'continuous' or 'categorical'. " +
+		//	"The file must contain one feature type per line. " +
+		//	"The file must also contain exactly N lines, " +
+		//	"being N the number of columns in train-data and test-data."
 		//	)]
-		//[DirectoryExists]
-		//public string OutputDirectory { get; }
+		//public string FeatureTypesFilename { get; } = string.Empty;
 
 		[Required]
+		[Option(ShortName = "",
+			LongName = "output-directory",
+			Description = "Directory to write the output files."
+			)]
+		[DirectoryExists]
+		public string OutputDirectory { get; } = string.Empty;
+
 		[Option(ShortName = "",
 			LongName = "max-generations",
 			Description =
@@ -75,9 +74,8 @@ namespace Minotaur {
 			"Must be greater than or equal to min-generations."
 			)]
 		[Range(1, int.MaxValue)]
-		public int MaximumGenerations { get; }
+		public int MaximumGenerations { get; } = 2000;
 
-		[Required]
 		[Option(ShortName = "",
 			LongName = "hyperrectangle-cache-size",
 			Description =
@@ -85,9 +83,8 @@ namespace Minotaur {
 			"If set to 0, effectively disables caching."
 			)]
 		[Range(0, int.MaxValue)]
-		public int HyperRectangleCacheSize { get; }
+		public int HyperRectangleCacheSize { get; } = 0;
 
-		[Required]
 		[Option(ShortName = "",
 			LongName = "rule-coverage-cache-size",
 			Description =
@@ -95,9 +92,8 @@ namespace Minotaur {
 			"If set to 0, effectively disables caching."
 			)]
 		[Range(0, int.MaxValue)]
-		public int RuleCoverageCacheSize { get; }
+		public int RuleCoverageCacheSize { get; } = 0;
 
-		[Required]
 		[Option(ShortName = "",
 			LongName = "individual-fitness-cache-size",
 			Description =
@@ -105,73 +101,58 @@ namespace Minotaur {
 			"If set to 0, effectively disables caching."
 			)]
 		[Range(0, int.MaxValue)]
-		public int FitnessCacheSize { get; }
-		
-		[Required]
+		public int FitnessCacheSize { get; } = 0;
+
 		[Option(ShortName = "", LongName = "population-size", Description = "The number of individuals in the initial and final populations.")]
 		[Range(1, int.MaxValue)]
-		public int PopulationSize { get; }
+		public int PopulationSize { get; } = 200;
 
-		[Required]
 		[Option(ShortName = "", LongName = "mutants-per-generation",
 			Description =
 			"How many mutants should be generated each generation."
 			)]
 		[Range(1, int.MaxValue)]
-		public int MutantsPerGeneration { get; }
+		public int MutantsPerGeneration { get; } = 100;
 
-		[Required]
 		[Option(CommandOptionType.MultipleValue, ShortName = "", LongName = "fitness-metrics",
 			Description =
 			"The metrics to use as fitness during the training phase."
 			)]
 		[AllowedValues("fscore", "model-size", "average-rule-volume", "rule-count")]
-		public string[] MetricNames { get; } = Array.Empty<string>();
+		public string[] MetricNames { get; } = new string[] { "fscore", "rule-count" };
 
-		[Required]
 		[Option(ShortName = "", LongName = "fittest-selection", Description = "The fittest selection strategy.")]
 		[AllowedValues("nsga2", "lexicographic")]
-		public string SelectionAlgorithm { get; } = string.Empty;
+		public string SelectionAlgorithm { get; } = "nsga2";
 
-		//[Required]
-		//[Option(ShortName = "", LongName = "maximum-initial-rule-count",
-		//	Description = "The maximum number of rules a individual can have during creation."
-		//	)]
-		//[Range(1, int.MaxValue)]
-		//public int MaximumInitialRuleCount { get; }
-
-		[Required]
 		[Option(ShortName = "", LongName = "individual-mutation-add-rule-weight",
 			Description =
 			"The probability, when mutating a individual, of adding a new rule to it."
 			)]
 		[Range(0, int.MaxValue)]
-		public int IndividualMutationAddRuleWeight { get; }
+		public int IndividualMutationAddRuleWeight { get; } = 5;
 
-		[Required]
 		[Option(ShortName = "", LongName = "individual-mutation-modify-rule-weight",
 			Description =
 			"The probability, when mutating a individual, of modifying a rule that it contains."
 			)]
 		[Range(0, int.MaxValue)]
-		public int IndividualMutationModifyRuleWeight { get; }
+		public int IndividualMutationModifyRuleWeight { get; } = 20;
 
-		[Required]
 		[Option(ShortName = "", LongName = "individual-mutation-remove-rule-weight",
 			Description =
 			"The probability, when mutating a individual, of removing a rule that it contains."
 			)]
 		[Range(0, int.MaxValue)]
-		public int IndividualMutationRemoveRuleWeight { get; }
+		public int IndividualMutationRemoveRuleWeight { get; } = 10;
 
-		[Required]
 		[Option(ShortName = "", LongName = "max-failed-mutations-per-generation",
 			Description = "When trying to mutate a individual, the mutant generated may not be consistent." +
 			"This option defines how many times the mutation may fail during a single generation." +
 			"If this number is reached, the evolutionary process stops."
 			)]
 		[Range(0, int.MaxValue)]
-		public int MaximumFailedMutationAttemptsPerGeneration { get; }
+		public int MaximumFailedMutationAttemptsPerGeneration { get; } = 2000;
 
 		//[Required]
 		//[Option(ShortName = "", LongName = "rule-mutation-remove-test-probability",
