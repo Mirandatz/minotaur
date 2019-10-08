@@ -11,7 +11,6 @@ namespace Minotaur.Theseus {
 
 	public sealed class EvolutionEngine {
 
-		private readonly PopulationBreeder _populationBreeder;
 		private readonly PopulationMutator _populationMutator;
 		private readonly IFittestSelector _fittestSelector;
 		private readonly FitnessReportMaker _fitnessReportMaker;
@@ -20,14 +19,12 @@ namespace Minotaur.Theseus {
 		private readonly int _maximumGenerations;
 
 		public EvolutionEngine(
-			PopulationBreeder populationBreeder,
 			PopulationMutator populationMutator,
 			FitnessReportMaker fitnessReportMaker,
 			IFittestSelector fittestSelector,
 			RuleConsistencyChecker consistencyChecker,
 			int maximumGenerations
 			) {
-			_populationBreeder = populationBreeder;
 			_populationMutator = populationMutator;
 			_fitnessReportMaker = fitnessReportMaker;
 			_fittestSelector = fittestSelector;
@@ -52,11 +49,8 @@ namespace Minotaur.Theseus {
 			int generationsRan;
 			for (generationsRan = 0; generationsRan < _maximumGenerations; generationsRan++) {
 				Console.Write($"\rRunning generation {generationsRan}/{_maximumGenerations}");
-
-				var children = _populationBreeder.Breed(population);
-				var populationWithChildren = population.Concatenate(children);
-
-				if (!_populationMutator.TryMutate(populationWithChildren, out var mutants)) {
+				
+				if (!_populationMutator.TryMutate(population, out var mutants)) {
 					reasonForStoppingEvolution = "" +
 						"reached maximum number of failed mutation attempts " +
 						"for a single generation";
@@ -79,7 +73,7 @@ namespace Minotaur.Theseus {
 					Console.WriteLine(_fitnessReportMaker.MakeReport(population));
 				}
 
-				var populationWithMutants = populationWithChildren.Concatenate(mutants);
+				var populationWithMutants = population.Concatenate(mutants);
 				var fittest = _fittestSelector.SelectFittest(populationWithMutants);
 				population = fittest;
 			}

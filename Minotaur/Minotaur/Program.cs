@@ -37,6 +37,10 @@ namespace Minotaur {
 				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
 
 				"--output-directory=C:/Source/minotaur-output/",
+
+				"--cfsbe-target-instance-coverage=50",
+
+				"--rule-consequent-threshold=0.5",
 			};
 		}
 
@@ -53,17 +57,7 @@ namespace Minotaur {
 			PrintTrainDatasetInformation(trainDataset);
 			Console.WriteLine();
 
-			//var dimensionIntervalCreator = new DimensionIntervalCreator(dataset: trainDataset);
-
-			//var hyperRectangleCreatorCache = IConcurrentCacheSelector.Create<Rule, HyperRectangle>(
-			//	capacity: settings.HyperRectangleCacheSize);
-
-			//var hyperRectangleCreator = new HyperRectangleCreator(
-			//  dimensionIntervalCreator: dimensionIntervalCreator,
-			//  cache: hyperRectangleCreatorCache);
-
-			var hyperRectangleCoverageCache = IConcurrentCacheSelector.Create<HyperRectangle, DatasetCoverage>(
-				capacity: 32 * 1024);
+			var hyperRectangleCoverageCache = IConcurrentCacheSelector.Create<HyperRectangle, DatasetCoverage>(capacity: settings.RuleCoverageCacheSize);
 
 			var hyperRectangleCoverageComputer = new HyperRectangleCoverageComputer(
 				dataset: trainDataset,
@@ -81,7 +75,7 @@ namespace Minotaur {
 
 			var consequentCreator = new InstanceLabelsAveragingRuleConsequentCreator(
 				dataset: trainDataset,
-				threshold: 0.5f);
+				threshold: settings.RuleConsequentThreshold);
 
 			var hyperRectangleIntersector = new HyperRectangleIntersector(trainDataset);
 			var nonIntersectingHyperRectangleCreator = new NonIntersectingRectangleCreator(hyperRectangleIntersector);
@@ -94,7 +88,7 @@ namespace Minotaur {
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,
 				hyperRectangleIntersector: hyperRectangleIntersector,
-				targetNumberOfInstancesToCover: 250);
+				targetNumberOfInstancesToCover: settings.ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {
@@ -155,16 +149,7 @@ namespace Minotaur {
 
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
-			var individualBreeder = new IndividualBreeder(
-				dataset: trainDataset,
-				ruleConsistencyChecker: consistencyChecker);
-
-			var populationBreeder = new PopulationBreeder(
-				individualBreeder: individualBreeder,
-				childrenPerGeneration: 0);
-
 			var evolutionEngine = new EvolutionEngine(
-				populationBreeder: populationBreeder,
 				populationMutator: populationMutator,
 				fitnessReportMaker: fitnessReportMaker,
 				fittestSelector: fittestSelector,
