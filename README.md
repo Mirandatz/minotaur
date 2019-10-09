@@ -42,8 +42,12 @@ Therefore, the following command line arguments are mandatory
 - Clone the pre-processed [minotaur.datasets repository](https://github.com/Mirandatz/minotaur.datasets) 
 - Assuming that the current directory is the same as the generated MINOTAUR executable, and that you are using the Windows PowerShell,  the following command will run MINOTAUR with default values for most of its arguments 
 `.\Minotaur.exe --train-data="C:\Source\minotaur.datasets\iris\ready-for-minotaur\fold-0\train-data.csv" --train-labels="C:\Source\minotaur.datasets\iris\ready-for-minotaur\fold-0\train-labels.csv" --test-data="C:\Source\minotaur.datasets\iris\ready-for-minotaur\fold-0\test-data.csv" --test-labels="C:\Source\minotaur.datasets\iris\ready-for-minotaur\fold-0\test-labels.csv" --output-directory="./"`
+- After the algorithm has finished, it will create two files in the current directory :
+  - `final-population-individuals.txt`  contains the the generated classification models, described in a human readable format. Each individual is separated by a line of "=====".
+  - `final-population-fitnesses.txt` contains the generated classification models fitnesses on the test dataset. The default metrics used to compute the fitness are [fscore, rule-count, average-rule-volume]. To understand why some values are negative, read the **Current limitations** section.
 
 
 # Current limitations
 - The current implementation only support multi-label datasets; therefore single-label datasets (like Iris) must have the labels "one-hot-encoded", [like this](https://github.com/Mirandatz/minotaur.datasets/tree/master/iris/ready-for-minotaur/fold-0)
 - The current implementation only support continuous features; if the dataset contains categorical features they won't be parsed correctly. In case they are successfully parsed, they will be treated as continuous features, which means the results will probably be nonsensical.
+- The current implementation only supports the maximization of the fitness values; therefore objectives that must be minimized (e.g. model-size) are multiplied by -1. 
