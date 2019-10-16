@@ -10,7 +10,7 @@ namespace Minotaur.Math.Dimensions {
 		private readonly int _precomputedHashCode;
 
 		public HyperRectangle(Array<IInterval> dimensions) {
-			Dimensions = dimensions.Clone();
+			Dimensions = dimensions.ShallowCopy();
 			DimensionCount = Dimensions.Length;
 
 			var hash = new HashCode();

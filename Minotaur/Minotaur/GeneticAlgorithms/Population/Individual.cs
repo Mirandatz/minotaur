@@ -12,63 +12,57 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		public const int MinimumRuleCount = 1;
 
 		public readonly Array<Rule> Rules;
-		public readonly Array<bool> DefaultLabels;
+		public readonly ILabel DefaultPrediction;
 
-		/// <summary>
-		/// This field is public and serializable to make it easier to identify specific instances during
-		/// "manual analysis".
-		/// </summary>
-		public readonly int HashCode;
+		private readonly int _hashCode;
 
-		public Individual(Array<Rule> rules, Array<bool> defaultLabels) {
+		public Individual(Array<Rule> rules, ILabel defaultPrediction) {
 			if (rules.Length < MinimumRuleCount)
 				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
 			if (rules.ContainsNulls())
 				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
-			if (defaultLabels.Length == 0)
-				throw new ArgumentException(nameof(defaultLabels) + " can't be empty.");
 
 			Rules = rules;
-			DefaultLabels = defaultLabels;
+			DefaultPrediction = defaultPrediction;
 
 			var hash = new HashCode();
 			for (int i = 0; i < rules.Length; i++)
 				hash.Add(rules[i]);
-			for (int i = 0; i < defaultLabels.Length; i++)
-				hash.Add(defaultLabels[i]);
 
-			HashCode = hash.ToHashCode();
+			hash.Add(defaultPrediction);
+
+			_hashCode = hash.ToHashCode();
 		}
 
-		public Array<bool> Predict(Array<float> instance) {
+		public ILabel Predict(Array<float> instance) {
 			for (int i = 0; i < Rules.Length; i++) {
 				if (Rules[i].Covers(instance)) {
 					return Rules[i].Consequent;
 				}
 			}
 
-			return DefaultLabels;
+			return DefaultPrediction;
 		}
 
-		public Matrix<bool> Predict(Dataset dataset) {
+		public ILabel[] Predict(Dataset dataset) {
 			var instanceCount = dataset.InstanceCount;
-			var classCount = dataset.ClassCount;
-			var allPredictions = new MutableMatrix<bool>(
-				rowCount: instanceCount,
-				columnCount: classCount);
+			var predictions = new ILabel[instanceCount];
 
 			for (int i = 0; i < instanceCount; i++) {
-				var prediction = Predict(dataset.GetInstanceData(i));
-				var row = allPredictions.GetRow(i);
-				prediction.AsSpan().CopyTo(row);
+				var instanceData = dataset.GetInstanceData(i);
+				var prediction = Predict(instanceData);
+				predictions[i] = prediction;
 			}
 
-			return allPredictions.ToMatrix();
+			return predictions;
 		}
 
-		public override string ToString() => string.Join(Environment.NewLine, Rules);
+		public override string ToString() {
+			var rules = string.Join(Environment.NewLine, Rules);
+			return rules + Environment.NewLine + $"Default: {DefaultPrediction}";
+		}
 
-		public override int GetHashCode() => HashCode;
+		public override int GetHashCode() => _hashCode;
 
 		public override bool Equals(object? obj) => Equals((Individual) obj!);
 

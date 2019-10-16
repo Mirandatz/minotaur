@@ -47,7 +47,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 			return new Individual(
 				rules: newRules,
-				defaultLabels: original.DefaultLabels);
+				defaultPrediction: original.DefaultPrediction);
 		}
 
 		private Individual? TryModifyRule(Individual original) {
@@ -91,7 +91,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 			return new Individual(
 				rules: newRules,
-				defaultLabels: original.DefaultLabels);
+				defaultPrediction: original.DefaultPrediction);
 		}
 
 		private Individual? TryRemoveRule(Individual original) {
@@ -109,7 +109,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 
 			return new Individual(
 				rules: newRules,
-				defaultLabels: original.DefaultLabels);
+				defaultPrediction: original.DefaultPrediction);
 		}
 	}
 }

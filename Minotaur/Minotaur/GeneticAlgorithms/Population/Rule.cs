@@ -16,11 +16,11 @@ namespace Minotaur.GeneticAlgorithms.Population {
 		/// The tests are sorted by the feature index they are testing.
 		/// </summary>
 		public readonly Array<IFeatureTest> Antecedent;
-		public readonly Array<bool> Consequent;
+		public readonly ILabel Consequent;
 
 		private readonly int _precomputedHashCode;
 
-		public Rule(Array<IFeatureTest> antecedent, Array<bool> consequent) {
+		public Rule(Array<IFeatureTest> antecedent, ILabel consequent) {
 			if (antecedent.ContainsNulls())
 				throw new ArgumentException(nameof(antecedent) + " can't contain nulls.");
 
@@ -49,14 +49,13 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 			_precomputedHashCode = PrecompileHashcode(antecedent, consequent);
 
-			static int PrecompileHashcode(Array<IFeatureTest> antecedent, Array<bool> consequent) {
+			static int PrecompileHashcode(Array<IFeatureTest> antecedent, ILabel consequent) {
 				var hash = new HashCode();
 
 				for (int i = 0; i < antecedent.Length; i++)
 					hash.Add(antecedent[i]);
 
-				for (int i = 0; i < consequent.Length; i++)
-					hash.Add(consequent[i]);
+				hash.Add(consequent);
 
 				return hash.ToHashCode();
 			}
@@ -95,7 +94,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			if (_precomputedHashCode != other._precomputedHashCode)
 				return false;
 
-			return Consequent.SequenceEquals(other.Consequent) &&
+			return Consequent.Equals(other.Consequent) &&
 				Antecedent.SequenceEquals(other.Antecedent);
 		}
 	}
