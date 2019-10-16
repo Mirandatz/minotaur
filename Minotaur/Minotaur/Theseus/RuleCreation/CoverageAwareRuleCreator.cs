@@ -13,11 +13,11 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly NonIntersectingRectangleCreator _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
 		private readonly InstanceCoveringRuleAntecedentCreator _antecedentCreator;
-		private readonly InstanceLabelsAveragingRuleConsequentCreator _consequentCreator;
+		private readonly MultiLabelConsequentCreator _consequentCreator;
 		private readonly HyperRectangleIntersector _rectangleIntersector;
 		private readonly int _targetNumberOfInstancesToCover;
 
-		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, InstanceLabelsAveragingRuleConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int targetNumberOfInstancesToCover) {
+		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, InstanceCoveringRuleAntecedentCreator antecedentCreator, MultiLabelConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int targetNumberOfInstancesToCover) {
 			_seedSelector = seedSelector;
 			_boxConverter = boxConverter;
 			_boxCreator = boxCreator;

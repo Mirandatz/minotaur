@@ -3,12 +3,12 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 
-	public sealed class InstanceLabelsAveragingRuleConsequentCreator {
+	public sealed class MultiLabelConsequentCreator {
 
 		public Dataset Dataset { get; }
 		private readonly float _threshold;
 
-		public InstanceLabelsAveragingRuleConsequentCreator(Dataset dataset, float threshold) {
+		public MultiLabelConsequentCreator(Dataset dataset, float threshold) {
 			if (threshold < 0 || threshold > 1)
 				throw new ArgumentOutOfRangeException(nameof(threshold));
 

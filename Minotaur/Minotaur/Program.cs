@@ -76,7 +76,7 @@ namespace Minotaur {
 
 			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(ruleAntecedentHyperRectangleConverter: ruleAntecedentHyperRectangleConverter);
 
-			var consequentCreator = new InstanceLabelsAveragingRuleConsequentCreator(
+			var consequentCreator = new MultiLabelConsequentCreator(
 				dataset: trainDataset,
 				threshold: settings.RuleConsequentThreshold);
 
