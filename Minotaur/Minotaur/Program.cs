@@ -114,9 +114,10 @@ namespace Minotaur {
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
 
-			var trainMetrics = MetricsSelector.SelectMetrics(
+			var trainMetrics = IMetricParser.ParseMetrics(
 				dataset: trainDataset,
-				metricsNames: settings.MetricNames);
+				metricsNames: settings.MetricNames,
+				settings.ClassificationType);
 
 			var trainFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
 				capacity: settings.FitnessCacheSize);
@@ -125,9 +126,10 @@ namespace Minotaur {
 			  metrics: trainMetrics,
 			  cache: trainFitnessCache);
 
-			var testMetrics = MetricsSelector.SelectMetrics(
+			var testMetrics = IMetricParser.ParseMetrics(
 				dataset: testDataset,
-				metricsNames: settings.MetricNames);
+				metricsNames: settings.MetricNames,
+				settings.ClassificationType);
 
 			var testFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
 				capacity: settings.FitnessCacheSize);
