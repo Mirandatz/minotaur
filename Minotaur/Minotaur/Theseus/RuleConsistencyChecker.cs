@@ -1,7 +1,6 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Collections.Generic;
-	using Minotaur.Collections;
 	using Minotaur.GeneticAlgorithms.Population;
 
 	public sealed class RuleConsistencyChecker {
@@ -51,14 +50,15 @@ namespace Minotaur.Theseus {
 		}
 
 		public bool AreConsistent(Rule lhs, Rule rhs) {
-			if (lhs.Consequent.SequenceEquals(rhs.Consequent))
-				return true;
+			throw new NotImplementedException();
+			//if (lhs.Consequent.SequenceEquals(rhs.Consequent))
+			//	return true;
 
-			var lhsBox = _converter.FromRule(lhs);
-			var rhsBox = _converter.FromRule(rhs);
-			var boxesOverlap = _intersector.IntersectsInAllDimension(lhsBox, rhsBox);
+			//var lhsBox = _converter.FromRule(lhs);
+			//var rhsBox = _converter.FromRule(rhs);
+			//var boxesOverlap = _intersector.IntersectsInAllDimension(lhsBox, rhsBox);
 
-			return !boxesOverlap;
+			//return !boxesOverlap;
 		}
 	}
 }

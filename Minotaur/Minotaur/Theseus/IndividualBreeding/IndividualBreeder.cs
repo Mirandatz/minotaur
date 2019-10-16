@@ -36,11 +36,9 @@ namespace Minotaur.Theseus.IndividualBreeding {
 				}
 			}
 
-			var defaultLabels = new bool[_dataset.ClassCount];
-
 			return new Individual(
 				rules: consistentRules.ToArray(),
-				defaultLabels: defaultLabels);
+				defaultPrediction: _dataset.DefaultLabel);
 		}
 	}
 }

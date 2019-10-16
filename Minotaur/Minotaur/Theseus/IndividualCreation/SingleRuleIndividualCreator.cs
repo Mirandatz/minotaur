@@ -18,10 +18,9 @@ namespace Minotaur.Theseus.IndividualCreation {
 			if (rule is null)
 				throw new InvalidOperationException("This operation should never fail.");
 
-			var defaultLabels = new bool[Dataset.ClassCount];
 			return new Individual(
 				rules: new Rule[] { rule },
-				defaultLabels: defaultLabels);
+				defaultPrediction: Dataset.DefaultLabel);
 		}
 	}
 }

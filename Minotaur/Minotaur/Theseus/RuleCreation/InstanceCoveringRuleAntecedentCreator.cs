@@ -1,11 +1,9 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
-	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
-	using static Minotaur.Math.Dimensions.HyperRectangleBuilder;
 
 	public sealed class InstanceCoveringRuleAntecedentCreator {
 

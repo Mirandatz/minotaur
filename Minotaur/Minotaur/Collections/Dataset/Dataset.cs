@@ -10,9 +10,9 @@ namespace Minotaur.Collections.Dataset {
 		public readonly int InstanceCount;
 		public readonly int FeatureCount;
 		public readonly int ClassCount;
+		public readonly ClassificationType ClassificationType;
 
-		public readonly Matrix<bool> InstanceLabels;
-
+		public readonly Array<ILabel> InstanceLabels;
 		public readonly Array<FeatureType> FeatureTypes;
 		public readonly Matrix<float> Data;
 
@@ -23,6 +23,8 @@ namespace Minotaur.Collections.Dataset {
 		private readonly float[][] _sortedUniqueFeatureValues;
 		private readonly Dictionary<float, int>[] _featureValueFrequencies;
 
+		public readonly ILabel DefaultLabel;
+
 		private Dataset(
 			FeatureType[] featureTypes,
 			Matrix<float> data,
@@ -31,7 +33,10 @@ namespace Minotaur.Collections.Dataset {
 			float[][] sortedFeatureValues,
 			float[][] sortedUniqueFeatureValues,
 			Dictionary<float, int>[] featureValueFrequencies,
-			Matrix<bool> labels
+			Array<ILabel> labels,
+			ClassificationType classificationType,
+			int classCount,
+			ILabel defaultLabel
 			) {
 			FeatureTypes = featureTypes;
 			Data = data;
@@ -43,26 +48,27 @@ namespace Minotaur.Collections.Dataset {
 
 			InstanceCount = data.RowCount;
 			FeatureCount = data.ColumnCount;
-			ClassCount = labels.ColumnCount;
+			ClassCount = classCount;
 			InstanceLabels = labels;
+			ClassificationType = classificationType;
+			DefaultLabel = defaultLabel;
 		}
 
 		public static Dataset CreateFromMutableObjects(
 			FeatureType[] mutableFeatureTypes,
 			MutableMatrix<float> mutableData,
-			MutableMatrix<bool> mutableLabels,
-			bool isTrainDataset
+			Array<ILabel> labels,
+			bool isTrainDataset,
+			ClassificationType classificationType
 			) {
 			if (mutableFeatureTypes.Length != mutableData.ColumnCount)
 				throw new ArgumentException("featureTypes.Length must be equal to  data.ColumnCount");
-			if (mutableData.RowCount != mutableLabels.RowCount)
+			if (mutableData.RowCount != labels.Length)
 				throw new ArgumentException("label.RowCount must be equal to data.RowCount");
 
 			var featureTypes = mutableFeatureTypes.ToArray();
 			var data = mutableData.ToMatrix();
 			var dataTransposed = mutableData.Transpose().ToMatrix();
-			var labels = mutableLabels.ToMatrix();
-			var labelsTranposed = mutableLabels.Transpose().ToMatrix();
 
 			var featuresCount = featureTypes.Length;
 
@@ -107,6 +113,15 @@ namespace Minotaur.Collections.Dataset {
 			Task.WaitAll(distanceMatrixTask);
 			var distanceMatrix = distanceMatrixTask.Result;
 
+			int classCount = classificationType switch
+			{
+				ClassificationType.SingleLabel => labels.Distinct().Count(),
+				ClassificationType.MultiLabel => ((MultiLabel) labels[0]).Values.Length,
+				_ => throw CommonExceptions.UnknownClassificationType,
+			};
+
+			var defaultLabel = ComputeDefaultLabel(labels, classificationType);
+
 			return new Dataset(
 				featureTypes: featureTypes,
 				data: data,
@@ -115,8 +130,10 @@ namespace Minotaur.Collections.Dataset {
 				sortedFeatureValues: sortedFeatureValues,
 				sortedUniqueFeatureValues: sortedUniqueFeatureValues,
 				featureValueFrequencies: featureValueFrequencies,
-				labels: labels);
-
+				labels: labels,
+				classificationType: classificationType,
+				classCount: classCount,
+				defaultLabel: defaultLabel);
 
 			static void ThrowIfDatasetContainsNonFiniteValues(float[] featureValues) {
 				if (featureValues.Any(v => !float.IsFinite(v)))
@@ -127,6 +144,29 @@ namespace Minotaur.Collections.Dataset {
 				if (isTrainDataset && sufv.Length == 1) {
 					var message = $"Feature (0-indexed) {featureIndex} contains a single value in the train dataset.";
 					throw new InvalidOperationException(message);
+				}
+			}
+
+			static ILabel ComputeDefaultLabel(Array<ILabel> labels, ClassificationType classificationType) {
+				return classificationType switch
+				{
+					ClassificationType.SingleLabel => ComputeMajorityClass(labels),
+					ClassificationType.MultiLabel => ComputeAverageLabels(labels),
+					_ => throw CommonExceptions.UnknownClassificationType,
+				};
+
+				static ILabel ComputeMajorityClass(Array<ILabel> labels) {
+					var mostCommon = labels
+						.GroupBy(l => ((SingleLabel) l).Value)
+						.OrderBy(g => g.Count())
+						.Last()
+						.Key;
+
+					return new SingleLabel(mostCommon);
+				}
+
+				static ILabel ComputeAverageLabels(Array<ILabel> labels) {
+					throw new NotImplementedException();
 				}
 			}
 		}
@@ -203,11 +243,11 @@ namespace Minotaur.Collections.Dataset {
 			return new Dictionary<float, int>(frequenciesDict);
 		}
 
-		public Array<bool> GetInstanceLabels(int instanceIndex) {
+		public ILabel GetInstanceLabel(int instanceIndex) {
 			if (!IsInstanceIndexValid(instanceIndex))
 				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
 
-			return InstanceLabels.GetRow(instanceIndex);
+			return InstanceLabels[instanceIndex];
 		}
 
 		public double[] ComputeDistances(int targetInstanceIndex, Array<int> otherInstancesIndices) {

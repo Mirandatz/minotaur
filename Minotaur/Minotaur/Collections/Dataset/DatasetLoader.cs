@@ -10,18 +10,47 @@ namespace Minotaur.Collections.Dataset {
 			return CsvParser.ParseCsv(csv);
 		}
 
-		private static MutableMatrix<bool> LoadLabels(string filename) {
+		private static Array<ILabel> LoadLabels(string filename, ClassificationType classificationType) {
 			var csv = File.ReadAllText(filename);
 			var labelsAsFloats = CsvParser.ParseCsv(csv);
-			var labels = labelsAsFloats.CastValues(f => {
-				if (f == 0)
-					return false;
-				if (f == 1)
-					return true;
-				throw new InvalidOperationException("Label's can only be 0 or 1.");
-			});
 
-			return labels;
+			return classificationType switch
+			{
+				ClassificationType.SingleLabel => ParseSingleLabel(labelsAsFloats),
+				ClassificationType.MultiLabel => ParseMultiLabel(labelsAsFloats),
+				_ => throw CommonExceptions.UnknownClassificationType,
+			};
+
+			static Array<ILabel> ParseSingleLabel(MutableMatrix<float> labelsMatrix) {
+				if (labelsMatrix.ColumnCount != 1) {
+					throw new InvalidOperationException($"For a classificatio problem with type {ClassificationType.SingleLabel}, " +
+						$"the labels file must contain only one column.");
+				}
+
+				var instanceCount = labelsMatrix.RowCount;
+				var labels = new ILabel[instanceCount];
+
+				for (int i = 0; i < instanceCount; i++) {
+					var value = labelsMatrix.Get(rowIndex: i, columnIndex: 0);
+					var label = new SingleLabel(value);
+					labels[i] = label;
+				}
+
+				return labels;
+			}
+
+			static Array<ILabel> ParseMultiLabel(MutableMatrix<float> labelsMatrix) {
+				var instanceCount = labelsMatrix.RowCount;
+				var labels = new ILabel[instanceCount];
+
+				for (int i = 0; i < instanceCount; i++) {
+					var values = labelsMatrix.GetRow(i);
+					var label = MultiLabel.Parse(values);
+					labels[i] = label;
+				}
+
+				return labels;
+			}
 		}
 
 		private static FeatureType[] LoadFeatureTypes(string filename) {
@@ -32,35 +61,35 @@ namespace Minotaur.Collections.Dataset {
 				featureTypes[i] = ParseFeatureType(lines, i);
 
 			return featureTypes;
-		}
 
-		private static FeatureType ParseFeatureType(string[] lines, int i) {
-			var originalText = lines[i];
-			var sanitizedText = originalText
-				.Trim()
-				.ToLower();
+			static FeatureType ParseFeatureType(string[] lines, int i) {
+				var originalText = lines[i];
+				var sanitizedText = originalText
+					.Trim()
+					.ToLower();
 
-			return sanitizedText switch
-			{
-				"continuous" => FeatureType.Continuous,
-
-				_ => throw new InvalidOperationException($"Error on line {i}: unable to parse {originalText}"),
-			};
+				return sanitizedText switch
+				{
+					"continuous" => FeatureType.Continuous,
+					_ => throw new InvalidOperationException($"Error on line {i}: unable to parse {originalText}"),
+				};
+			}
 		}
 
 		public static (Dataset TrainDataset, Dataset TestDataset) LoadDatasets(
 			string trainDataFilename,
 			string trainLabelsFilename,
 			string testDataFilename,
-			string testLabelsFilename
+			string testLabelsFilename,
+			ClassificationType classificationType
 			) {
 			Console.Write("Loading datasets... ");
 
 			var trainData = Task.Run(() => DatasetLoader.LoadData(trainDataFilename));
-			var trainLabels = Task.Run(() => DatasetLoader.LoadLabels(trainLabelsFilename));
+			var trainLabels = Task.Run(() => DatasetLoader.LoadLabels(trainLabelsFilename, classificationType));
 
 			var testData = Task.Run(() => DatasetLoader.LoadData(testDataFilename));
-			var testLabels = Task.Run(() => DatasetLoader.LoadLabels(testLabelsFilename));
+			var testLabels = Task.Run(() => DatasetLoader.LoadLabels(testLabelsFilename, classificationType));
 
 			Task.WaitAll(
 				trainData,
@@ -77,14 +106,16 @@ namespace Minotaur.Collections.Dataset {
 			var trainDataset = Dataset.CreateFromMutableObjects(
 				mutableFeatureTypes: featureTypes,
 				mutableData: trainData.Result,
-				mutableLabels: trainLabels.Result,
-				isTrainDataset: true);
+				labels: trainLabels.Result,
+				isTrainDataset: true,
+				classificationType: classificationType);
 
 			var testDataset = Dataset.CreateFromMutableObjects(
 				mutableFeatureTypes: featureTypes,
 				mutableData: testData.Result,
-				mutableLabels: testLabels.Result,
-				isTrainDataset: false);
+				labels: testLabels.Result,
+				isTrainDataset: false,
+				classificationType: classificationType);
 
 			Console.Write("Checking if TrainDataset and TestDataset are compatible... ");
 			if (trainDataset.FeatureCount != testDataset.FeatureCount)

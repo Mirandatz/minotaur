@@ -1,6 +1,5 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
-	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 
 	public sealed class MultiLabelConsequentCreator {
@@ -16,7 +15,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			_threshold = threshold;
 		}
 
-		public Array<bool> CreateConsequent(ReadOnlySpan<int> indicesOfInstances) {
+		public MultiLabel CreateConsequent(ReadOnlySpan<int> indicesOfInstances) {
 			// @Todo: add safety / sanity checks
 
 			var classCount = Dataset.ClassCount;
@@ -27,15 +26,16 @@ namespace Minotaur.Theseus.RuleCreation {
 			}
 
 			var instanceCount = indicesOfInstances.Length;
-			return ComputeAverageLabels(instanceCount, classCount, trueCount);
+			throw new NotImplementedException();
+			//return ComputeAverageLabels(instanceCount, classCount, trueCount);
 		}
 
 		private void UpdateTrueCount(int[] trueCount, int instanceIndex) {
-			var labels = Dataset.GetInstanceLabels(instanceIndex);
-			for (int i = 0; i < labels.Length; i++) {
-				if (labels[i])
-					trueCount[i] += 1;
-			}
+			//var labels = Dataset.GetInstanceLabel(instanceIndex);
+			//for (int i = 0; i < labels.Length; i++) {
+			//	if (labels[i])
+			//		trueCount[i] += 1;
+			//}
 		}
 
 		private bool[] ComputeAverageLabels(int instanceCount, int featureCount, int[] trueCount) {

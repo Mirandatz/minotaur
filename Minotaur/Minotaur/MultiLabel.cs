@@ -1,4 +1,4 @@
-namespace Minotaur.GeneticAlgorithms.Population {
+namespace Minotaur {
 	using System;
 	using Minotaur.Collections;
 
@@ -8,14 +8,29 @@ namespace Minotaur.GeneticAlgorithms.Population {
 
 		private readonly int _hashCode;
 
-		public MultiLabel(Array<bool> values) {
-			Values = values.ShallowCopy();
+		private MultiLabel(Array<bool> values) {
+			Values = values;
 
 			var hash = new HashCode();
 			for (int i = 0; i < Values.Length; i++)
 				hash.Add(Values[i]);
 
 			_hashCode = hash.ToHashCode();
+		}
+
+		public static MultiLabel Parse(Span<float> values) {
+			var labels = new bool[values.Length];
+
+			for (int i = 0; i < values.Length; i++) {
+				labels[i] = (values[i]) switch
+				{
+					0f => false,
+					1f => true,
+					_ => throw new InvalidOperationException(nameof(values) + " contains non binary values."),
+				};
+			}
+
+			return new MultiLabel(labels);
 		}
 
 		public override int GetHashCode() => _hashCode;

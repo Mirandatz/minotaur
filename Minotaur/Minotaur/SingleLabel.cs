@@ -1,4 +1,4 @@
-namespace Minotaur.GeneticAlgorithms.Population {
+namespace Minotaur {
 	using System;
 
 	public sealed class SingleLabel: ILabel, IEquatable<SingleLabel> {

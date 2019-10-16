@@ -1,5 +1,4 @@
 namespace Minotaur.Theseus {
-	using System;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;

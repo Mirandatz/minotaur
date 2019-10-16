@@ -28,7 +28,7 @@ namespace Minotaur.Theseus {
 		public HyperRectangle[] FromRules(Array<Rule> rules) {
 			var boxes = new HyperRectangle[rules.Length];
 
-			for(int i=0; i<boxes.Length; i++) {
+			for (int i = 0; i < boxes.Length; i++) {
 				var rule = rules[i];
 				var box = FromRule(rule);
 				boxes[i] = box;

@@ -16,35 +16,144 @@ namespace Minotaur {
 
 		[Required]
 		[FileExists]
-		[Option(ShortName = "",
-			LongName = "train-data",
-			Description = "Path to the .csv file containg the training data."
-			)]
+		[Option(
+			ShortName = "", LongName = "train-data",
+			Description = "Path to the .csv file containg the training data.")]
 		public string TrainDataFilename { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
-		[Option(ShortName = "",
-			LongName = "train-labels",
-			Description = "Path to the .csv file containg the training labels."
-			)]
+		[Option(
+			ShortName = "", LongName = "train-labels",
+			Description = "Path to the .csv file containg the training labels.")]
 		public string TrainLabelsFilename { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
-		[Option(ShortName = "",
-			LongName = "test-data",
-			Description = "Path to the.csv file containg the test data."
-			)]
+		[Option(
+			ShortName = "", LongName = "test-data",
+			Description = "Path to the.csv file containg the test data.")]
 		public string TestDataFilename { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
-		[Option(ShortName = "",
-			LongName = "test-labels",
-			Description = "Path to the .csv file containg the test labels."
-			)]
+		[Option(
+			ShortName = "", LongName = "test-labels",
+			Description = "Path to the .csv file containg the test labels.")]
 		public string TestLabelsFilename { get; } = string.Empty;
+
+		[Required]
+		[Option(
+			ShortName = "", LongName = "output-directory",
+			Description = "Directory to write the output files.")]
+		[DirectoryExists]
+		public string OutputDirectory { get; } = string.Empty;
+
+		[Required]
+		[Option(
+			ShortName = "", LongName = "classification-type",
+			Description = "Describes whether the dataset is a single-label or multi-label.")]
+		[AllowedValues("singlelabel", "multilabel")]
+		public ClassificationType ClassificationType { get; }
+
+		[Option(
+			ShortName = "", LongName = "max-generations",
+			Description =
+			"The maximum number of generations (iterations) to run. ")]
+		[Range(1, int.MaxValue)]
+		public int MaximumGenerations { get; } = 2000;
+
+		[Option(
+			ShortName = "", LongName = "rule-to-box-cache-size",
+			Description =
+			"The maximum number of entries in the cache of hyperrectangle creator. " +
+			"If set to 0, effectively disables caching.")]
+		[Range(0, int.MaxValue)]
+		public int RuleAntecedentToHyperRectangleCacheSize { get; } = 0;
+
+		[Option(
+			ShortName = "", LongName = "rule-coverage-cache-size",
+			Description =
+			"The maximum number of entries in the cache of rule coverage computer. " +
+			"If set to 0, effectively disables caching.")]
+		[Range(0, int.MaxValue)]
+		public int RuleCoverageCacheSize { get; } = 0;
+
+		[Option(
+			ShortName = "", LongName = "individual-fitness-cache-size",
+			Description =
+			"The maximum number of entries in the cache of individual fitness . " +
+			"If set to 0, effectively disables caching.")]
+		[Range(0, int.MaxValue)]
+		public int FitnessCacheSize { get; } = 0;
+
+		[Option(
+			ShortName = "", LongName = "population-size",
+			Description = "The number of individuals in the initial and final populations.")]
+		[Range(1, int.MaxValue)]
+		public int PopulationSize { get; } = 200;
+
+		[Option(
+			ShortName = "", LongName = "mutants-per-generation",
+			Description = "How many mutants should be generated each generation.")]
+		[Range(1, int.MaxValue)]
+		public int MutantsPerGeneration { get; } = 100;
+
+		[Option(CommandOptionType.MultipleValue,
+			ShortName = "", LongName = "fitness-metrics",
+			Description = "The metrics to use as fitness during the training phase.")]
+		[AllowedValues("fscore", "model-size", "average-rule-volume", "rule-count")]
+		public string[] MetricNames { get; } = new string[] { "fscore", "rule-count", "average-rule-volume" };
+
+		[Option(
+			ShortName = "", LongName = "fittest-selection",
+			Description = "The fittest selection strategy.")]
+		[AllowedValues("nsga2", "lexicographic")]
+		public string SelectionAlgorithm { get; } = "nsga2";
+
+		[Option(
+			ShortName = "", LongName = "individual-mutation-add-rule-weight",
+			Description = "The probability, when mutating a individual, of adding a new rule to it.")]
+		[Range(0, int.MaxValue)]
+		public int IndividualMutationAddRuleWeight { get; } = 5;
+
+		[Option(
+			ShortName = "", LongName = "individual-mutation-modify-rule-weight",
+			Description = "The probability, when mutating a individual, of modifying a rule that it contains.")]
+		[Range(0, int.MaxValue)]
+		public int IndividualMutationModifyRuleWeight { get; } = 20;
+
+		[Option(
+			ShortName = "", LongName = "individual-mutation-remove-rule-weight",
+			Description = "The probability, when mutating a individual, of removing a rule that it contains.")]
+		[Range(0, int.MaxValue)]
+		public int IndividualMutationRemoveRuleWeight { get; } = 10;
+
+		[Option(
+			ShortName = "", LongName = "max-failed-mutations-per-generation",
+			Description = "When trying to mutate a individual, the mutant generated may not be consistent." +
+			"This option defines how many times the mutation may fail during a single generation." +
+			"If this number is reached, the evolutionary process stops.")]
+		[Range(0, int.MaxValue)]
+		public int MaximumFailedMutationAttemptsPerGeneration { get; } = 2000;
+
+		[Option(ShortName = "", LongName = "cfsbe-target-instance-coverage",
+			Description = "After a consistent hyperrectangle is found using the " +
+			"Constrained Feature Space Box Enlargement algorithm, " +
+			"one must create a rule inside such hyperrectangle. " +
+			"This paramater is used to specifiy how many instances such rule should " +
+			"try to cover." +
+			"Using a value that is too small may cause overfitting, " +
+			"while using a value that is too large may result in underfitting.")]
+		[Range(1, int.MaxValue)]
+		public int ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances { get; } = 50;
+
+		[Option(ShortName = "", LongName = "rule-consequent-threshold",
+			Description = "The consequent of a rule (i.e. the labels it predicted) are " +
+			"generated by averaging the labels of the dataset instances it covers and checking" +
+			"if they are above a certain threshold, defined by this parameter.")]
+		[Range(0f, 1f)]
+		public float RuleConsequentThreshold { get; } = 0.5f;
 
 		//[Required]
 		//[FileExists]
@@ -58,121 +167,6 @@ namespace Minotaur {
 		//	"being N the number of columns in train-data and test-data."
 		//	)]
 		//public string FeatureTypesFilename { get; } = string.Empty;
-
-		[Required]
-		[Option(ShortName = "",
-			LongName = "output-directory",
-			Description = "Directory to write the output files."
-			)]
-		[DirectoryExists]
-		public string OutputDirectory { get; } = string.Empty;
-
-		[Option(ShortName = "",
-			LongName = "max-generations",
-			Description =
-			"The maximum number of generations (iterations) to run. " +
-			"Must be greater than or equal to min-generations."
-			)]
-		[Range(1, int.MaxValue)]
-		public int MaximumGenerations { get; } = 2000;
-
-		[Option(ShortName = "",
-			LongName = "rule-to-box-cache-size",
-			Description =
-			"The maximum number of entries in the cache of hyperrectangle creator. " +
-			"If set to 0, effectively disables caching."
-			)]
-		[Range(0, int.MaxValue)]
-		public int RuleAntecedentToHyperRectangleCacheSize { get; } = 0;
-
-		[Option(ShortName = "",
-			LongName = "rule-coverage-cache-size",
-			Description =
-			"The maximum number of entries in the cache of rule coverage computer. " +
-			"If set to 0, effectively disables caching."
-			)]
-		[Range(0, int.MaxValue)]
-		public int RuleCoverageCacheSize { get; } = 0;
-
-		[Option(ShortName = "",
-			LongName = "individual-fitness-cache-size",
-			Description =
-			"The maximum number of entries in the cache of individual fitness . " +
-			"If set to 0, effectively disables caching."
-			)]
-		[Range(0, int.MaxValue)]
-		public int FitnessCacheSize { get; } = 0;
-
-		[Option(ShortName = "", LongName = "population-size", Description = "The number of individuals in the initial and final populations.")]
-		[Range(1, int.MaxValue)]
-		public int PopulationSize { get; } = 200;
-
-		[Option(ShortName = "", LongName = "mutants-per-generation",
-			Description =
-			"How many mutants should be generated each generation."
-			)]
-		[Range(1, int.MaxValue)]
-		public int MutantsPerGeneration { get; } = 100;
-
-		[Option(CommandOptionType.MultipleValue, ShortName = "", LongName = "fitness-metrics",
-			Description =
-			"The metrics to use as fitness during the training phase."
-			)]
-		[AllowedValues("fscore", "model-size", "average-rule-volume", "rule-count")]
-		public string[] MetricNames { get; } = new string[] { "fscore", "rule-count", "average-rule-volume" };
-
-		[Option(ShortName = "", LongName = "fittest-selection", Description = "The fittest selection strategy.")]
-		[AllowedValues("nsga2", "lexicographic")]
-		public string SelectionAlgorithm { get; } = "nsga2";
-
-		[Option(ShortName = "", LongName = "individual-mutation-add-rule-weight",
-			Description =
-			"The probability, when mutating a individual, of adding a new rule to it."
-			)]
-		[Range(0, int.MaxValue)]
-		public int IndividualMutationAddRuleWeight { get; } = 5;
-
-		[Option(ShortName = "", LongName = "individual-mutation-modify-rule-weight",
-			Description =
-			"The probability, when mutating a individual, of modifying a rule that it contains."
-			)]
-		[Range(0, int.MaxValue)]
-		public int IndividualMutationModifyRuleWeight { get; } = 20;
-
-		[Option(ShortName = "", LongName = "individual-mutation-remove-rule-weight",
-			Description =
-			"The probability, when mutating a individual, of removing a rule that it contains."
-			)]
-		[Range(0, int.MaxValue)]
-		public int IndividualMutationRemoveRuleWeight { get; } = 10;
-
-		[Option(ShortName = "", LongName = "max-failed-mutations-per-generation",
-			Description = "When trying to mutate a individual, the mutant generated may not be consistent." +
-			"This option defines how many times the mutation may fail during a single generation." +
-			"If this number is reached, the evolutionary process stops."
-			)]
-		[Range(0, int.MaxValue)]
-		public int MaximumFailedMutationAttemptsPerGeneration { get; } = 2000;
-
-		[Option(ShortName = "", LongName = "cfsbe-target-instance-coverage",
-					Description = "After a consistent hyperrectangle is found using the " +
-					"Constrained Feature Space Box Enlargement algorithm, " +
-					"one must create a rule inside such hyperrectangle. " +
-					"This paramater is used to specifiy how many instances such rule should " +
-					"try to cover." +
-					"Using a value that is too small may cause overfitting, " +
-					"while using a value that is too large may result in underfitting."
-					)]
-		[Range(1, int.MaxValue)]
-		public int ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances { get; } = 50;
-
-		[Option(ShortName = "", LongName = "rule-consequent-threshold",
-					Description = "The consequent of a rule (i.e. the labels it predicted) are " +
-			"generated by averaging the labels of the dataset instances it covers and checking" +
-			"if they are above a certain threshold, defined by this parameter."
-			)]
-		[Range(0f, 1f)]
-		public float RuleConsequentThreshold { get; } = 0.5f;
 
 		//[Required]
 		//[Option(ShortName = "", LongName = "rule-mutation-remove-test-probability",

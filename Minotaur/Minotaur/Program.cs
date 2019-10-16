@@ -31,15 +31,16 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/train-data.csv",
-				"--train-labels=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/train-labels.csv",
-				"--test-data=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/test-data.csv",
-				"--test-labels=C:/Source/minotaur.datasets/iris/ready-for-minotaur/fold-0/test-labels.csv",
+				"--train-data=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-data.csv",
+				"--train-labels=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-labels.csv",
+				"--test-data=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-data.csv",
+				"--test-labels=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-labels.csv",
 				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
+				"--classification-type=singlelabel",
 
 				"--max-generations=200",
 
-				"--output-directory=C:/Source/minotaur-output/",
+				"--output-directory=C:/Source/minotaur.output/",
 
 				"--cfsbe-target-instance-coverage=50",
 
@@ -54,7 +55,8 @@ namespace Minotaur {
 				trainDataFilename: settings.TrainDataFilename,
 				trainLabelsFilename: settings.TrainLabelsFilename,
 				testDataFilename: settings.TestDataFilename,
-				testLabelsFilename: settings.TestLabelsFilename);
+				testLabelsFilename: settings.TestLabelsFilename,
+				classificationType: settings.ClassificationType);
 
 			Console.WriteLine();
 			PrintTrainDatasetInformation(trainDataset);

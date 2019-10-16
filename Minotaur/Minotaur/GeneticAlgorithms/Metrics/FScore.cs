@@ -17,22 +17,23 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		}
 
 		public float Evaluate(Individual individual) {
-			var predictions = individual.Predict(_dataset);
-			var confusionMatrix = PseudoConfusionMatrix.Create(
-				actual: _dataset.InstanceLabels,
-				predicted: predictions);
+			throw new NotImplementedException();
+			//var predictions = individual.Predict(_dataset);
+			//var confusionMatrix = PseudoConfusionMatrix.Create(
+			//	actual: _dataset.InstanceLabels,
+			//	predicted: predictions);
 
-			var tp = confusionMatrix.TruePositive;
-			var fp = confusionMatrix.FalsePositive;
-			var fn = confusionMatrix.FalseNegative;
+			//var tp = confusionMatrix.TruePositive;
+			//var fp = confusionMatrix.FalsePositive;
+			//var fn = confusionMatrix.FalseNegative;
 
-			if (tp + fp + fn == 0) {
-				return 1;
-			}
+			//if (tp + fp + fn == 0) {
+			//	return 1;
+			//}
 
-			var beta = 1;
-			var beta2 = beta * beta;
-			return ((beta2 + 1) * tp) / ((beta2 + 1) * tp + beta2 * fn + fp);
+			//var beta = 1;
+			//var beta2 = beta * beta;
+			//return ((beta2 + 1) * tp) / ((beta2 + 1) * tp + beta2 * fn + fp);
 		}
 
 		public float EvaluateAsMaximizationTask(Individual individual) => Evaluate(individual);

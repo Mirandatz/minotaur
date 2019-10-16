@@ -45,7 +45,7 @@ namespace Minotaur.Theseus {
 			int generationsRan;
 			for (generationsRan = 0; generationsRan < _maximumGenerations; generationsRan++) {
 				Console.Write($"\rRunning generation {generationsRan}/{_maximumGenerations}");
-				
+
 				if (!_populationMutator.TryMutate(population, out var mutants)) {
 					reasonForStoppingEvolution = "" +
 						"reached maximum number of failed mutation attempts " +
