@@ -45,7 +45,7 @@ namespace Minotaur.Collections.Dataset {
 
 				for (int i = 0; i < instanceCount; i++) {
 					var values = labelsMatrix.GetRow(i);
-					var label = MultiLabel.Parse(values);
+					var label = MultiLabelCreator.FromSpanOfBinaryValues(values);
 					labels[i] = label;
 				}
 

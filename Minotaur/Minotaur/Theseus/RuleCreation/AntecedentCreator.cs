@@ -5,12 +5,12 @@ namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
-	public sealed class InstanceCoveringRuleAntecedentCreator {
+	public sealed class AntecedentCreator {
 
 		public Dataset Dataset { get; }
 		private readonly RuleAntecedentHyperRectangleConverter _converter;
 
-		public InstanceCoveringRuleAntecedentCreator(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter) {
+		public AntecedentCreator(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter) {
 			_converter = ruleAntecedentHyperRectangleConverter;
 			Dataset = _converter.Dataset;
 		}

@@ -76,11 +76,14 @@ namespace Minotaur {
 				ruleConverter: ruleAntecedentHyperRectangleConverter,
 				coverageComputer: hyperRectangleCoverageComputer);
 
-			var antecedentCreator = new InstanceCoveringRuleAntecedentCreator(ruleAntecedentHyperRectangleConverter: ruleAntecedentHyperRectangleConverter);
+			var antecedentCreator = new AntecedentCreator(ruleAntecedentHyperRectangleConverter: ruleAntecedentHyperRectangleConverter);
 
-			var consequentCreator = new MultiLabelConsequentCreator(
-				dataset: trainDataset,
-				threshold: settings.RuleConsequentThreshold);
+			var consequentCreator = settings.ClassificationType switch
+			{
+				ClassificationType.SingleLabel => (IConsequentCreator) new SingleLabelConsequentCreator(dataset: trainDataset),
+				ClassificationType.MultiLabel => (IConsequentCreator) new MultiLabelConsequentCreator(dataset: trainDataset, threshold: settings.RuleConsequentThreshold),
+				_ => throw CommonExceptions.UnknownClassificationType,
+			};
 
 			var hyperRectangleIntersector = new HyperRectangleIntersector(trainDataset);
 			var nonIntersectingHyperRectangleCreator = new NonIntersectingRectangleCreator(hyperRectangleIntersector);

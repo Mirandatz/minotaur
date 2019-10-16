@@ -5,11 +5,13 @@ namespace Minotaur {
 	public sealed class MultiLabel: ILabel, IEquatable<MultiLabel> {
 
 		public readonly Array<bool> Values;
+		public readonly int Length;
 
 		private readonly int _hashCode;
 
-		private MultiLabel(Array<bool> values) {
-			Values = values;
+		public MultiLabel(Array<bool> values) {
+			Values = values.ShallowCopy();
+			Length = Values.Length;
 
 			var hash = new HashCode();
 			for (int i = 0; i < Values.Length; i++)
@@ -18,20 +20,7 @@ namespace Minotaur {
 			_hashCode = hash.ToHashCode();
 		}
 
-		public static MultiLabel Parse(Span<float> values) {
-			var labels = new bool[values.Length];
-
-			for (int i = 0; i < values.Length; i++) {
-				labels[i] = (values[i]) switch
-				{
-					0f => false,
-					1f => true,
-					_ => throw new InvalidOperationException(nameof(values) + " contains non binary values."),
-				};
-			}
-
-			return new MultiLabel(labels);
-		}
+		public bool this[int index] => Values[index];
 
 		public override int GetHashCode() => _hashCode;
 
