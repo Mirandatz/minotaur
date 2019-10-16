@@ -50,7 +50,7 @@ namespace Minotaur.Collections {
 
 		public ReadOnlySpan<T> AsSpan() => new ReadOnlySpan<T>(_items);
 
-		public Array<T> Clone() {
+		public Array<T> ShallowCopy() {
 
 			var itemsClone = new T[this.Length];
 			Array.Copy(
@@ -94,7 +94,7 @@ namespace Minotaur.Collections {
 
 			// Copy everyone and overwrite should be faster 
 			// than conditionally copying
-			var newArray = Clone();
+			var newArray = ShallowCopy();
 			newArray._items[index] = newItem;
 
 			return newArray;
