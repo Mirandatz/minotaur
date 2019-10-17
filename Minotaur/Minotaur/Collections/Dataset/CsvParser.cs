@@ -1,89 +1,44 @@
 namespace Minotaur.Collections.Dataset {
 	using System;
-	using System.Linq;
+	using System.IO;
 
 	public static class CsvParser {
-		public const char DefaultDelimiter = ',';
+		public const char Delimiter = ',';
 
-		public static MutableMatrix<float> ParseCsv(string csvData, char delimiter = DefaultDelimiter) {
-			if (string.IsNullOrEmpty(csvData))
-				throw new ArgumentException(nameof(csvData) + " can't be null nor empty.");
-
-			var lines = GetAndCheckLines(csvData);
-			var width = GetAndCheckMatrixWidth(lines, delimiter);
-			var height = lines.Length;
-
-			var matrix = new MutableMatrix<float>(rowCount: height, columnCount: width);
-			for (int i = 0; i < height; i++)
-				ParseLine(lineNumber: i, delimiter: delimiter, lines: lines, matrix: matrix);
-
-			return matrix;
-		}
-
-		private static String[] GetAndCheckLines(string csvData) {
-			var lines = csvData.Split(
+		public static MutableMatrix<string> ReadCsv(string filename) {
+			var dataAsText = File.ReadAllText(filename);
+			var lines = dataAsText.Split(
 				separator: Environment.NewLine,
 				options: StringSplitOptions.RemoveEmptyEntries);
 
 			if (lines.Length == 0)
-				throw new InvalidOperationException("The file is empty.");
+				throw new InvalidOperationException($"Parsing error. Empty file: {filename}");
 
-			for (int i = 0; i < lines.Length; i++) {
-				if (lines[i].Length == 0)
-					throw new InvalidOperationException($"Line {i} is empty.");
-			}
+			var width = lines[0].Split(Delimiter).Length + 1;
+			var height = lines.Length;
 
-			return lines;
-		}
+			var matrix = new MutableMatrix<string>(
+				rowCount: height,
+				columnCount: width);
 
-		private static int GetAndCheckMatrixWidth(string[] lines, char delimiter) {
-			var firstLineDelimiterCount = lines
-				.First()
-				.Count(c => c == delimiter);
+			for (int i = 0; i < height; i++) {
+				var line = lines[i];
+				var lineValues = line.Split(Delimiter);
 
-			for (int i = 0; i < lines.Length; i++) {
-				var delimiterCount = lines[i].Count(c => c == delimiter);
-
-				if (delimiterCount != firstLineDelimiterCount)
-					throw new InvalidOperationException($"Line {i} contains {delimiterCount} delimiters, but should contain {firstLineDelimiterCount}.");
-			}
-
-			// +1 coz if we have N delimiters, we have N+1 values
-			return firstLineDelimiterCount + 1;
-		}
-
-		private static void ParseLine(
-			int lineNumber,
-			char delimiter,
-			string[] lines,
-			MutableMatrix<float> matrix) {
-
-			var line = lines[lineNumber];
-			var splits = line.Split(delimiter);
-
-			for (int i = 0; i < splits.Length; i++) {
-				var parsed = float.TryParse(splits[i], out var value);
-
-				if (!parsed) {
-					throw new InvalidOperationException($"Unable to parse element. " +
-						$"Line: {lineNumber},  Column: {i}, Value: {splits[i]}.");
+				if (lineValues.Length != width) {
+					throw new InvalidOperationException($"Parsing error. Line (0-indexed) {i} contains {lineValues.Length} values, expected {width}. " +
+						$"File {filename}");
 				}
 
-				if (float.IsNaN(value)) {
-					throw new InvalidOperationException($"Unable to parse element, NaN is not supported. " +
-						$"Line: {lineNumber},  Column: {i}, Value: {splits[i]}.");
+				for (int j = 0; j < width; j++) {
+					matrix.Set(
+						rowIndex: i,
+						columnIndex: j,
+						value: lineValues[j]);
 				}
-
-				if (float.IsInfinity(value)) {
-					throw new InvalidOperationException($"Unable to parse element, infinities are not supported. " +
-						$"Line: {lineNumber},  Column: {i}, Value: {splits[i]}.");
-				}
-
-				matrix.Set(
-					rowIndex: lineNumber,
-					columnIndex: i,
-					value: value);
 			}
+
+			return matrix;
 		}
 	}
 }

@@ -8,12 +8,12 @@ namespace Minotaur.Collections.Dataset {
 
 		private static MutableMatrix<float> LoadData(string filename) {
 			var csv = File.ReadAllText(filename);
-			return CsvParser.ParseCsv(csv);
+			return CsvParser.ParseFloatsCsv(csv);
 		}
 
 		private static Array<ILabel> LoadLabels(string filename, ClassificationType classificationType) {
 			var csv = File.ReadAllText(filename);
-			var labelsAsFloats = CsvParser.ParseCsv(csv);
+			var labelsAsFloats = CsvParser.ParseFloatsCsv(csv);
 
 			return classificationType switch
 			{
@@ -151,6 +151,95 @@ namespace Minotaur.Collections.Dataset {
 			Console.WriteLine("Yep, they are.");
 
 			return (TrainDataset: trainDataset, TestDataset: testDataset);
+		}
+
+		public static MutableMatrix<float> ReadDataFile(string filename) {
+			var unparsedMatrix = CsvParser.ReadCsv(filename);
+
+			var parsedData = new MutableMatrix<float>(
+				rowCount: unparsedMatrix.RowCount,
+				columnCount: unparsedMatrix.ColumnCount);
+
+			throw new NotImplementedException();
+		}
+
+		public static SingleLabel[] ReadSingleLabelFile(string filename) {
+			var unparsedMatrix = CsvParser.ReadCsv(filename);
+
+			if (unparsedMatrix.ColumnCount != 1) {
+				throw new InvalidOperationException($"For a {ClassificationType.SingleLabel} dataset, the labels file must constain a single column. " +
+					$"But the file {filename} contains {unparsedMatrix.ColumnCount}.");
+			}
+
+			var labels = ParseLabels(unparsedMatrix, filename);
+
+			var labelsAreNaturalRange = CheckIfLabelsAreNaturalRange(labels);
+			if (!labelsAreNaturalRange) {
+				throw new InvalidOperationException($"Labels must be form a natural range, " +
+					$"that is, their values must be between [0, #unique-labels[. " +
+					$"That doesn't hold for file: {filename}");
+			}
+
+			return labels;
+
+			static SingleLabel[] ParseLabels(MutableMatrix<string> matrix, string filename) {
+				var labels = new SingleLabel[matrix.ColumnCount];
+
+				for (int i = 0; i < labels.Length; i++) {
+					var valueAsString = matrix.Get(rowIndex: i, columnIndex: 0);
+					var parsed = int.TryParse(valueAsString, out var parsedValue);
+
+					if (!parsed)
+						throw new InvalidOperationException($"Parsing error. Can't parse {valueAsString} as int. Line {i}. File: {filename}.");
+
+					labels[i] = new SingleLabel(parsedValue);
+				}
+
+				return labels;
+			}
+
+			static bool CheckIfLabelsAreNaturalRange(SingleLabel[] labelsAsInts) {
+				var sortedUniqueLabelValues = labelsAsInts
+					.Select(sl => sl.Value)
+					.Distinct()
+					.OrderBy(v => v)
+					.ToArray();
+
+				for (int i = 0; i < sortedUniqueLabelValues.Length; i++) {
+					if (sortedUniqueLabelValues[i] != i)
+						return false;
+				}
+
+				return true;
+			}
+		}
+
+		public static MultiLabel[] ReadMultiLabelFile(string filename) {
+			var unparsedMatrix = CsvParser.ReadCsv(filename);
+			var labels = new MultiLabel[unparsedMatrix.ColumnCount];
+
+			for (int i = 0; i < labels.Length; i++) {
+				var line = unparsedMatrix.GetRow(i);
+				var label = ParseLine(line, filename);
+				labels[i] = label;
+			}
+
+			return labels;
+
+			static MultiLabel ParseLine(Span<string> line, string filename) {
+				var labels = new bool[line.Length];
+
+				for (int i = 0; i < line.Length; i++) {
+					var valueAsString = line[i];
+					var parsed = bool.TryParse(line[i], out var parsedValue);
+					if (!parsed)
+						throw new InvalidOperationException($"Parsing error. Can't parse {valueAsString} as bool. Line {i}. File: {filename}.");
+
+					labels[i] = parsedValue;
+				}
+
+				return new MultiLabel(labels);
+			}
 		}
 	}
 }
