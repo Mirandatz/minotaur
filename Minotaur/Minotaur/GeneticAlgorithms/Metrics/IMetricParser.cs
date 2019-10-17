@@ -20,6 +20,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 				var currentMetricName = metricsNames[i];
 				metrics[i] = (metricsNames[i], classificationType) switch
 				{
+					("fscore", ClassificationType.SingleLabel) => new SingleLabelFScore(dataset),
 					("fscore", ClassificationType.MultiLabel) => new MultiLabelFScore(dataset),
 					("average-rule-volume", _) => new AverageRuleVolume(dataset),
 					("rule-count", _) => new RuleCount(),

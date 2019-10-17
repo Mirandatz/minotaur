@@ -13,7 +13,7 @@ namespace Minotaur.Theseus.RuleCreation {
 		public ILabel CreateConsequent(ReadOnlySpan<int> indicesOfDatasetInstances) {
 			// @Performance
 
-			var labels = new float[indicesOfDatasetInstances.Length];
+			var labels = new int[indicesOfDatasetInstances.Length];
 
 			for (int i = 0; i < indicesOfDatasetInstances.Length; i++) {
 				var instanceIndex = indicesOfDatasetInstances[i];

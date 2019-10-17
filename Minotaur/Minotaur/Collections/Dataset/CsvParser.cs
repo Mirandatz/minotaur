@@ -1,6 +1,7 @@
 namespace Minotaur.Collections.Dataset {
 	using System;
 	using System.IO;
+	using System.Linq;
 
 	public static class CsvParser {
 		public const char Delimiter = ',';
@@ -14,7 +15,7 @@ namespace Minotaur.Collections.Dataset {
 			if (lines.Length == 0)
 				throw new InvalidOperationException($"Parsing error. Empty file: {filename}");
 
-			var width = lines[0].Split(Delimiter).Length + 1;
+			var width = lines[0].Count(c => c == Delimiter) + 1;
 			var height = lines.Length;
 
 			var matrix = new MutableMatrix<string>(
