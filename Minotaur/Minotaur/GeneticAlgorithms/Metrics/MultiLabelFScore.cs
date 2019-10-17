@@ -14,6 +14,9 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		public string Name => nameof(MultiLabelFScore);
 
 		public MultiLabelFScore(Dataset dataset) {
+			if (dataset.ClassificationType != ClassificationType.MultiLabel)
+				throw new InvalidOperationException();
+
 			_dataset = dataset;
 		}
 

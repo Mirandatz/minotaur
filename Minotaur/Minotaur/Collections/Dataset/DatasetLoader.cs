@@ -1,6 +1,7 @@
 namespace Minotaur.Collections.Dataset {
 	using System;
 	using System.IO;
+	using System.Linq;
 	using System.Threading.Tasks;
 
 	public static class DatasetLoader {
@@ -32,8 +33,21 @@ namespace Minotaur.Collections.Dataset {
 
 				for (int i = 0; i < instanceCount; i++) {
 					var value = labelsMatrix.Get(rowIndex: i, columnIndex: 0);
-					var label = new SingleLabel(value);
+					var label = new SingleLabel((int) value);
 					labels[i] = label;
+				}
+
+				// Sanity check
+				var sortedDistinctLabels = labels
+					.Select(l => ((SingleLabel) l).Value)
+					.Distinct()
+					.OrderBy(v => v)
+					.ToArray();
+
+				for (int i = 0; i < sortedDistinctLabels.Length; i++) {
+					if (sortedDistinctLabels[i] != i)
+						throw new InvalidOperationException($"Labels for a {nameof(ClassificationType.SingleLabel)} dataset " +
+							"must be a natural range; that is, their values must be between [0, #classes[");
 				}
 
 				return labels;

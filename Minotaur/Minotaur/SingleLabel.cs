@@ -3,13 +3,11 @@ namespace Minotaur {
 
 	public sealed class SingleLabel: ILabel, IEquatable<SingleLabel> {
 
-		public readonly float Value;
+		public readonly int Value;
 
-		public SingleLabel(float value) {
-			if (float.IsNaN(value))
-				throw new ArgumentOutOfRangeException(nameof(value) + " can't be NaN.");
-			if (float.IsInfinity(value))
-				throw new ArgumentOutOfRangeException(nameof(value) + " must be finite.");
+		public SingleLabel(int value) {
+			if (value < 0)
+				throw new ArgumentOutOfRangeException(nameof(value) + " must be >= 0.");
 
 			Value = value;
 		}
