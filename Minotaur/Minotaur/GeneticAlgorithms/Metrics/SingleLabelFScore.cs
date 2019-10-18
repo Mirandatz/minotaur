@@ -112,7 +112,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 
 			return fscores;
 
-			static float ComputeFScore(int truePositives, int falsePositives, int falseNegatives) {
+			static float ComputeFScore(float truePositives, float falsePositives, float falseNegatives) {
 				if (truePositives + falsePositives + falseNegatives == 0)
 					return 1;
 

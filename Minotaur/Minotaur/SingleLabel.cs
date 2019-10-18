@@ -12,6 +12,8 @@ namespace Minotaur {
 			Value = value;
 		}
 
+		public override string ToString() => Value.ToString();
+
 		public override int GetHashCode() => Value.GetHashCode();
 
 		public override bool Equals(object? obj) => Equals((SingleLabel) obj!);
