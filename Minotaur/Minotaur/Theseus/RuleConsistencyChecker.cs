@@ -50,15 +50,14 @@ namespace Minotaur.Theseus {
 		}
 
 		public bool AreConsistent(Rule lhs, Rule rhs) {
-			throw new NotImplementedException();
-			//if (lhs.Consequent.SequenceEquals(rhs.Consequent))
-			//	return true;
+			if (lhs.Consequent.Equals(rhs.Consequent))
+				return true;
 
-			//var lhsBox = _converter.FromRule(lhs);
-			//var rhsBox = _converter.FromRule(rhs);
-			//var boxesOverlap = _intersector.IntersectsInAllDimension(lhsBox, rhsBox);
+			var lhsBox = _converter.FromRule(lhs);
+			var rhsBox = _converter.FromRule(rhs);
+			var boxesOverlap = _intersector.IntersectsInAllDimension(lhsBox, rhsBox);
 
-			//return !boxesOverlap;
+			return !boxesOverlap;
 		}
 	}
 }

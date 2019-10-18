@@ -1,7 +1,6 @@
 namespace Minotaur.GeneticAlgorithms.Metrics {
 	using System;
 	using Minotaur.Collections;
-	using Minotaur.Collections.Dataset;
 
 	/// <remarks>
 	/// Predicted labels are stored in the columns.
@@ -16,11 +15,9 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 		}
 
 		// @Assumption: labels are stored as a natural range; that is, their values e [0, #classes[
-		public static SingleLabelConfusionMatrix Create(Array<ILabel> actualLabels, Array<ILabel> predictedLabels, Array<float> classWeights) {
+		public static SingleLabelConfusionMatrix Create(Array<ILabel> actualLabels, Array<ILabel> predictedLabels, int classCount) {
 			if (actualLabels.Length != predictedLabels.Length)
 				throw new InvalidOperationException();
-
-			var classCount = classWeights.Length;
 
 			var absoluteConfusionMatrix = new MutableMatrix<int>(
 				rowCount: classCount,
