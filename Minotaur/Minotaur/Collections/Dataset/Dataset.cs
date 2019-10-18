@@ -17,41 +17,23 @@ namespace Minotaur.Collections.Dataset {
 		public readonly Matrix<float> Data;
 
 		// These are stored for performance reasons
-		public readonly Matrix<double> DistanceMatrix;
-		public readonly Matrix<float> DataTransposed;
-		private readonly float[][] _sortedFeatureValues;
-		private readonly float[][] _sortedUniqueFeatureValues;
-		private readonly Dictionary<float, int>[] _featureValueFrequencies;
-
+		private readonly Matrix<double> _distanceMatrix;
+		public readonly Array<int> ClassFrequencies;
 		public readonly ILabel DefaultLabel;
+		private readonly float[][] _sortedUniqueFeatureValues;
 
-		private Dataset(
-			FeatureType[] featureTypes,
-			Matrix<float> data,
-			Matrix<float> dataTransposed,
-			Matrix<double> distanceMatrix,
-			float[][] sortedFeatureValues,
-			float[][] sortedUniqueFeatureValues,
-			Dictionary<float, int>[] featureValueFrequencies,
-			Array<ILabel> labels,
-			ClassificationType classificationType,
-			int classCount,
-			ILabel defaultLabel
-			) {
+		public Dataset(int instanceCount, int featureCount, int classCount, ClassificationType classificationType, Array<ILabel> instanceLabels, Array<FeatureType> featureTypes, Matrix<float> data, Matrix<double> distanceMatrix, Array<int> classFrequencies, ILabel defaultLabel, float[][] sortedUniqueFeatureValues) {
+			InstanceCount = instanceCount;
+			FeatureCount = featureCount;
+			ClassCount = classCount;
+			ClassificationType = classificationType;
+			InstanceLabels = instanceLabels;
 			FeatureTypes = featureTypes;
 			Data = data;
-			DataTransposed = dataTransposed;
-			DistanceMatrix = distanceMatrix;
-			_sortedFeatureValues = sortedFeatureValues;
-			_sortedUniqueFeatureValues = sortedUniqueFeatureValues;
-			_featureValueFrequencies = featureValueFrequencies;
-
-			InstanceCount = data.RowCount;
-			FeatureCount = data.ColumnCount;
-			ClassCount = classCount;
-			InstanceLabels = labels;
-			ClassificationType = classificationType;
+			_distanceMatrix = distanceMatrix;
+			ClassFrequencies = classFrequencies;
 			DefaultLabel = defaultLabel;
+			_sortedUniqueFeatureValues = sortedUniqueFeatureValues;
 		}
 
 		public static Dataset CreateFromMutableObjects(
@@ -79,39 +61,33 @@ namespace Minotaur.Collections.Dataset {
 
 			var distanceMatrixTask = Task.Run(() => Distance.ComputeEuclideanDistanceMatrix(data));
 
-			Parallel.For(
-				fromInclusive: 0,
-				toExclusive: featuresCount,
-				body: featureIndex => {
+			Parallel.For(fromInclusive: 0, toExclusive: featuresCount, body: featureIndex => {
 
-					var currentFeatureValues = dataTransposed.GetRow(featureIndex).ToArray();
+				var currentFeatureValues = dataTransposed.GetRow(featureIndex).ToArray();
 
-					ThrowIfDatasetContainsNonFiniteValues(currentFeatureValues);
+				ThrowIfDatasetContainsNonFiniteValues(currentFeatureValues);
 
-					var sufv = currentFeatureValues
-					.Distinct()
-					.OrderBy(v => v)
-					.ToArray();
+				var sufv = currentFeatureValues
+				.Distinct()
+				.OrderBy(v => v)
+				.ToArray();
 
-					sortedUniqueFeatureValues[featureIndex] = sufv;
+				sortedUniqueFeatureValues[featureIndex] = sufv;
 
-					ThrowIfTrainDatasetContainsFeaturesWithSingleValue(isTrainDataset, featureIndex, sufv);
+				ThrowIfTrainDatasetContainsFeaturesWithSingleValue(isTrainDataset, featureIndex, sufv);
 
-					sortedFeatureValues[featureIndex] = currentFeatureValues
-					.OrderBy(v => v)
-					.ToArray();
+				sortedFeatureValues[featureIndex] = currentFeatureValues
+				.OrderBy(v => v)
+				.ToArray();
 
-					var counts = currentFeatureValues
-					.GroupBy(v => v)
-					.ToDictionary(
-						keySelector: g => g.Key,
-						elementSelector: g => g.Count());
+				var counts = currentFeatureValues
+				.GroupBy(v => v)
+				.ToDictionary(
+					keySelector: g => g.Key,
+					elementSelector: g => g.Count());
 
-					featureValueFrequencies[featureIndex] = counts;
-				});
-
-			Task.WaitAll(distanceMatrixTask);
-			var distanceMatrix = distanceMatrixTask.Result;
+				featureValueFrequencies[featureIndex] = counts;
+			});
 
 			int classCount = classificationType switch
 			{
@@ -120,20 +96,30 @@ namespace Minotaur.Collections.Dataset {
 				_ => throw CommonExceptions.UnknownClassificationType,
 			};
 
+			var classFrequencies = classificationType switch
+			{
+				ClassificationType.SingleLabel => ComputeSingleLabelClassFrequencies(labels, classCount),
+				ClassificationType.MultiLabel => ComputeMultiLabelClassFrequencies(labels, classCount),
+				_ => throw CommonExceptions.UnknownClassificationType,
+			};
+
 			var defaultLabel = ComputeDefaultLabel(labels, classificationType);
 
+			Task.WaitAll(distanceMatrixTask);
+			var distanceMatrix = distanceMatrixTask.Result;
+
 			return new Dataset(
+				instanceCount: data.RowCount,
+				featureCount: data.ColumnCount,
+				classCount: classCount,
+				classificationType: classificationType,
+				instanceLabels: labels,
 				featureTypes: featureTypes,
 				data: data,
-				dataTransposed: dataTransposed,
 				distanceMatrix: distanceMatrix,
-				sortedFeatureValues: sortedFeatureValues,
-				sortedUniqueFeatureValues: sortedUniqueFeatureValues,
-				featureValueFrequencies: featureValueFrequencies,
-				labels: labels,
-				classificationType: classificationType,
-				classCount: classCount,
-				defaultLabel: defaultLabel);
+				classFrequencies: classFrequencies,
+				defaultLabel: defaultLabel,
+				sortedUniqueFeatureValues: sortedUniqueFeatureValues);
 
 			static void ThrowIfDatasetContainsNonFiniteValues(float[] featureValues) {
 				if (featureValues.Any(v => !float.IsFinite(v)))
@@ -169,6 +155,21 @@ namespace Minotaur.Collections.Dataset {
 					throw new NotImplementedException();
 				}
 			}
+
+			static int[] ComputeSingleLabelClassFrequencies(Array<ILabel> labels, int classCount) {
+				var frequencies = new int[classCount];
+
+				for (int i = 0; i < labels.Length; i++) {
+					var classIndex = ((SingleLabel) labels[i]).Value;
+					frequencies[classIndex] += 1;
+				}
+
+				return frequencies;
+			}
+
+			static int[] ComputeMultiLabelClassFrequencies(Array<ILabel> labels, int classCount) {
+				throw new NotImplementedException();
+			}
 		}
 
 		public bool IsFeatureIndexValid(int featureIndex) {
@@ -177,15 +178,6 @@ namespace Minotaur.Collections.Dataset {
 
 		public bool IsInstanceIndexValid(int instanceIndex) {
 			return instanceIndex >= 0 && instanceIndex < InstanceCount;
-		}
-
-		public float GetDatum(int instanceIndex, int featureIndex) {
-			if (!IsInstanceIndexValid(instanceIndex))
-				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
-			if (!IsFeatureIndexValid(featureIndex))
-				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
-
-			return Data.Get(rowIndex: instanceIndex, columnIndex: featureIndex);
 		}
 
 		public FeatureType GetFeatureType(int featureIndex) {
@@ -202,18 +194,11 @@ namespace Minotaur.Collections.Dataset {
 			return Data.GetRow(instanceIndex);
 		}
 
-		public Array<float> GetFeatureValues(int featureIndex) {
-			if (!IsFeatureIndexValid(featureIndex))
-				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
+		public ILabel GetInstanceLabel(int instanceIndex) {
+			if (!IsInstanceIndexValid(instanceIndex))
+				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
 
-			return DataTransposed.GetRow(featureIndex);
-		}
-
-		public Array<float> GetSortedFeatureValues(int featureIndex) {
-			if (!IsFeatureIndexValid(featureIndex))
-				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
-
-			return _sortedFeatureValues[featureIndex];
+			return InstanceLabels[instanceIndex];
 		}
 
 		public Array<float> GetSortedUniqueFeatureValues(int featureIndex) {
@@ -221,33 +206,6 @@ namespace Minotaur.Collections.Dataset {
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
 
 			return _sortedUniqueFeatureValues[featureIndex];
-		}
-
-		public int GetFeatureValueFrequency(int featureIndex, float featureValue) {
-			if (!IsFeatureIndexValid(featureIndex))
-				throw new ArgumentOutOfRangeException(nameof(featureIndex) + $" must be between [0, {FeatureCount}[.");
-
-			return _featureValueFrequencies[featureIndex].GetValueOrDefault(
-				key: featureValue,
-				defaultValue: 0);
-		}
-
-		public Dictionary<float, int> GetFeatureValueFrequenciesDictionary(int featureIndex) {
-			if (!IsFeatureIndexValid(featureIndex)) {
-				throw new ArgumentOutOfRangeException(
-				$"{nameof(featureIndex)} must be between [0, {FeatureCount}[.");
-			}
-
-			// @Performance
-			var frequenciesDict = _featureValueFrequencies[featureIndex];
-			return new Dictionary<float, int>(frequenciesDict);
-		}
-
-		public ILabel GetInstanceLabel(int instanceIndex) {
-			if (!IsInstanceIndexValid(instanceIndex))
-				throw new ArgumentOutOfRangeException(nameof(instanceIndex) + $" must be between [0, {InstanceCount}[.");
-
-			return InstanceLabels[instanceIndex];
 		}
 
 		public double[] ComputeDistances(int targetInstanceIndex, Array<int> otherInstancesIndices) {
@@ -262,13 +220,12 @@ namespace Minotaur.Collections.Dataset {
 				if (!IsInstanceIndexValid(rhsIndex))
 					throw new ArgumentException(nameof(otherInstancesIndices) + " contains invalid indices.");
 
-				distances[i] = DistanceMatrix.Get(
+				distances[i] = _distanceMatrix.Get(
 					rowIndex: targetInstanceIndex,
 					columnIndex: rhsIndex);
 			}
 
 			return distances;
-
 		}
 
 		public (float Minimum, float Maximum) GetMinimumAndMaximumFeatureValues(int featureIndex) {
