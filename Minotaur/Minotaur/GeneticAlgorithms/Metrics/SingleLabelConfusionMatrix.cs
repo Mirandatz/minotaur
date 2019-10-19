@@ -2,20 +2,14 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 	using System;
 	using Minotaur.Collections;
 
-	/// <remarks>
-	/// Predicted labels are stored in the columns.
-	/// Actual labels are stored in the rows.
-	/// </remarks>
 	public sealed class SingleLabelConfusionMatrix {
 
-		public readonly Matrix<int> AbsoluteValues;
-
-		private SingleLabelConfusionMatrix(Matrix<int> absoluteValues) {
-			AbsoluteValues = absoluteValues;
-		}
-
 		// @Assumption: labels are stored as a natural range; that is, their values e [0, #classes[
-		public static SingleLabelConfusionMatrix Create(Array<ILabel> actualLabels, Array<ILabel> predictedLabels, int classCount) {
+		/// <remarks>
+		/// Predicted labels are stored in the columns.
+		/// Actual labels are stored in the rows.
+		/// </remarks>
+		public static Matrix<int> Create(Array<ILabel> actualLabels, Array<ILabel> predictedLabels, int classCount) {
 			if (actualLabels.Length != predictedLabels.Length)
 				throw new InvalidOperationException();
 
@@ -40,7 +34,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 					oldConfusionValue + 1);
 			}
 
-			return new SingleLabelConfusionMatrix(absoluteConfusionMatrix.ToMatrix());
+			return absoluteConfusionMatrix.ToMatrix();
 		}
 	}
 }

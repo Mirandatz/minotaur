@@ -17,43 +17,45 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			var predicted = individual.Predict(_dataset);
 			var actual = _dataset.InstanceLabels;
 
-			var cfmt = SingleLabelConfusionMatrix.Create(
+			var confusionMatrix = SingleLabelConfusionMatrix.Create(
 				actualLabels: actual,
 				predictedLabels: predicted,
 				classCount: _dataset.ClassCount);
 
-			var tps = ComputeTruePositives(cfmt);
-			var fps = ComputeFalsePositives(cfmt);
-			var fns = ComputeFalseNegatives(cfmt);
+			var tps = ComputeTruePositives(confusionMatrix);
+			var fps = ComputeFalsePositives(confusionMatrix);
+			var fns = ComputeFalseNegatives(confusionMatrix);
 			var fscores = ComputeFScores(tps, fps, fns);
-			var classFrequencies = _dataset.ClassFrequencies;
+			var absoluteClassFrequencies = _dataset.ClassFrequencies;
+
+			var instanceCount = _dataset.InstanceCount;
+			var relativeClassFrequencies = new float[absoluteClassFrequencies.Length];
+			for (int i = 0; i < relativeClassFrequencies.Length; i++)
+				relativeClassFrequencies[i] = ((float)absoluteClassFrequencies[i]) / instanceCount;
 
 			return WeightedMean(
 				values: fscores,
-				weights: classFrequencies);
+				weights: relativeClassFrequencies);
 		}
 
-		private int[] ComputeTruePositives(SingleLabelConfusionMatrix cfmt) {
-			var values = cfmt.AbsoluteValues;
-			var classCount = values.RowCount;
+		private int[] ComputeTruePositives(Matrix<int> confusionMatrix) {
+			var classCount = confusionMatrix.RowCount;
 
 			var tps = new int[classCount];
 			for (int i = 0; i < tps.Length; i++)
-				tps[i] = values.Get(i, i);
+				tps[i] = confusionMatrix.Get(i, i);
 
 			return tps;
 		}
 
-		private int[] ComputeFalsePositives(SingleLabelConfusionMatrix cfmt) {
-			var values = cfmt.AbsoluteValues;
-			var classCount = values.RowCount;
-
+		private int[] ComputeFalsePositives(Matrix<int> confusionMatrix) {
+			var classCount = confusionMatrix.RowCount;
 			var fps = new int[classCount];
 
 			for (int i = 0; i < classCount; i++) {
 				fps[i] = ComputeFalsePositive(
 					classIndex: i,
-					confusionMatrix: values);
+					confusionMatrix: confusionMatrix);
 			}
 
 			return fps;
@@ -72,15 +74,14 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			}
 		}
 
-		private int[] ComputeFalseNegatives(SingleLabelConfusionMatrix cfmt) {
-			var values = cfmt.AbsoluteValues;
-			var classCount = values.RowCount;
+		private int[] ComputeFalseNegatives(Matrix<int> confusionMatrix) {
+			var classCount = confusionMatrix.RowCount;
 
 			var fns = new int[classCount];
 			for (int i = 0; i < classCount; i++) {
 				fns[i] = ComputeFalseNegative(
 					classIndex: i,
-					confusionMatrix: values);
+					confusionMatrix: confusionMatrix);
 			}
 
 			return fns;
@@ -122,14 +123,14 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			}
 		}
 
-		private float WeightedMean(float[] values, Array<int> weights) {
+		private float WeightedMean(float[] values, Array<float> weights) {
 			// @Sanity check
 			if (values.Length != weights.Length)
 				throw new InvalidOperationException();
 
 			double sum = 0;
 			for (int i = 0; i < values.Length; i++)
-				sum += values[i] / weights[i];
+				sum += values[i] * weights[i];
 
 			return (float) sum;
 		}
