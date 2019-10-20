@@ -72,7 +72,7 @@ namespace Minotaur {
 		public int RuleAntecedentToHyperRectangleCacheSize { get; } = 0;
 
 		[Option(
-			ShortName = "", LongName = "rule-coverage-cache-size",
+			ShortName = "", LongName = "cache-size-rule-coverage",
 			Description =
 			"The maximum number of entries in the cache of rule coverage computer. " +
 			"If set to 0, effectively disables caching.")]
@@ -80,7 +80,7 @@ namespace Minotaur {
 		public int RuleCoverageCacheSize { get; } = 0;
 
 		[Option(
-			ShortName = "", LongName = "individual-fitness-cache-size",
+			ShortName = "", LongName = "cache-size-fitnesses",
 			Description =
 			"The maximum number of entries in the cache of individual fitness . " +
 			"If set to 0, effectively disables caching.")]

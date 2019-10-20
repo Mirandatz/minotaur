@@ -38,8 +38,6 @@ namespace Minotaur {
 				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
 				"--classification-type=singlelabel",
 
-				"--max-generations=2000",
-
 				"--output-directory=C:/Source/minotaur.output/",
 
 				"--cfsbe-target-instance-coverage=50",
