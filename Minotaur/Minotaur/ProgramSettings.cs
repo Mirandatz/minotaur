@@ -64,22 +64,6 @@ namespace Minotaur {
 		public int MaximumGenerations { get; } = 2000;
 
 		[Option(
-			ShortName = "", LongName = "rule-to-box-cache-size",
-			Description =
-			"The maximum number of entries in the cache of hyperrectangle creator. " +
-			"If set to 0, effectively disables caching.")]
-		[Range(0, int.MaxValue)]
-		public int RuleAntecedentToHyperRectangleCacheSize { get; } = 0;
-
-		[Option(
-			ShortName = "", LongName = "cache-size-rule-coverage",
-			Description =
-			"The maximum number of entries in the cache of rule coverage computer. " +
-			"If set to 0, effectively disables caching.")]
-		[Range(0, int.MaxValue)]
-		public int RuleCoverageCacheSize { get; } = 0;
-
-		[Option(
 			ShortName = "", LongName = "cache-size-fitnesses",
 			Description =
 			"The maximum number of entries in the cache of individual fitness . " +
@@ -154,6 +138,22 @@ namespace Minotaur {
 			"if they are above a certain threshold, defined by this parameter.")]
 		[Range(0f, 1f)]
 		public float RuleConsequentThreshold { get; } = 0.5f;
+
+		//[Option(
+		//	ShortName = "", LongName = "rule-to-box-cache-size",
+		//	Description =
+		//	"The maximum number of entries in the cache of hyperrectangle creator. " +
+		//	"If set to 0, effectively disables caching.")]
+		//[Range(0, int.MaxValue)]
+		//public int RuleAntecedentToHyperRectangleCacheSize { get; } = 0;
+
+		//[Option(
+		//	ShortName = "", LongName = "cache-size-rule-coverage",
+		//	Description =
+		//	"The maximum number of entries in the cache of rule coverage computer. " +
+		//	"If set to 0, effectively disables caching.")]
+		//[Range(0, int.MaxValue)]
+		//public int RuleCoverageCacheSize { get; } = 0;
 
 		//[Required]
 		//[FileExists]

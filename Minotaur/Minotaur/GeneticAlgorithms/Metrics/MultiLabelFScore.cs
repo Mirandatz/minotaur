@@ -103,10 +103,10 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 				}
 
 				return new PseudoConfusionMatrix(
-					truePositive: truePositive / (instanceCount * featureCount),
-					falsePositive: falsePositive / (instanceCount * featureCount),
-					trueNegative: trueNegative / (instanceCount * featureCount),
-					falseNegative: falseNegative / (instanceCount * featureCount));
+					truePositive: truePositive / ((float) (instanceCount * featureCount)),
+					falsePositive: falsePositive / ((float) (instanceCount * featureCount)),
+					trueNegative: trueNegative / ((float) (instanceCount * featureCount)),
+					falseNegative: falseNegative / ((float) (instanceCount * featureCount)));
 			}
 
 			private static void UpdateCounts(MultiLabel actualLabels, MultiLabel predictedLabels, int featureCount, ref int truePositive, ref int falsePositive, ref int trueNegative, ref int falseNegative) {

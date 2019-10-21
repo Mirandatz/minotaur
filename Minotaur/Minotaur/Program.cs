@@ -31,16 +31,24 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-data.csv",
-				"--train-labels=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-labels.csv",
-				"--test-data=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-data.csv",
-				"--test-labels=C:/Source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-labels.csv",
-				//"--feature-types=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-feature-types.csv",
-				"--classification-type=singlelabel",
+				//"--train-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/train-data.csv",
+				//"--train-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/train-labels.csv",
+				//"--test-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-data.csv",
+				//"--test-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-labels.csv",
+				
+				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
+				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
+				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
+				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
+
+				"--classification-type=multilabel",
 
 				"--output-directory=C:/Source/minotaur.output/",
 
-				"--cfsbe-target-instance-coverage=50",
+				"--population-size=200",
+				"--mutants-per-generation=200",
+
+				"--cfsbe-target-instance-coverage=100",
 
 				"--rule-consequent-threshold=0.5",
 			};
@@ -60,11 +68,9 @@ namespace Minotaur {
 			PrintTrainDatasetInformation(trainDataset);
 			Console.WriteLine();
 
-			var hyperRectangleCoverageCache = IConcurrentCacheSelector.Create<HyperRectangle, DatasetCoverage>(capacity: settings.RuleCoverageCacheSize);
-
 			var hyperRectangleCoverageComputer = new HyperRectangleCoverageComputer(
 				dataset: trainDataset,
-				cache: hyperRectangleCoverageCache);
+				cache: new NullCache<HyperRectangle, DatasetCoverage>());
 
 			var featureTestIntervalConveter = new FeatureTestDimensionIntervalConverter(trainDataset);
 

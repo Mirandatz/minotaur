@@ -152,7 +152,25 @@ namespace Minotaur.Collections.Dataset {
 				}
 
 				static ILabel ComputeAverageLabels(Array<ILabel> labels) {
-					throw new NotImplementedException();
+					var classCount = ((MultiLabel) labels[0]).Values.Length;
+					var frequencies = new int[classCount];
+
+					for (int instanceIndex = 0; instanceIndex < labels.Length; instanceIndex++) {
+						var instanceLabels = ((MultiLabel) labels[instanceIndex]).Values;
+
+						for (int labelIndex = 0; labelIndex < classCount; labelIndex++) {
+							if (instanceLabels[labelIndex])
+								frequencies[labelIndex] += 1;
+						}
+					}
+
+					var instanceCount = (float) labels.Length;
+					var averageLabel = new bool[classCount];
+
+					for (int i = 0; i < averageLabel.Length; i++)
+						averageLabel[i] = frequencies[i] >= (instanceCount / 2);
+
+					return new MultiLabel(averageLabel);
 				}
 			}
 
@@ -168,7 +186,18 @@ namespace Minotaur.Collections.Dataset {
 			}
 
 			static int[] ComputeMultiLabelClassFrequencies(Array<ILabel> labels, int classCount) {
-				throw new NotImplementedException();
+				var frequencies = new int[classCount];
+
+				for (int instanceIndex = 0; instanceIndex < labels.Length; instanceIndex++) {
+					var instanceLabels = ((MultiLabel) labels[instanceIndex]).Values;
+
+					for (int labelIndex = 0; labelIndex < classCount; labelIndex++) {
+						if (instanceLabels[labelIndex])
+							frequencies[labelIndex] += 1;
+					}
+				}
+
+				return frequencies;
 			}
 		}
 

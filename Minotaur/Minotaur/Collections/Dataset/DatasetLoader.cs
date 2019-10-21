@@ -165,7 +165,7 @@ namespace Minotaur.Collections.Dataset {
 
 			static MultiLabel[] ReadMultiLabelFile(string filename) {
 				var unparsedMatrix = CsvParser.ReadCsv(filename);
-				var labels = new MultiLabel[unparsedMatrix.ColumnCount];
+				var labels = new MultiLabel[unparsedMatrix.RowCount];
 
 				for (int i = 0; i < labels.Length; i++) {
 					var line = unparsedMatrix.GetRow(i);
@@ -180,11 +180,17 @@ namespace Minotaur.Collections.Dataset {
 
 					for (int i = 0; i < line.Length; i++) {
 						var valueAsString = line[i];
-						var parsed = bool.TryParse(line[i], out var parsedValue);
+
+						var parsed = int.TryParse(line[i], out var parsedValue);
 						if (!parsed)
 							throw new InvalidOperationException($"Parsing error. Can't parse {valueAsString} as bool. Line {i}. File: {filename}.");
 
-						labels[i] = parsedValue;
+						labels[i] = parsedValue switch
+						{
+							0 => false,
+							1 => true,
+							_ => throw new InvalidOperationException($"Parsing error. Can't parse {valueAsString} as bool. Line {i}. File: {filename}.")
+						};
 					}
 
 					return new MultiLabel(labels);
