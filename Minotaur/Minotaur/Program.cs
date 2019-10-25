@@ -1,6 +1,7 @@
 namespace Minotaur {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
 	using System.Text.Json;
@@ -23,6 +24,8 @@ namespace Minotaur {
 	public static class Program {
 
 		public static int Main(string[] args) {
+			ThreadPool.SetMaxThreads(Environment.ProcessorCount, Environment.ProcessorCount);
+
 			if (args.Length == 1 && args[0] == "--lazy-dev-switch")
 				args = LazyDevArguments();
 
@@ -36,16 +39,17 @@ namespace Minotaur {
 				//"--test-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-data.csv",
 				//"--test-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-labels.csv",
 				
-				"--train-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-data.csv",
-				"--train-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-train-labels.csv",
-				"--test-data=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-data.csv",
-				"--test-labels=C:/Source/geneal.datasets/ready-for-darwin/emotions/emotions-fold-0-test-labels.csv",
+				"--train-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-data.csv",
+				"--train-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-labels.csv",
+				"--test-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-data.csv",
+				"--test-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-labels.csv",
 
 				"--classification-type=multilabel",
 
 				"--output-directory=C:/Source/minotaur.output/",
 
 				"--population-size=200",
+				"--max-generations=100",
 				"--mutants-per-generation=200",
 
 				"--cfsbe-target-instance-coverage=100",
@@ -161,6 +165,9 @@ namespace Minotaur {
 				ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
 				hyperRectangleIntersector: hyperRectangleIntersector);
 
+			// @Timing
+			var sw = Stopwatch.StartNew();
+
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
 			var evolutionEngine = new EvolutionEngine(
@@ -173,10 +180,15 @@ namespace Minotaur {
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 			Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
 
+			// @Timing
+			Timers.IncrementTotalTicks(sw.ElapsedTicks * (Environment.ProcessorCount + 1));
+
 			SerializePopulationAndFitnesses(
 				settings: settings,
 				finalPopulation: evolutionReport.FinalPopulation,
 				testFitnessEvaluator: testFitnessEvaluator);
+
+			PrintTicks();
 
 			return 0;
 		}
@@ -194,6 +206,7 @@ namespace Minotaur {
 		}
 
 		private static void PrintTrainDatasetInformation(Dataset trainDataset) {
+			Console.WriteLine();
 			Console.WriteLine("Train dataset information");
 			Console.WriteLine($"Train dataset instance count {trainDataset.InstanceCount}");
 			Console.WriteLine($"Train dataset feature count {trainDataset.FeatureCount}");
@@ -202,7 +215,6 @@ namespace Minotaur {
 		}
 
 		private static Individual[] CreateInitialPopulation(IIndividualCreator individualCreator, ProgramSettings settings) {
-
 			var statusReportPrefix = "Creating initial population: ";
 			var statusReport = $"" +
 				$"{statusReportPrefix} " +
@@ -281,6 +293,14 @@ namespace Minotaur {
 				contents: serializedFitness);
 
 			Console.WriteLine("Done.");
+		}
+
+		private static void PrintTicks() {
+			Console.WriteLine();
+			Console.WriteLine($"Total ticks: {Timers.TotalTicks}");
+			Console.WriteLine($"Fitness evaluation ticks: {Timers.FitnessEvaluationTicks}");
+			Console.WriteLine($"NSGA-II ticks: {Timers.NSGA2Ticks}");
+			Console.WriteLine($"CFSBE ticks: {Timers.CFSBETicks}");
 		}
 	}
 }

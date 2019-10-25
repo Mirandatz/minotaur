@@ -50,9 +50,8 @@ namespace Minotaur.GeneticAlgorithms {
 		private Fitness EvaluateAsMaximizationTask(Individual individual) {
 			var fitnesses = new float[Metrics.Length];
 
-			Parallel.For(0, fitnesses.Length, i => {
+			for (int i = 0; i < fitnesses.Length; i++)
 				fitnesses[i] = Metrics[i].EvaluateAsMaximizationTask(individual);
-			});
 
 			return Fitness.Wrap(fitnesses);
 		}

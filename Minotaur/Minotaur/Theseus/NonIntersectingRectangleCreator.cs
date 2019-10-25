@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus {
 	using System;
+	using System.Diagnostics;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math;
@@ -16,6 +17,8 @@ namespace Minotaur.Theseus {
 		}
 
 		public HyperRectangle? TryCreateLargestNonIntersectingRectangle(int seedIndex, Array<HyperRectangle> existingHyperRectangles, NaturalRange dimensionExpansionOrder) {
+			var sw = Stopwatch.StartNew();
+
 			if (dimensionExpansionOrder.Length != Dataset.FeatureCount)
 				throw new InvalidOperationException();
 
@@ -53,7 +56,11 @@ namespace Minotaur.Theseus {
 				}
 			}
 
-			return builder.TryBuild();
+			var largestHyperRectangle = builder.TryBuild();
+
+			Timers.IncrementCfsbeTicks(sw.ElapsedTicks);
+
+			return largestHyperRectangle;
 		}
 
 		private void UpdateContinuousDimension(HyperRectangleBuilder builder, Array<HyperRectangle> existingHyperRectangles, int dimensionIndex, Array<float> seed) {

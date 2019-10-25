@@ -1,6 +1,7 @@
 namespace Minotaur.GeneticAlgorithms.Selection {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
@@ -24,6 +25,8 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 		}
 
 		public Individual[] SelectFittest(Array<Individual> population) {
+			var nsga2sw = Stopwatch.StartNew();
+
 			if (_fittestCount < 0)
 				throw new ArgumentOutOfRangeException(nameof(_fittestCount) + " must be  >= 0");
 			if (population.ContainsNulls())
@@ -31,7 +34,11 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 
 			var populationArray = population.ToArray();
 
+			var fesw = Stopwatch.StartNew();
 			var fitnesses = _fitnessEvaluator.EvaluateAsMaximizationTask(population);
+			fesw.Stop();
+			Timers.IncrementFitnessEvaluationTicks(fesw.ElapsedTicks);
+
 			var fitnessesDict = new Dictionary<Individual, Fitness>(capacity: fitnesses.Length);
 			for (int i = 0; i < population.Length; i++)
 				fitnessesDict[populationArray[i]] = fitnesses[i];
@@ -64,6 +71,11 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 			// Sanity check
 			if (fittest.Count != _fittestCount)
 				throw new InvalidOperationException();
+
+			var fittestArray = fittest.ToArray();
+
+			nsga2sw.Stop();
+			Timers.IncrementNSGA2Ticks(nsga2sw.ElapsedTicks - fesw.ElapsedTicks);
 
 			return fittest.ToArray();
 		}
