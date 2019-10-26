@@ -37,10 +37,10 @@ namespace Minotaur {
 				//"--test-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-data.csv",
 				//"--test-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-labels.csv",
 				
-				"--train-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-data.csv",
-				"--train-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-labels.csv",
-				"--test-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-data.csv",
-				"--test-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-labels.csv",
+				"--train-data=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/train-data.csv",
+				"--train-labels=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/train-labels.csv",
+				"--test-data=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/test-data.csv",
+				"--test-labels=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/test-labels.csv",
 
 				"--classification-type=multilabel",
 
