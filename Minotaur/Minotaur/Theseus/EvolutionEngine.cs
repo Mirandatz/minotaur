@@ -53,21 +53,22 @@ namespace Minotaur.Theseus {
 					break;
 				}
 
-				// Saniy check
-				//Parallel.For(0, population.Length, i => {
-				//	var individual = population[i];
-				//	var isConsistent = _consistencyChecker.IsConsistent(individual);
-				//	if (!isConsistent) {
-				//		throw new InvalidOperationException();
-				//	}
-				//});
+				SanityChecker.Run(() => {
+					Parallel.For(0, population.Length, i => {
+						var individual = population[i];
+						var isConsistent = _consistencyChecker.IsConsistent(individual);
+						if (!isConsistent) {
+							throw new InvalidOperationException();
+						}
+					});
+				});
 
 				if (generationsRan % 10 == 0) {
 					Console.WriteLine();
 					Console.WriteLine(_fitnessReportMaker.MakeReport(population));
 				}
 
-				var populationWithMutants = population.Concatenate(mutants);				
+				var populationWithMutants = population.Concatenate(mutants);
 				var fittest = _fittestSelector.SelectFittest(populationWithMutants);
 				population = fittest;
 			}

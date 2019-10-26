@@ -24,8 +24,6 @@ namespace Minotaur {
 	public static class Program {
 
 		public static int Main(string[] args) {
-			ThreadPool.SetMaxThreads(Environment.ProcessorCount, Environment.ProcessorCount);
-
 			if (args.Length == 1 && args[0] == "--lazy-dev-switch")
 				args = LazyDevArguments();
 
@@ -55,10 +53,14 @@ namespace Minotaur {
 				"--cfsbe-target-instance-coverage=100",
 
 				"--rule-consequent-threshold=0.5",
+				"--sanity-checks=false"
 			};
 		}
 
 		public static int Run(ProgramSettings settings) {
+			ThreadPool.SetMaxThreads(Environment.ProcessorCount, Environment.ProcessorCount);
+			SanityChecker.PerformChecks = bool.Parse(settings.SanityChecks);
+
 			PrintSettings(settings);
 
 			(var trainDataset, var testDataset) = DatasetLoader.LoadDatasets(

@@ -42,12 +42,14 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			var boxes = _boxConverter.FromRules(existingRules);
 
-			// @Sanity check
-			for (int i = 0; i < boxes.Length; i++) {
-				var box = boxes[i];
-				if (box.Contains(seed))
-					throw new InvalidOperationException();
-			}
+			SanityChecker.Run(() => {
+				for (int i = 0; i < boxes.Length; i++) {
+					var box = boxes[i];
+					if (box.Contains(seed))
+						throw new InvalidOperationException();
+				}
+			});
+
 
 			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
 				inclusiveStart: 0,
@@ -61,12 +63,13 @@ namespace Minotaur.Theseus.RuleCreation {
 			if (secureRectangle is null)
 				return null;
 
-			// @Sanity check
-			for (int i = 0; i < boxes.Length; i++) {
-				var box = boxes[i];
-				if (_rectangleIntersector.IntersectsInAllDimension(secureRectangle, box))
-					throw new InvalidOperationException();
-			}
+			SanityChecker.Run(() => {
+				for (int i = 0; i < boxes.Length; i++) {
+					var box = boxes[i];
+					if (_rectangleIntersector.IntersectsInAllDimension(secureRectangle, box))
+						throw new InvalidOperationException();
+				}
+			});
 
 			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
 			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();

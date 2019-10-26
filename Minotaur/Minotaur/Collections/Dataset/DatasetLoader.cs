@@ -30,6 +30,7 @@ namespace Minotaur.Collections.Dataset {
 
 			Console.WriteLine("Done.");
 
+			Console.Write("Initializing dataset structs... ");
 			var featureTypes = new FeatureType[trainData.Result.ColumnCount];
 			for (int i = 0; i < featureTypes.Length; i++)
 				featureTypes[i] = FeatureType.Continuous;
@@ -47,6 +48,8 @@ namespace Minotaur.Collections.Dataset {
 				labels: testLabels.Result,
 				isTrainDataset: false,
 				classificationType: classificationType);
+
+			Console.WriteLine("Done.");
 
 			Console.Write("Checking if TrainDataset and TestDataset are compatible... ");
 			if (trainDataset.FeatureCount != testDataset.FeatureCount)

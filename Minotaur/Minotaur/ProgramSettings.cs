@@ -142,6 +142,7 @@ namespace Minotaur {
 		[Option(ShortName = "", LongName = "sanity-checks",
 			Description = "Whether sanity checks should be performed or not. " +
 			"This is a debug feature; enabling it may cause degrade the performance.")]
-		public bool SanityChecks { get; } = true;
+		[AllowedValues("false", "true")]
+		public string SanityChecks { get; } = "true";
 	}
 }
