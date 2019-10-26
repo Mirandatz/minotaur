@@ -1,6 +1,5 @@
 namespace Minotaur {
 	using System;
-	using System.Diagnostics;
 	using System.Threading;
 
 	public static class Timers {
@@ -40,14 +39,6 @@ namespace Minotaur {
 
 			Interlocked.Add(ref _nsga2Ticks, incrementValue);
 		}
-
-		//private static long _ioTicks;
-		//public static long IOTicks => _ioTicks;
-		//public static void IncrementIOTicks(long incrementValue) {
-		//	if (incrementValue < 0)
-		//		throw new InvalidOperationException();
-
-		//	Interlocked.Add(ref _ioTicks, incrementValue);
 	}
 }
 
