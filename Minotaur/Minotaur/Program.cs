@@ -32,17 +32,12 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				//"--train-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/train-data.csv",
-				//"--train-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/train-labels.csv",
-				//"--test-data=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-data.csv",
-				//"--test-labels=C:/Source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-2/test-labels.csv",
-				
-				"--train-data=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/train-data.csv",
-				"--train-labels=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/train-labels.csv",
-				"--test-data=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/test-data.csv",
-				"--test-labels=C:/Source/minotaur.datasets/EUR-Lex (eurovoc descriptors)/2-ready-for-minotaur/fold-0/test-labels.csv",
+				"--train-data=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-data.csv",
+				"--train-labels=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-labels.csv",
+				"--test-data=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-data.csv",
+				"--test-labels=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-labels.csv",
 
-				"--classification-type=multilabel",
+				"--classification-type=singlelabel",
 
 				"--output-directory=C:/Source/minotaur.output/",
 
@@ -166,10 +161,7 @@ namespace Minotaur {
 			var consistencyChecker = new RuleConsistencyChecker(
 				ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
 				hyperRectangleIntersector: hyperRectangleIntersector);
-
-			// @Timing
-			var sw = Stopwatch.StartNew();
-
+			
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
 			var evolutionEngine = new EvolutionEngine(
@@ -181,10 +173,7 @@ namespace Minotaur {
 
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 			Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
-
-			// @Timing
-			Timers.IncrementTotalTicks(sw.ElapsedTicks * (Environment.ProcessorCount + 1));
-
+			
 			SerializePopulationAndFitnesses(
 				settings: settings,
 				finalPopulation: evolutionReport.FinalPopulation,
@@ -299,9 +288,7 @@ namespace Minotaur {
 
 		private static void PrintTicks() {
 			Console.WriteLine();
-			Console.WriteLine($"Total ticks: {Timers.TotalTicks}");
 			Console.WriteLine($"Fitness evaluation ticks: {Timers.FitnessEvaluationTicks}");
-			Console.WriteLine($"NSGA-II ticks: {Timers.NSGA2Ticks}");
 			Console.WriteLine($"CFSBE ticks: {Timers.CFSBETicks}");
 		}
 	}

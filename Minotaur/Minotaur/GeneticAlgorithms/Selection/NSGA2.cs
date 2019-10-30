@@ -25,8 +25,6 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 		}
 
 		public Individual[] SelectFittest(Array<Individual> population) {
-			var nsga2sw = Stopwatch.StartNew();
-
 			if (_fittestCount < 0)
 				throw new ArgumentOutOfRangeException(nameof(_fittestCount) + " must be  >= 0");
 			if (population.ContainsNulls())
@@ -73,9 +71,6 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 				throw new InvalidOperationException();
 
 			var fittestArray = fittest.ToArray();
-
-			nsga2sw.Stop();
-			Timers.IncrementNSGA2Ticks(nsga2sw.ElapsedTicks - fesw.ElapsedTicks);
 
 			return fittest.ToArray();
 		}
