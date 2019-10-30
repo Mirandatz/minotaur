@@ -18,49 +18,51 @@ namespace Minotaur.Theseus {
 
 		public HyperRectangle? TryCreateLargestNonIntersectingRectangle(int seedIndex, Array<HyperRectangle> existingHyperRectangles, NaturalRange dimensionExpansionOrder) {
 			var sw = Stopwatch.StartNew();
-
-			if (dimensionExpansionOrder.Length != Dataset.FeatureCount)
-				throw new InvalidOperationException();
-
-			if (existingHyperRectangles.IsEmpty) {
-				var tempBuilder = HyperRectangleBuilder.InitializeWithLargestRectangle(Dataset);
-				var hyperRectangle = tempBuilder.TryBuild();
-
-				if (hyperRectangle is null)
+			try {
+				if (dimensionExpansionOrder.Length != Dataset.FeatureCount)
 					throw new InvalidOperationException();
-				else
-					return hyperRectangle;
-			}
 
-			var builder = HyperRectangleBuilder.InitializeWithSeed(
-				dataset: Dataset,
-				seedIndex: seedIndex);
+				if (existingHyperRectangles.IsEmpty) {
+					var tempBuilder = HyperRectangleBuilder.InitializeWithLargestRectangle(Dataset);
+					var hyperRectangle = tempBuilder.TryBuild();
 
-			var seed = Dataset.GetInstanceData(seedIndex);
-
-			for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
-				var dimensionIndex = dimensionExpansionOrder[i];
-
-				switch (Dataset.GetFeatureType(dimensionIndex)) {
-
-				case FeatureType.Continuous:
-				UpdateContinuousDimension(
-					builder: builder,
-					existingHyperRectangles: existingHyperRectangles,
-					dimensionIndex: dimensionIndex,
-					seed: seed);
-				break;
-
-				default:
-				throw CommonExceptions.UnknownFeatureType;
+					if (hyperRectangle is null)
+						throw new InvalidOperationException();
+					else
+						return hyperRectangle;
 				}
+
+				var builder = HyperRectangleBuilder.InitializeWithSeed(
+					dataset: Dataset,
+					seedIndex: seedIndex);
+
+				var seed = Dataset.GetInstanceData(seedIndex);
+
+				for (int i = 0; i < dimensionExpansionOrder.Length; i++) {
+					var dimensionIndex = dimensionExpansionOrder[i];
+
+					switch (Dataset.GetFeatureType(dimensionIndex)) {
+
+					case FeatureType.Continuous:
+					UpdateContinuousDimension(
+						builder: builder,
+						existingHyperRectangles: existingHyperRectangles,
+						dimensionIndex: dimensionIndex,
+						seed: seed);
+					break;
+
+					default:
+					throw CommonExceptions.UnknownFeatureType;
+					}
+				}
+
+				var largestHyperRectangle = builder.TryBuild();
+
+
+				return largestHyperRectangle;
+			} finally {
+				Timers.IncrementCfsbeTicks(sw.ElapsedTicks);
 			}
-
-			var largestHyperRectangle = builder.TryBuild();
-
-			Timers.IncrementCfsbeTicks(sw.ElapsedTicks);
-
-			return largestHyperRectangle;
 		}
 
 		private void UpdateContinuousDimension(HyperRectangleBuilder builder, Array<HyperRectangle> existingHyperRectangles, int dimensionIndex, Array<float> seed) {
