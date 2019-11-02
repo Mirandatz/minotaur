@@ -32,18 +32,22 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-data.csv",
-				"--train-labels=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/train-labels.csv",
-				"--test-data=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-data.csv",
-				"--test-labels=c:/source/minotaur.datasets/iris/2-ready-for-minotaur/fold-0/test-labels.csv",
+				"--train-data=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-data.csv",
+				"--train-labels=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-labels.csv",
+				"--test-data=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-data.csv",
+				"--test-labels=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-labels.csv",
 
-				"--classification-type=singlelabel",
+				"--classification-type=multilabel",
 
 				"--output-directory=C:/Source/minotaur.output/",
 
-				"--population-size=200",
-				"--max-generations=100",
-				"--mutants-per-generation=200",
+				"--fitness-metrics=fscore",
+				"--fittest-selection=nsga2",
+
+				"--population-size=30",
+				"--mutants-per-generation=10",
+
+				"--max-generations=50",
 
 				"--cfsbe-target-instance-coverage=100",
 
@@ -125,7 +129,8 @@ namespace Minotaur {
 				settings.ClassificationType);
 
 			var trainFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
-				capacity: settings.FitnessCacheSize);
+				capacity: settings.PopulationSize,
+				enabled: bool.Parse(settings.FitnessCaching));
 
 			var trainFitnessEvaluator = new FitnessEvaluator(
 			  metrics: trainMetrics,
@@ -137,7 +142,8 @@ namespace Minotaur {
 				settings.ClassificationType);
 
 			var testFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
-				capacity: settings.FitnessCacheSize);
+				capacity: settings.PopulationSize,
+				enabled: bool.Parse(settings.FitnessCaching));
 
 			var testFitnessEvaluator = new FitnessEvaluator(
 				metrics: testMetrics,

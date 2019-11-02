@@ -56,44 +56,52 @@ namespace Minotaur {
 		[AllowedValues("singlelabel", "multilabel")]
 		public ClassificationType ClassificationType { get; }
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "max-generations",
 			Description =
 			"The maximum number of generations (iterations) to run. ")]
 		[Range(1, int.MaxValue)]
-		public int MaximumGenerations { get; } = 2000;
+		public int MaximumGenerations { get; }
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "population-size",
 			Description = "The number of individuals in the initial and final populations.")]
 		[Range(1, int.MaxValue)]
-		public int PopulationSize { get; } = 200;
+		public int PopulationSize { get; }
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "mutants-per-generation",
 			Description = "How many mutants should be generated each generation.")]
 		[Range(1, int.MaxValue)]
-		public int MutantsPerGeneration { get; } = 100;
+		public int MutantsPerGeneration { get; }
 
 		[Option(
-			ShortName = "", LongName = "cache-size-fitnesses",
+			ShortName = "", LongName = "fitness-caching",
 			Description =
-			"The maximum number of entries in the cache of individual fitness . " +
-			"If set to 0, effectively disables caching.")]
-		[Range(0, int.MaxValue)]
-		public int FitnessCacheSize { get; } = 0;
+			"If enabled, the fitness of the individuals will be cached, " +
+			"avoiding the cost of computing it for individuals that survive between generations. " +
+			"It is important to note that if the number of individuals being " +
+			"created at each generation is large (relative to the population size) " +
+			"enabling the cache may actually decrease the performance.")]
+		[AllowedValues("false", "true")]
+		public string FitnessCaching { get; } = "false";
 
+		[Required]
 		[Option(CommandOptionType.MultipleValue,
 			ShortName = "", LongName = "fitness-metrics",
 			Description = "The metrics to use as fitness during the training phase.")]
 		[AllowedValues("fscore", "average-rule-volume", "rule-count")]
-		public string[] MetricNames { get; } = new string[] { "fscore", "average-rule-volume" };
+		public string[] MetricNames { get; } = null!;
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "fittest-selection",
 			Description = "The fittest selection strategy.")]
 		[AllowedValues("nsga2", "lexicographic")]
-		public string SelectionAlgorithm { get; } = "nsga2";
+		public string SelectionAlgorithm { get; } = null!;
 
 		[Option(
 			ShortName = "", LongName = "individual-mutation-add-rule-weight",
@@ -121,6 +129,7 @@ namespace Minotaur {
 		[Range(0, int.MaxValue)]
 		public int MaximumFailedMutationAttemptsPerGeneration { get; } = 2000;
 
+		[Required]
 		[Option(ShortName = "", LongName = "cfsbe-target-instance-coverage",
 			Description = "After a consistent hyperrectangle is found using the " +
 			"Constrained Feature Space Box Enlargement algorithm, " +
@@ -130,7 +139,7 @@ namespace Minotaur {
 			"Using a value that is too small may cause overfitting, " +
 			"while using a value that is too large may result in underfitting.")]
 		[Range(1, int.MaxValue)]
-		public int ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances { get; } = 50;
+		public int ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances { get; }
 
 		[Option(ShortName = "", LongName = "rule-consequent-threshold",
 			Description = "The consequent of a rule (i.e. the labels it predicted) are " +
