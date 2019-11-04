@@ -1,16 +1,16 @@
 namespace Minotaur.Math {
 	using System;
-	using Minotaur.Collections;
 
 	public sealed class NaturalRange {
-		public readonly Array<int> Values;
+		private readonly int[] _values;
+		public readonly int Length;
 
-		private NaturalRange(Array<int> values) {
-			Values = values;
+		private NaturalRange(int[] values) {
+			_values = values;
+			Length = _values.Length;
 		}
 
-		public int Length => Values.Length;
-		public int this[int index] => Values[index];
+		public int this[int index] => _values[index];
 
 		public static NaturalRange CreateSorted(int inclusiveStart, int exclusiveEnd) {
 			if (inclusiveStart >= exclusiveEnd)
@@ -45,7 +45,5 @@ namespace Minotaur.Math {
 
 			return new NaturalRange(values: values);
 		}
-
-		public int[] ToArray() => Values.ToArray();
 	}
 }
