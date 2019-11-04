@@ -1,5 +1,6 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
+	using System.Threading;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 
@@ -9,29 +10,49 @@ namespace Minotaur.GeneticAlgorithms.Population {
 	/// it DOES NOT check whether the rules consistent.
 	/// </summary>
 	public sealed class Individual: IEquatable<Individual> {
-		public const int MinimumRuleCount = 1;
+		private const int MinimumRuleCount = 1;
+		private const long NephelimId = -1;
 
+		private static long _individualsCreated = 0;
+
+		public readonly long ParentId;
+		public readonly long Id;
 		public readonly Array<Rule> Rules;
 		public readonly ILabel DefaultPrediction;
 
 		private readonly int _hashCode;
 
-		public Individual(Array<Rule> rules, ILabel defaultPrediction) {
+		public Individual(long parentId, Array<Rule> rules, ILabel defaultPrediction) {
 			if (rules.Length < MinimumRuleCount)
 				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
 			if (rules.ContainsNulls())
 				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
 
+			Id = Interlocked.Increment(ref _individualsCreated);
+			ParentId = parentId;
 			Rules = rules;
 			DefaultPrediction = defaultPrediction;
 
+			// We only use rules and labels to compute hash and equality
+			// to allow "clones" in the population
 			var hash = new HashCode();
+			hash.Add(defaultPrediction);
 			for (int i = 0; i < rules.Length; i++)
 				hash.Add(rules[i]);
 
-			hash.Add(defaultPrediction);
-
 			_hashCode = hash.ToHashCode();
+		}
+
+		public static Individual CreateFirstGenerationIndividual(Array<Rule> rules, ILabel defaultPrediction) {
+			if (rules.Length < MinimumRuleCount)
+				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
+			if (rules.ContainsNulls())
+				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
+
+			return new Individual(
+				parentId: NephelimId,
+				rules: rules,
+				defaultPrediction: defaultPrediction);
 		}
 
 		public ILabel Predict(Array<float> instance) {

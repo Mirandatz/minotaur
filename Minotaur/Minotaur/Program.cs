@@ -223,7 +223,7 @@ namespace Minotaur {
 			var created = 0L;
 
 			Parallel.For(0, population.Length, i => {
-				population[i] = individualCreator.Create();
+				population[i] = individualCreator.CreateFirstGenerationIndividual();
 
 				statusReport = $"" +
 				$"\r{statusReportPrefix} " +

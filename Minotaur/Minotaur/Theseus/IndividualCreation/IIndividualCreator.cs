@@ -4,6 +4,6 @@ namespace Minotaur.Theseus.IndividualCreation {
 
 	public interface IIndividualCreator {
 		Dataset Dataset { get; }
-		Individual Create();
+		Individual CreateFirstGenerationIndividual();
 	}
 }

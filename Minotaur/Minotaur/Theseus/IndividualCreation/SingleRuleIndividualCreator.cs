@@ -13,12 +13,12 @@ namespace Minotaur.Theseus.IndividualCreation {
 			Dataset = ruleCreator.Dataset;
 		}
 
-		public Individual Create() {
+		public Individual CreateFirstGenerationIndividual() {
 			var rule = _ruleCreator.TryCreateRule(existingRules: Array.Empty<Rule>());
 			if (rule is null)
 				throw new InvalidOperationException("This operation should never fail.");
 
-			return new Individual(
+			return Individual.CreateFirstGenerationIndividual(
 				rules: new Rule[] { rule },
 				defaultPrediction: Dataset.DefaultLabel);
 		}
