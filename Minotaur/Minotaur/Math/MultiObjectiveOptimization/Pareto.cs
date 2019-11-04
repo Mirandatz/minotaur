@@ -11,11 +11,14 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 	public static class Pareto {
 
 		public static int[] ComputeDominatedByCounts(Array<Fitness> fitnesses) {
-			if (fitnesses.AsSpan().ContainsNulls())
+			if (fitnesses.ContainsNulls())
 				throw new ArgumentException(nameof(fitnesses) + " can't contain nulls");
 
 			if (fitnesses.IsEmpty)
 				return Array.Empty<int>();
+
+			if (fitnesses.Length == 1)
+				return new int[] { 0 };
 
 			var dominatedByCounts = new int[fitnesses.Length];
 			Parallel.For(0, fitnesses.Length, i => {
@@ -28,10 +31,6 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 		}
 
 		private static int ComputeDominatedByCount(Fitness pivot, Array<Fitness> fitnesses) {
-			if (pivot == null)
-				throw new ArgumentNullException(nameof(pivot));
-			if (fitnesses is null)
-				throw new ArgumentNullException(nameof(fitnesses));
 			if (fitnesses.Length == 0)
 				throw new ArgumentException(nameof(fitnesses) + " can't be empty");
 
@@ -47,10 +46,6 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 		}
 
 		public static (int Dominates, int DominatedBy) CountDominations(Fitness pivot, Array<Fitness> fitnesses) {
-			if (pivot == null)
-				throw new ArgumentNullException(nameof(pivot));
-			if (fitnesses == null)
-				throw new ArgumentNullException(nameof(fitnesses));
 
 			var dominates = 0;
 			var dominatedBy = 0;
@@ -68,10 +63,8 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 		}
 
 		public static DominationStatus Domination(Fitness lhs, Fitness rhs) {
-			if (lhs == null)
-				throw new ArgumentNullException(nameof(lhs));
-			if (rhs == null)
-				throw new ArgumentNullException(nameof(rhs));
+			if (lhs.Count != rhs.Count)
+				throw new InvalidOperationException();
 
 			var lhsBetter = 0;
 			var rhsBetter = 0;
