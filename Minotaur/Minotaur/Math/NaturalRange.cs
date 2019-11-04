@@ -3,11 +3,9 @@ namespace Minotaur.Math {
 	using Minotaur.Collections;
 
 	public sealed class NaturalRange {
-		public bool IsSorted;
 		public readonly Array<int> Values;
 
-		private NaturalRange(Array<int> values, bool isSorted) {
-			IsSorted = isSorted;
+		private NaturalRange(Array<int> values) {
 			Values = values;
 		}
 
@@ -27,9 +25,7 @@ namespace Minotaur.Math {
 				currentValue += 1;
 			}
 
-			return new NaturalRange(
-				values: values,
-				isSorted: true);
+			return new NaturalRange(values: values);
 		}
 
 		public static NaturalRange CreateShuffled(int inclusiveStart, int exclusiveEnd) {
@@ -47,9 +43,9 @@ namespace Minotaur.Math {
 
 			Minotaur.Random.ThreadStaticRandom.Shuffle(values);
 
-			return new NaturalRange(
-				values: values,
-				isSorted: true);
+			return new NaturalRange(values: values);
 		}
+
+		public int[] ToArray() => Values.ToArray();
 	}
 }
