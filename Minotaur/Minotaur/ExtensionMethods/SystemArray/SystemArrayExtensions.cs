@@ -19,6 +19,12 @@ namespace Minotaur.ExtensionMethods.SystemArray {
 			return ((IEnumerable<T>) array).GetEnumerator();
 		}
 
+		public static T[] ShallowCopyT<T>(this T[] array) {
+			var copy = new T[array.Length];
+			array.CopyTo(array: copy, index: 0);
+			return copy;
+		}
+
 		public static Array<T> AsReadOnly<T>(this T[] array) => Array<T>.Wrap(array);
 	}
 
