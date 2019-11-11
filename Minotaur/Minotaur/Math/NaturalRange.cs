@@ -1,5 +1,6 @@
 namespace Minotaur.Math {
 	using System;
+	using Minotaur.ExtensionMethods.SystemArray;
 
 	public sealed class NaturalRange {
 		private readonly int[] _values;
@@ -11,6 +12,8 @@ namespace Minotaur.Math {
 		}
 
 		public int this[int index] => _values[index];
+
+		public int[] ToArray() => _values.ShallowCopyT();
 
 		public static NaturalRange CreateSorted(int inclusiveStart, int exclusiveEnd) {
 			if (inclusiveStart >= exclusiveEnd)
