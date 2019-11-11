@@ -25,46 +25,47 @@ namespace Minotaur {
 			if (population.Length < 3)
 				throw new ArgumentException(nameof(population) + " must contain at least 3 elements.");
 
-			var trainFitness = TrainDatasetFitnessEvaluator.EvaluateAsMaximizationTask(population);
-			var sortedFitnesses = trainFitness.ToArray();
-			Array.Sort(
-				array: sortedFitnesses,
-				comparer: new LexicographicalFitnessComparer());
+			throw new NotImplementedException();
+			//var trainFitness = TrainDatasetFitnessEvaluator.EvaluateAsMaximizationTask(population);
+			//var sortedFitnesses = trainFitness.ToArray();
+			//Array.Sort(
+			//	array: sortedFitnesses,
+			//	comparer: new LexicographicalFitnessComparer());
 
-			var builder = new StringBuilder();
+			//var builder = new StringBuilder();
 
-			builder.AppendLine("Train Dataset Fitness");
-			builder.Append("Best individual: ");
-			builder.AppendLine(sortedFitnesses[^1].ToString());
-			builder.Append("Second best individual: ");
-			builder.AppendLine(sortedFitnesses[^2].ToString());
-			builder.Append("Median individual: ");
-			builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
-			builder.Append("Second worst individual: ");
-			builder.AppendLine(sortedFitnesses[1].ToString());
-			builder.Append("Worst individual: ");
-			builder.AppendLine(sortedFitnesses[0].ToString());
+			//builder.AppendLine("Train Dataset Fitness");
+			//builder.Append("Best individual: ");
+			//builder.AppendLine(sortedFitnesses[^1].ToString());
+			//builder.Append("Second best individual: ");
+			//builder.AppendLine(sortedFitnesses[^2].ToString());
+			//builder.Append("Median individual: ");
+			//builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
+			//builder.Append("Second worst individual: ");
+			//builder.AppendLine(sortedFitnesses[1].ToString());
+			//builder.Append("Worst individual: ");
+			//builder.AppendLine(sortedFitnesses[0].ToString());
 
 
-			var testFitness = TestDatasetFitnessEvaluator.EvaluateAsMaximizationTask(population);
-			sortedFitnesses = testFitness.ToArray();
-			Array.Sort(
-				array: sortedFitnesses,
-				comparer: new LexicographicalFitnessComparer());
+			//var testFitness = TestDatasetFitnessEvaluator.EvaluateAsMaximizationTask(population);
+			//sortedFitnesses = testFitness.ToArray();
+			//Array.Sort(
+			//	array: sortedFitnesses,
+			//	comparer: new LexicographicalFitnessComparer());
 
-			builder.AppendLine("Test Dataset Fitness");
-			builder.Append("Best individual: ");
-			builder.AppendLine(sortedFitnesses[^1].ToString());
-			builder.Append("Second best individual: ");
-			builder.AppendLine(sortedFitnesses[^2].ToString());
-			builder.Append("Median individual: ");
-			builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
-			builder.Append("Second worst individual: ");
-			builder.AppendLine(sortedFitnesses[1].ToString());
-			builder.Append("Worst individual: ");
-			builder.AppendLine(sortedFitnesses[0].ToString());
+			//builder.AppendLine("Test Dataset Fitness");
+			//builder.Append("Best individual: ");
+			//builder.AppendLine(sortedFitnesses[^1].ToString());
+			//builder.Append("Second best individual: ");
+			//builder.AppendLine(sortedFitnesses[^2].ToString());
+			//builder.Append("Median individual: ");
+			//builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
+			//builder.Append("Second worst individual: ");
+			//builder.AppendLine(sortedFitnesses[1].ToString());
+			//builder.Append("Worst individual: ");
+			//builder.AppendLine(sortedFitnesses[0].ToString());
 
-			return builder.ToString();
+			//return builder.ToString();
 		}
 	}
 }

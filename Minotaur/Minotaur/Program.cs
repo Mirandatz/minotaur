@@ -167,7 +167,7 @@ namespace Minotaur {
 			var consistencyChecker = new RuleConsistencyChecker(
 				ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
 				hyperRectangleIntersector: hyperRectangleIntersector);
-			
+
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
 			var evolutionEngine = new EvolutionEngine(
@@ -179,7 +179,7 @@ namespace Minotaur {
 
 			var evolutionReport = evolutionEngine.Run(initialPopulation);
 			Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
-			
+
 			SerializePopulationAndFitnesses(
 				settings: settings,
 				finalPopulation: evolutionReport.FinalPopulation,
@@ -252,44 +252,45 @@ namespace Minotaur {
 		}
 
 		private static void SerializePopulationAndFitnesses(ProgramSettings settings, Array<Individual> finalPopulation, FitnessEvaluator testFitnessEvaluator) {
-			Console.Write("Serializing final population's individuals and their fitnesseses... ");
+			throw new NotImplementedException();
+			//Console.Write("Serializing final population's individuals and their fitnesseses... ");
 
-			var populationAsArray = finalPopulation.ToArray();
-			var testFitness = testFitnessEvaluator.EvaluateAsMaximizationTask(finalPopulation);
-			Array.Sort(
-				keys: testFitness,
-				items: populationAsArray,
-				comparer: new LexicographicalFitnessComparer());
+			//var populationAsArray = finalPopulation.ToArray();
+			//var testFitness = testFitnessEvaluator.EvaluateAsMaximizationTask(finalPopulation);
+			//Array.Sort(
+			//	keys: testFitness,
+			//	items: populationAsArray,
+			//	comparer: new LexicographicalFitnessComparer());
 
-			var populationSortedDescending = populationAsArray
-				.Reverse()
-				.Select(ind => ind.ToString())
-				.ToArray();
+			//var populationSortedDescending = populationAsArray
+			//	.Reverse()
+			//	.Select(ind => ind.ToString())
+			//	.ToArray();
 
-			var lineSeparator = Environment.NewLine + "===============================================================================" + Environment.NewLine;
+			//var lineSeparator = Environment.NewLine + "===============================================================================" + Environment.NewLine;
 
-			var serializedPopulation = string.Join(
-				separator: lineSeparator,
-				value: populationSortedDescending);
+			//var serializedPopulation = string.Join(
+			//	separator: lineSeparator,
+			//	value: populationSortedDescending);
 
-			File.WriteAllText(
-				path: Path.Combine(settings.OutputDirectory, "final-population-individuals.txt"),
-				contents: serializedPopulation);
+			//File.WriteAllText(
+			//	path: Path.Combine(settings.OutputDirectory, "final-population-individuals.txt"),
+			//	contents: serializedPopulation);
 
-			var fitnessesSortedDescending = testFitness
-				.Reverse()
-				.Select(fit => fit.ToString())
-				.ToArray();
+			//var fitnessesSortedDescending = testFitness
+			//	.Reverse()
+			//	.Select(fit => fit.ToString())
+			//	.ToArray();
 
-			var serializedFitness = string.Join(
-				separator: lineSeparator,
-				value: fitnessesSortedDescending);
+			//var serializedFitness = string.Join(
+			//	separator: lineSeparator,
+			//	value: fitnessesSortedDescending);
 
-			File.WriteAllText(
-				path: Path.Combine(settings.OutputDirectory, "final-population-fitnesses.txt"),
-				contents: serializedFitness);
+			//File.WriteAllText(
+			//	path: Path.Combine(settings.OutputDirectory, "final-population-fitnesses.txt"),
+			//	contents: serializedFitness);
 
-			Console.WriteLine("Done.");
+			//Console.WriteLine("Done.");
 		}
 
 		private static void PrintTicks() {
