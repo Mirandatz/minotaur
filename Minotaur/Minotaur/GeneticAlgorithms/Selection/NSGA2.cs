@@ -144,25 +144,23 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 					scaledSortedObjectives: rescaledSortedObjectives.ToMatrix());
 			}
 
-			private static MinMaxScaler[] CreateObjectiveMinMaxScalers(
-				IReadOnlyDictionary<Individual, Fitness> fitnesses,
-				int objectiveCount,
-				MutableMatrix<float> rescaledSortedObjectives) {
-				var MinMaxScalers = new MinMaxScaler[objectiveCount];
-				for (int i = 0; i < objectiveCount; i++) {
-					var values = fitnesses
-						.Values
-						.Select(v => v[i])
-						.ToArray();
+			private static MinMaxScaler[] CreateObjectiveMinMaxScalers(IReadOnlyDictionary<Individual, Fitness> fitnesses, int objectiveCount, MutableMatrix<float> rescaledSortedObjectives) {
+				throw new NotImplementedException();
+				//var MinMaxScalers = new MinMaxScaler[objectiveCount];
+				//for (int i = 0; i < objectiveCount; i++) {
+				//	var values = fitnesses
+				//		.Values
+				//		.Select(v => v[i])
+				//		.ToArray();
 
-					Array.Sort(values);
-					MinMaxScalers[i] = MinMaxScaler.Create(values);
-					MinMaxScalers[i].Rescale(values);
-					var row = rescaledSortedObjectives.GetRow(i);
-					values.CopyTo(row);
-				}
+				//	Array.Sort(values);
+				//	MinMaxScalers[i] = MinMaxScaler.Create(values);
+				//	//MinMaxScalers[i].CreateScalerAndRescale(values);
+				//	var row = rescaledSortedObjectives.GetRow(i);
+				//	values.CopyTo(row);
+				//}
 
-				return MinMaxScalers;
+				//return MinMaxScalers;
 			}
 
 			public float Evaluate(Individual individual) {
