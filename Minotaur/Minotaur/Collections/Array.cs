@@ -46,12 +46,11 @@ namespace Minotaur.Collections {
 
 		public static implicit operator Array<T>(T[] mutableArray) => Wrap(mutableArray);
 
-		// Below  here there are just some convenience methods
+		// Below ,there are just some convenience methods
 
 		public ReadOnlySpan<T> AsSpan() => new ReadOnlySpan<T>(_items);
 
 		public Array<T> ShallowCopy() {
-
 			var itemsClone = new T[this.Length];
 			Array.Copy(
 				sourceArray: this._items,
@@ -83,6 +82,20 @@ namespace Minotaur.Collections {
 			newArray[^1] = item;
 
 			return newArray;
+		}
+
+		public Array<T> Concatenate(Array<T> other) {
+			var concatenated = new T[this.Length + other.Length];
+
+			this._items.CopyTo(
+				array: concatenated,
+				index: 0);
+
+			other._items.CopyTo(
+				array: concatenated,
+				index: this.Length);
+
+			return concatenated;
 		}
 
 		public Array<T> Swap(int index, T newItem) {
