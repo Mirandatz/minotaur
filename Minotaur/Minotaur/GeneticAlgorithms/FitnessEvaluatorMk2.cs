@@ -22,7 +22,7 @@ namespace Minotaur.GeneticAlgorithms {
 			return fitnesses;
 		}
 
-		private Fitness EvaluateAsMaximizationTask(Individual individual) {
+		public Fitness EvaluateAsMaximizationTask(Individual individual) {
 			var fitnesses = new float[Metrics.Length];
 
 			for (int i = 0; i < fitnesses.Length; i++)
