@@ -8,20 +8,10 @@ namespace Minotaur.Theseus.Evolution {
 
 	public sealed class EvolutionEngineMk2 {
 
-		private readonly FitnessEvaluatorMk2 _fitnessEvaluator;
-		private readonly PopulationMutatorMk2 _populationMutator;
-		private readonly IFittestIdentifier _fittestIdentifier;
-
-		private readonly Array<IEvolutionStopper> _evolutionStoppers;
-		private readonly Array<IPostGenerationCallback> _postGenerationCallbacks;
-
-		public EvolutionEngineMk2(FitnessEvaluatorMk2 fitnessEvaluator, PopulationMutatorMk2 populationMutator, IFittestIdentifier fittestIdentifier, Array<IEvolutionStopper> evolutionStoppers, Array<IPostGenerationCallback> postGenerationCallbacks) {
-			_fitnessEvaluator = fitnessEvaluator;
-			_populationMutator = populationMutator;
-			_fittestIdentifier = fittestIdentifier;
-			_evolutionStoppers = evolutionStoppers;
-			_postGenerationCallbacks = postGenerationCallbacks;
-		}
+		private readonly int _maximumNumberOfGenerations = 0;
+		private readonly FitnessEvaluatorMk2 _fitnessEvaluator = null!;
+		private readonly PopulationMutatorMk2 _populationMutator = null!;
+		private readonly IFittestIdentifier _fittestIdentifier = null!;
 
 		public GenerationResult Run(Array<Individual> initialPopulation) {
 			if (initialPopulation.Length == 0)
@@ -30,9 +20,8 @@ namespace Minotaur.Theseus.Evolution {
 			var oldPopulation = initialPopulation.ShallowCopy();
 			Array<Fitness> oldFitnesses = _fitnessEvaluator.EvaluateAsMaximizationTask(oldPopulation);
 
-			int generationNumber = 0;
-
-			while (true) {
+			int generationNumber;
+			for (generationNumber = 0; generationNumber <= _maximumNumberOfGenerations; generationNumber++) {
 				var generationResult = RunSingleGeneration(generationNumber, oldPopulation, oldFitnesses);
 
 				if (generationResult is null)
@@ -40,16 +29,6 @@ namespace Minotaur.Theseus.Evolution {
 
 				oldPopulation = generationResult.Population;
 				oldFitnesses = generationResult.Fitnesses;
-
-				foreach (var cb in _postGenerationCallbacks)
-					cb.Run(generationResult);
-
-				foreach (var es in _evolutionStoppers) {
-					if (es.ShouldStopEvolution(generationResult))
-						break;
-				}
-
-				generationNumber += 1;
 			}
 
 			return new GenerationResult(
