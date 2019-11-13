@@ -56,15 +56,6 @@ namespace Minotaur.Output {
 			}
 		}
 
-		public void WriteToDisk() {
-			lock (_syncRoot) {
-				Task.WaitAll(
-					Task.Run(() => WriteIndividualsCsv()),
-					Task.Run(() => WriteGenerationsCsv())
-					);
-			}
-		}
-
 		private void UpdateKnownIndividuals(GenerationResult generationResult) {
 			var population = generationResult.Population;
 			var individualCount = population.Length;
@@ -122,6 +113,15 @@ namespace Minotaur.Output {
 			_individualsIdsPerGeneration[generationResult.GenerationNumber] = ids;
 		}
 
+		public void WriteToDisk() {
+			lock (_syncRoot) {
+				Task.WaitAll(
+					Task.Run(() => WriteIndividualsCsv()),
+					Task.Run(() => WriteGenerationsCsv())
+					);
+			}
+		}
+
 		private void WriteIndividualsCsv() {
 			var builder = new StringBuilder();
 
@@ -145,12 +145,17 @@ namespace Minotaur.Output {
 		}
 
 		private string GenerateRecordsForAllIndividuals() {
-			var individualsArray = _knownIndividuals.ToArray();
+			var individualsArray = _knownIndividuals
+				.Values
+				.OrderBy(ind => ind.Id)
+				.ThenBy(ind => ind.ParentId)
+				.ToArray();
+
 			var individualCount = individualsArray.Length;
 			var records = new string[individualCount];
 
 			Parallel.For(fromInclusive: 0, toExclusive: individualCount, i => {
-				records[i] = GenerateRecordForSingleIndividual(individualsArray[i].Value);
+				records[i] = GenerateRecordForSingleIndividual(individualsArray[i]);
 			});
 
 			return string.Join(

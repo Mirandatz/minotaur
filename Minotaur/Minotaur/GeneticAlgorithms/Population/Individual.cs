@@ -11,7 +11,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 	/// </summary>
 	public sealed class Individual: IEquatable<Individual> {
 		private const int MinimumRuleCount = 1;
-		private const long NephelimId = -1;
+		private const long AllFatherId = 0;
 
 		private static long _individualsCreated = 0;
 
@@ -50,7 +50,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
 
 			return new Individual(
-				parentId: NephelimId,
+				parentId: AllFatherId,
 				rules: rules,
 				defaultPrediction: defaultPrediction);
 		}
