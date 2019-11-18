@@ -15,6 +15,7 @@ namespace Minotaur {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.GeneticAlgorithms.Selection;
 	using Minotaur.Math.Dimensions;
+	using Minotaur.Output;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.IndividualCreation;
@@ -58,7 +59,7 @@ namespace Minotaur {
 
 		public static int Run(ProgramSettings settings) {
 			ThreadPool.SetMaxThreads(Environment.ProcessorCount, Environment.ProcessorCount);
-			SanityChecker.PerformChecks = bool.Parse(settings.SanityChecks);
+			SanityChecker.PerformChecks = bool.Parse(settings.ExpensiveSanityChecks);
 
 			PrintSettings(settings);
 
@@ -128,66 +129,55 @@ namespace Minotaur {
 				metricsNames: settings.MetricNames,
 				settings.ClassificationType);
 
-			var trainFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
-				capacity: settings.PopulationSize,
-				enabled: bool.Parse(settings.FitnessCaching));
+			var trainFitnessEvaluator = new FitnessEvaluatorMk2(trainMetrics);
+			var testFitnessEvaluator = new FitnessEvaluatorMk2(trainMetrics);
 
-			var trainFitnessEvaluator = new FitnessEvaluator(
-			  metrics: trainMetrics,
-			  cache: trainFitnessCache);
+			var evolutionLoggers = new IEvolutionLogger[] {
+				new BasicStdoutLogger(testDatasetFitnessEvaluator: testFitnessEvaluator),
 
-			var testMetrics = IMetricParser.ParseMetrics(
-				dataset: testDataset,
-				metricsNames: settings.MetricNames,
-				settings.ClassificationType);
+				new AdvancedFileLogger(
+					outputDirectory: settings.OutputDirectory,
+					trainDatasetFitnessEvaluator: trainFitnessEvaluator,
+					testDatasetFitnessEvaluator: testFitnessEvaluator),
+			};
 
-			var testFitnessCache = IConcurrentCacheSelector.Create<Individual, Fitness>(
-				capacity: settings.PopulationSize,
-				enabled: bool.Parse(settings.FitnessCaching));
+			throw new NotImplementedException();
 
-			var testFitnessEvaluator = new FitnessEvaluator(
-				metrics: testMetrics,
-				cache: testFitnessCache);
+			//var fittestSelector = IFittestSelectorCreator.Create(
+			//	fittestSelectorName: settings.SelectionAlgorithm,
+			//	fittestCount: settings.PopulationSize,
+			//	fitnessEvaluator: trainFitnessEvaluator);
 
-			var fitnessReportMaker = new FitnessReportMaker(
-				trainDatasetFitnessEvaluator: trainFitnessEvaluator,
-				testDatasetFitnessEvaluator: testFitnessEvaluator);
+			//var individualCreator = new SingleRuleIndividualCreator(ruleCreator: ruleCreator);
 
-			var fittestSelector = IFittestSelectorCreator.Create(
-				fittestSelectorName: settings.SelectionAlgorithm,
-				fittestCount: settings.PopulationSize,
-				fitnessEvaluator: trainFitnessEvaluator);
+			//var initialPopulation = CreateInitialPopulation(
+			//	individualCreator: individualCreator,
+			//	settings: settings);
 
-			var individualCreator = new SingleRuleIndividualCreator(ruleCreator: ruleCreator);
+			//var consistencyChecker = new RuleConsistencyChecker(
+			//	ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
+			//	hyperRectangleIntersector: hyperRectangleIntersector);
 
-			var initialPopulation = CreateInitialPopulation(
-				individualCreator: individualCreator,
-				settings: settings);
+			//CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
-			var consistencyChecker = new RuleConsistencyChecker(
-				ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
-				hyperRectangleIntersector: hyperRectangleIntersector);
+			//var evolutionEngine = new EvolutionEngine(
+			//	populationMutator: populationMutator,
+			//	fitnessReportMaker: fitnessReportMaker,
+			//	fittestSelector: fittestSelector,
+			//	consistencyChecker: consistencyChecker,
+			//	maximumGenerations: settings.MaximumGenerations);
 
-			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
+			//var evolutionReport = evolutionEngine.Run(initialPopulation);
+			//Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
 
-			var evolutionEngine = new EvolutionEngine(
-				populationMutator: populationMutator,
-				fitnessReportMaker: fitnessReportMaker,
-				fittestSelector: fittestSelector,
-				consistencyChecker: consistencyChecker,
-				maximumGenerations: settings.MaximumGenerations);
+			//SerializePopulationAndFitnesses(
+			//	settings: settings,
+			//	finalPopulation: evolutionReport.FinalPopulation,
+			//	testFitnessEvaluator: testFitnessEvaluator);
 
-			var evolutionReport = evolutionEngine.Run(initialPopulation);
-			Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
+			//PrintTicks();
 
-			SerializePopulationAndFitnesses(
-				settings: settings,
-				finalPopulation: evolutionReport.FinalPopulation,
-				testFitnessEvaluator: testFitnessEvaluator);
-
-			PrintTicks();
-
-			return 0;
+			//return 0;
 		}
 
 		private static void PrintSettings(ProgramSettings settings) {

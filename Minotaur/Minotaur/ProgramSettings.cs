@@ -78,17 +78,6 @@ namespace Minotaur {
 		[Range(1, int.MaxValue)]
 		public int MutantsPerGeneration { get; }
 
-		[Option(
-			ShortName = "", LongName = "fitness-caching",
-			Description =
-			"If enabled, the fitness of the individuals will be cached, " +
-			"avoiding the cost of computing it for individuals that survive between generations. " +
-			"It is important to note that if the number of individuals being " +
-			"created at each generation is large (relative to the population size) " +
-			"enabling the cache may actually decrease the performance.")]
-		[AllowedValues("false", "true")]
-		public string FitnessCaching { get; } = "false";
-
 		[Required]
 		[Option(CommandOptionType.MultipleValue,
 			ShortName = "", LongName = "fitness-metrics",
@@ -148,10 +137,10 @@ namespace Minotaur {
 		[Range(0f, 1f)]
 		public float RuleConsequentThreshold { get; } = 0.5f;
 
-		[Option(ShortName = "", LongName = "sanity-checks",
+		[Option(ShortName = "", LongName = "expensive-sanity-checks",
 			Description = "Whether sanity checks should be performed or not. " +
 			"This is a debug feature; enabling it may cause degrade the performance.")]
 		[AllowedValues("false", "true")]
-		public string SanityChecks { get; } = "true";
+		public string ExpensiveSanityChecks { get; } = "true";
 	}
 }
