@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus.Evolution {
 	using System;
+	using System.Threading.Tasks;
 	using Minotaur.Collections;
 	using Minotaur.GeneticAlgorithms;
 	using Minotaur.GeneticAlgorithms.Population;
@@ -13,17 +14,19 @@ namespace Minotaur.Theseus.Evolution {
 		private readonly FitnessEvaluatorMk2 _fitnessEvaluator;
 		private readonly PopulationMutatorMk2 _populationMutator;
 		private readonly IFittestIdentifier _fittestIdentifier;
-		private readonly Array<IEvolutionLogger> _loggers;
+		private readonly BasicStdoutLogger _stdoutLogger;
+		private readonly AdvancedFileLogger _fileLogger;
 
-		public EvolutionEngineMk2(int maximumNumberOfGenerations, FitnessEvaluatorMk2 fitnessEvaluator, PopulationMutatorMk2 populationMutator, IFittestIdentifier fittestIdentifier, Array<IEvolutionLogger> loggers) {
-			if (_maximumNumberOfGenerations <= 0)
+		public EvolutionEngineMk2(int maximumNumberOfGenerations, FitnessEvaluatorMk2 fitnessEvaluator, PopulationMutatorMk2 populationMutator, IFittestIdentifier fittestIdentifier, BasicStdoutLogger stdoutLogger, AdvancedFileLogger fileLogger) {
+			if (maximumNumberOfGenerations <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumNumberOfGenerations));
 
 			_maximumNumberOfGenerations = maximumNumberOfGenerations;
 			_fitnessEvaluator = fitnessEvaluator;
 			_populationMutator = populationMutator;
 			_fittestIdentifier = fittestIdentifier;
-			_loggers = loggers;
+			_stdoutLogger = stdoutLogger;
+			_fileLogger = fileLogger;
 		}
 
 		public GenerationResult Run(Array<Individual> initialPopulation) {
@@ -77,8 +80,8 @@ namespace Minotaur.Theseus.Evolution {
 		}
 
 		private void RunLoggers(GenerationResult generationResult) {
-			for (int i = 0; i < _loggers.Length; i++)
-				_loggers[i].LogGeneration(generationResult);
+			Task.Run(() => _stdoutLogger.LogGeneration(generationResult));
+			Task.Run(() => _fileLogger.LogGeneration(generationResult));
 		}
 	}
 }

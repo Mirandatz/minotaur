@@ -1,9 +1,6 @@
 namespace Minotaur {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.IO;
-	using System.Linq;
 	using System.Text.Json;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -18,6 +15,7 @@ namespace Minotaur {
 	using Minotaur.Output;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
+	using Minotaur.Theseus.Evolution;
 	using Minotaur.Theseus.IndividualCreation;
 	using Minotaur.Theseus.IndividualMutation;
 	using Minotaur.Theseus.RuleCreation;
@@ -53,7 +51,7 @@ namespace Minotaur {
 				"--cfsbe-target-instance-coverage=100",
 
 				"--rule-consequent-threshold=0.5",
-				"--sanity-checks=false"
+				"--expensive-sanity-checks=true"
 			};
 		}
 
@@ -119,7 +117,7 @@ namespace Minotaur {
 				mutationChooser: individualMutationChooser,
 				ruleCreator: ruleCreator);
 
-			var populationMutator = new PopulationMutator(
+			var populationMutator = new PopulationMutatorMk2(
 				individualMutator: ruleSwappingindividualMutator,
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
@@ -127,57 +125,61 @@ namespace Minotaur {
 			var trainMetrics = IMetricParser.ParseMetrics(
 				dataset: trainDataset,
 				metricsNames: settings.MetricNames,
-				settings.ClassificationType);
+				classificationType: settings.ClassificationType);
 
 			var trainFitnessEvaluator = new FitnessEvaluatorMk2(trainMetrics);
-			var testFitnessEvaluator = new FitnessEvaluatorMk2(trainMetrics);
 
-			var evolutionLoggers = new IEvolutionLogger[] {
-				new BasicStdoutLogger(testDatasetFitnessEvaluator: testFitnessEvaluator),
+			var testMetrics = IMetricParser.ParseMetrics(
+				dataset: testDataset,
+				metricsNames: settings.MetricNames,
+				classificationType: settings.ClassificationType);
 
-				new AdvancedFileLogger(
+			var testFitnessEvaluator = new FitnessEvaluatorMk2(testMetrics);
+
+			var fittestIdentifier = IFittestIdentifierParser.Parse(
+				name: settings.SelectionAlgorithm,
+				fittestCount: settings.PopulationSize);
+
+			var individualCreator = new SingleRuleIndividualCreator(ruleCreator: ruleCreator);
+
+			var initialPopulation = CreateInitialPopulation(
+				individualCreator: individualCreator,
+				settings: settings);
+
+			var consistencyChecker = new RuleConsistencyChecker(
+				ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
+				hyperRectangleIntersector: hyperRectangleIntersector);
+
+			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
+
+			var stdoutLogger = new BasicStdoutLogger(testDatasetFitnessEvaluator: testFitnessEvaluator);
+
+			var fileLogger = new AdvancedFileLogger(
 					outputDirectory: settings.OutputDirectory,
 					trainDatasetFitnessEvaluator: trainFitnessEvaluator,
-					testDatasetFitnessEvaluator: testFitnessEvaluator),
-			};
+					testDatasetFitnessEvaluator: testFitnessEvaluator);
 
-			throw new NotImplementedException();
+			var evolutionEngine = new EvolutionEngineMk2(
+				maximumNumberOfGenerations: settings.MaximumGenerations,
+				fitnessEvaluator: trainFitnessEvaluator,
+				populationMutator: populationMutator,
+				fittestIdentifier: fittestIdentifier,
+				stdoutLogger: stdoutLogger,
+				fileLogger: fileLogger);
 
-			//var fittestSelector = IFittestSelectorCreator.Create(
-			//	fittestSelectorName: settings.SelectionAlgorithm,
-			//	fittestCount: settings.PopulationSize,
-			//	fitnessEvaluator: trainFitnessEvaluator);
+			var lastGenerationResult = evolutionEngine.Run(initialPopulation);
+			if (lastGenerationResult.GenerationNumber == settings.MaximumGenerations)
+				Console.WriteLine($"Evolution cycle stopped. Reason: maximum number of generations reached.");
+			else
+				Console.WriteLine($"Evolution cycle stopped. Reason: maximum number of generations reached.");
 
-			//var individualCreator = new SingleRuleIndividualCreator(ruleCreator: ruleCreator);
+			PrintTicks();
 
-			//var initialPopulation = CreateInitialPopulation(
-			//	individualCreator: individualCreator,
-			//	settings: settings);
+			Console.Write("Writing output to disk... ");
+			fileLogger.WriteToDisk();
+			Console.WriteLine("Done.");
 
-			//var consistencyChecker = new RuleConsistencyChecker(
-			//	ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
-			//	hyperRectangleIntersector: hyperRectangleIntersector);
-
-			//CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
-
-			//var evolutionEngine = new EvolutionEngine(
-			//	populationMutator: populationMutator,
-			//	fitnessReportMaker: fitnessReportMaker,
-			//	fittestSelector: fittestSelector,
-			//	consistencyChecker: consistencyChecker,
-			//	maximumGenerations: settings.MaximumGenerations);
-
-			//var evolutionReport = evolutionEngine.Run(initialPopulation);
-			//Console.WriteLine($"Evolution stoped. Reason: {evolutionReport.ReasonForStoppingEvolution}");
-
-			//SerializePopulationAndFitnesses(
-			//	settings: settings,
-			//	finalPopulation: evolutionReport.FinalPopulation,
-			//	testFitnessEvaluator: testFitnessEvaluator);
-
-			//PrintTicks();
-
-			//return 0;
+			return 0;
 		}
 
 		private static void PrintSettings(ProgramSettings settings) {
@@ -239,48 +241,6 @@ namespace Minotaur {
 			});
 
 			Console.WriteLine("Yep, it is.");
-		}
-
-		private static void SerializePopulationAndFitnesses(ProgramSettings settings, Array<Individual> finalPopulation, FitnessEvaluator testFitnessEvaluator) {
-			throw new NotImplementedException();
-			//Console.Write("Serializing final population's individuals and their fitnesseses... ");
-
-			//var populationAsArray = finalPopulation.ToArray();
-			//var testFitness = testFitnessEvaluator.EvaluateAsMaximizationTask(finalPopulation);
-			//Array.Sort(
-			//	keys: testFitness,
-			//	items: populationAsArray,
-			//	comparer: new LexicographicalFitnessComparer());
-
-			//var populationSortedDescending = populationAsArray
-			//	.Reverse()
-			//	.Select(ind => ind.ToString())
-			//	.ToArray();
-
-			//var lineSeparator = Environment.NewLine + "===============================================================================" + Environment.NewLine;
-
-			//var serializedPopulation = string.Join(
-			//	separator: lineSeparator,
-			//	value: populationSortedDescending);
-
-			//File.WriteAllText(
-			//	path: Path.Combine(settings.OutputDirectory, "final-population-individuals.txt"),
-			//	contents: serializedPopulation);
-
-			//var fitnessesSortedDescending = testFitness
-			//	.Reverse()
-			//	.Select(fit => fit.ToString())
-			//	.ToArray();
-
-			//var serializedFitness = string.Join(
-			//	separator: lineSeparator,
-			//	value: fitnessesSortedDescending);
-
-			//File.WriteAllText(
-			//	path: Path.Combine(settings.OutputDirectory, "final-population-fitnesses.txt"),
-			//	contents: serializedFitness);
-
-			//Console.WriteLine("Done.");
 		}
 
 		private static void PrintTicks() {
