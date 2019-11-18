@@ -1,22 +1,22 @@
 namespace Minotaur.Output {
 	using System;
 	using System.Collections.Generic;
-	using System.Text;
-	using Minotaur.GeneticAlgorithms.Population;
+	using System.Data;
+	using System.IO;
+	using System.Linq;
+	using System.Threading.Tasks;
 	using Minotaur.Collections;
 	using Minotaur.GeneticAlgorithms;
-	using System.Threading.Tasks;
-	using System.IO;
+	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Theseus.Evolution;
-	using System.Data;
-	using System.Linq;
 
 	public sealed class AdvancedFileLogger: IEvolutionLogger {
 
-		private readonly string _recordSeparator = Environment.NewLine;
-		private readonly string _fieldSeparator = ",";
-		private readonly int _trainFitnessObjectiveCount;
-		private readonly int _testFitnessObjectiveCount;
+		private readonly string _fieldsSeparator = ", ";
+		private readonly string _recordsSeparator = Environment.NewLine;
+
+		private readonly Array<string> _trainFitnessObjectivesNames;
+		private readonly Array<string> _testFitnessObjectivesNames;
 
 		private readonly string _outputDirectory;
 		private readonly string _individualsLogFilename;
@@ -30,18 +30,24 @@ namespace Minotaur.Output {
 
 		private readonly FitnessEvaluatorMk2 _testDatasetFitnessEvaluator;
 
-		public AdvancedFileLogger(string outputDirectory, int trainFitnessObjectiveCount, FitnessEvaluatorMk2 testDatasetFitnessEvaluator) {
+		public AdvancedFileLogger(string outputDirectory, FitnessEvaluatorMk2 trainDatasetFitnessEvaluator, FitnessEvaluatorMk2 testDatasetFitnessEvaluator) {
 			if (!Directory.Exists(outputDirectory))
 				throw new ArgumentException(nameof(outputDirectory));
-			if (trainFitnessObjectiveCount <= 0)
-				throw new ArgumentOutOfRangeException(nameof(trainFitnessObjectiveCount));
 
 			_outputDirectory = outputDirectory;
 			_individualsLogFilename = Path.Combine(_outputDirectory, "individuals_log.csv");
 			_generationLogFilename = Path.Combine(_outputDirectory, "generations_log.csv");
 
-			_trainFitnessObjectiveCount = trainFitnessObjectiveCount;
-			_testFitnessObjectiveCount = testDatasetFitnessEvaluator.Metrics.Length;
+			_trainFitnessObjectivesNames = trainDatasetFitnessEvaluator
+				.Metrics
+				.Select(m => m.Name)
+				.ToArray();
+
+			_testFitnessObjectivesNames = testDatasetFitnessEvaluator
+				.Metrics
+				.Select(m => m.Name)
+				.ToArray();
+
 			_testDatasetFitnessEvaluator = testDatasetFitnessEvaluator;
 		}
 
@@ -123,131 +129,78 @@ namespace Minotaur.Output {
 		}
 
 		private void WriteIndividualsCsv() {
-			var builder = new StringBuilder();
+			var builder = new CsvBuilder(
+				fieldsSeparator: _fieldsSeparator,
+				recordSeparator: _recordsSeparator,
+				fieldNames: new string[] { "Id", "Parent Id", "Rules" });
 
-			// Writing header
-			builder.Append("Id");
-			builder.Append(_fieldSeparator);
-
-			builder.Append("Parent Id");
-			builder.Append(_fieldSeparator);
-
-			builder.Append("Rules");
-			builder.Append(_fieldSeparator);
-
-			// Writing records
-			var records = GenerateRecordsForAllIndividuals();
-			builder.Append(records);
-
-			File.WriteAllText(
-				path: _individualsLogFilename,
-				contents: builder.ToString());
-		}
-
-		private string GenerateRecordsForAllIndividuals() {
 			var individualsArray = _knownIndividuals
 				.Values
 				.OrderBy(ind => ind.Id)
 				.ThenBy(ind => ind.ParentId)
 				.ToArray();
 
-			var individualCount = individualsArray.Length;
-			var records = new string[individualCount];
+			var ids = new string[individualsArray.Length];
+			var parentIds = new string[individualsArray.Length];
+			var rules = new string[individualsArray.Length];
 
-			Parallel.For(fromInclusive: 0, toExclusive: individualCount, i => {
-				records[i] = GenerateRecordForSingleIndividual(individualsArray[i]);
+			Parallel.For(fromInclusive: 0, toExclusive: individualsArray.Length, i => {
+				var individual = individualsArray[i];
+				ids[i] = individual.Id.ToString();
+				parentIds[i] = individual.ParentId.ToString();
+				rules[i] = SerializationHelper.Serialize(individual.Rules);
 			});
 
-			return string.Join(
-				separator: _recordSeparator,
-				values: records as IEnumerable<string>);
-		}
+			for (int i = 0; i < individualsArray.Length; i++) {
+				builder.AddField(ids[i]);
+				builder.AddField(parentIds[i]);
+				builder.AddField(rules[i]);
+				builder.FinishRecord();
+			}
 
-		private string GenerateRecordForSingleIndividual(Individual individual) {
-			return
-				$"{individual.Id}{_fieldSeparator}" +
-				$"{individual.ParentId}{_fieldSeparator}" +
-				$"{SerializationHelper.Serialize(individual.Rules)} " +
-				$"DEFAULT {SerializationHelper.Serialize(individual.DefaultPrediction)}";
+			File.WriteAllText(
+				path: _individualsLogFilename,
+				contents: builder.ToString());
 		}
 
 		private void WriteGenerationsCsv() {
-			var builder = new StringBuilder();
+			var fieldNames = new string[] { "Generation Number", "Individual Id", "Individual Parent Id" }
+			.Concat(_trainFitnessObjectivesNames)
+			.Concat(_testFitnessObjectivesNames)
+			.ToArray();
 
-			// Writing header
-			builder.Append("Generation Number");
-			builder.Append(_fieldSeparator);
+			var builder = new CsvBuilder(
+				fieldsSeparator: _fieldsSeparator,
+				recordSeparator: _recordsSeparator,
+				fieldNames: fieldNames);
 
-			builder.Append("Individual Parent Id");
-			builder.Append(_fieldSeparator);
+			// @Todo: parallelize the generation of strings,
+			// like we did in WriteIndividualsCsv()
 
-			builder.Append("Individual Id");
-			builder.Append(_fieldSeparator);
+			foreach ((var generationNumber, var individualIds) in _individualsIdsPerGeneration) {
+				foreach (var id in individualIds) {
+					builder.AddField(generationNumber.ToString());
 
-			for (int i = 0; i < _trainFitnessObjectiveCount; i++) {
-				builder.Append("Train Fitness Objective ");
-				builder.Append(i);
-				builder.Append(_fieldSeparator);
+					var individual = _knownIndividuals[id];
+					builder.AddField(individual.Id.ToString());
+
+					builder.AddField(individual.ParentId.ToString());
+
+					var trainFitness = _trainFitnesses[individual];
+					foreach (var objective in trainFitness)
+						builder.AddField(objective.ToString());
+
+					var testFitness = _testFitnesses[individual];
+					foreach (var objective in testFitness)
+						builder.AddField(objective.ToString());
+
+					builder.FinishRecord();
+				}
 			}
-
-			for (int i = 0; i < _testFitnessObjectiveCount; i++) {
-				builder.Append("Test Fitness Objective ");
-				builder.Append(i);
-				builder.Append(_fieldSeparator);
-			}
-
-			builder.Append(_recordSeparator);
-
-			// Writing records
-			var records = GenerateRecordsForAllGenerations();
-			builder.Append(records);
 
 			File.WriteAllText(
 				path: _generationLogFilename,
 				contents: builder.ToString());
-		}
-
-		private string GenerateRecordsForAllGenerations() {
-			var generationCount = _individualsIdsPerGeneration.Count;
-			var records = new string[generationCount];
-
-			Parallel.For(fromInclusive: 0, toExclusive: generationCount, generationNumber => {
-				records[generationNumber] = GenerateRecordsForSingleGeneration(generationNumber);
-			});
-
-			return string.Join(
-				separator: _recordSeparator,
-				values: records as IEnumerable<string>);
-		}
-
-		private string GenerateRecordsForSingleGeneration(int generationNumber) {
-			var builder = new StringBuilder();
-			builder.Append(generationNumber);
-			builder.Append(_fieldSeparator);
-
-			var generationIds = _individualsIdsPerGeneration[generationNumber];
-			foreach (var individualId in generationIds) {
-				builder.Append(individualId);
-				builder.Append(_fieldSeparator);
-
-				var individual = _knownIndividuals[individualId];
-
-				var trainFitness = _trainFitnesses[individual];
-				var serializedTrainFitness = string.Join(
-					separator: _fieldSeparator,
-					values: trainFitness);
-				builder.Append(trainFitness);
-				builder.Append(_fieldSeparator);
-
-				var testFitness = _testFitnesses[individual];
-				var serializedTestFitness = string.Join(
-					separator: _fieldSeparator,
-					values: testFitness);
-
-				builder.Append(_recordSeparator);
-			}
-
-			return builder.ToString();
 		}
 	}
 }

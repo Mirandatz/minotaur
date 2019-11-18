@@ -66,5 +66,9 @@ namespace Minotaur.Output {
 
 			return _csvBuilder.ToString();
 		}
+
+		public override string ToString() {
+			return BuildCsv();
+		}
 	}
 }
