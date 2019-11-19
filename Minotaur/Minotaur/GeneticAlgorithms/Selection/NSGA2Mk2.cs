@@ -59,7 +59,7 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 				throw new InvalidOperationException();
 
 			// Sanity check
-			if (fittestIndices.Any(i => i < 0 || i > _fittestCount))
+			if (fittestIndices.Any(i => i < 0))
 				throw new InvalidOperationException();
 
 			return fittestIndices.ToArray();
@@ -74,10 +74,10 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 			var sortedScaledObjectives = SortScaledObjectives(scaledObjectives);
 			var crowdingDistances = ComputeCrowdingDistances(indexedScaledObjectives, sortedScaledObjectives);
 
-			var mostDiverse = indexedFitnesses
-				.Select(x => x.Index)
-				.OrderBy(i => crowdingDistances[i])
-				.ToArray();
+			var mostDiverse = indices.ToArray();
+			Array.Sort(
+				keys: crowdingDistances,
+				items: mostDiverse);
 
 			return mostDiverse;
 
@@ -126,10 +126,9 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 				var objectiveCount = scaledObjectives.Length;
 
 				for (int i = 0; i < indexedScaledObjectives.Length; i++) {
-
 					var objectives = new float[objectiveCount];
 					for (int j = 0; j < objectiveCount; j++)
-						objectives[j] = scaledObjectives[i][j];
+						objectives[j] = scaledObjectives[j][i];
 
 					indexedScaledObjectives[i] = (
 						Index: indexedFitnesses[i].Index,
@@ -164,7 +163,7 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 					for (int i = 0; i < objectiveCount; i++) {
 						var instanceObjectiveValue = instance.Objectives[i];
 						var sortedObjectiveValues = sortedScaledObjectives[i];
-						var instancePosition = Array.BinarySearch(sortedScaledObjectives, instanceObjectiveValue);
+						var instancePosition = Array.BinarySearch(sortedObjectiveValues, instanceObjectiveValue);
 
 						if (instancePosition < 0)
 							throw new InvalidOperationException();
