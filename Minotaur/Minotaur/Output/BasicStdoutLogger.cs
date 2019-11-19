@@ -16,6 +16,8 @@ namespace Minotaur.Output {
 
 		public void LogGeneration(GenerationResult generationResult) {
 			lock (_syncRoot) {
+				if (generationResult.GenerationNumber % 10 != 0)
+					return;
 
 				var population = generationResult.Population;
 				var trainFitness = generationResult.Fitnesses;
@@ -28,6 +30,8 @@ namespace Minotaur.Output {
 				var builder = new StringBuilder();
 
 				builder.AppendLine();
+				builder.Append("Generation ");
+				builder.AppendLine(generationResult.GenerationNumber.ToString());
 				builder.AppendLine("Train Dataset Fitness");
 				builder.Append("Best individual: ");
 				builder.AppendLine(sortedFitnesses[^1].ToString());
