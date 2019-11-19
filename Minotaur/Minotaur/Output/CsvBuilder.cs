@@ -17,9 +17,9 @@ namespace Minotaur.Output {
 		private int _fieldsWritten = 0;
 
 		public CsvBuilder(string fieldsSeparator, string recordSeparator, string[] fieldNames) {
-			if (string.IsNullOrWhiteSpace(fieldsSeparator))
+			if (fieldsSeparator != Environment.NewLine && string.IsNullOrEmpty(fieldsSeparator))
 				throw new ArgumentOutOfRangeException(nameof(fieldsSeparator));
-			if (string.IsNullOrWhiteSpace(recordSeparator))
+			if (recordSeparator != Environment.NewLine && string.IsNullOrWhiteSpace(recordSeparator))
 				throw new ArgumentOutOfRangeException(nameof(recordSeparator));
 			if (fieldsSeparator.Contains(recordSeparator) || recordSeparator.Contains(fieldsSeparator))
 				throw new ArgumentException();

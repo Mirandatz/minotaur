@@ -103,7 +103,7 @@ namespace Minotaur.Output {
 			for (int i = 0; i < individualCount; i++) {
 				var individual = population[i];
 				var fitness = fitnesses[i];
-				_trainFitnesses[individual] = fitness;
+				_testFitnesses[individual] = fitness;
 			}
 		}
 
