@@ -20,11 +20,10 @@ namespace Minotaur.Output {
 					return;
 
 				var population = generationResult.Population;
-				var trainFitness = generationResult.Fitnesses;
-				var sortedFitnesses = trainFitness.ToArray();
+				var trainFitness = generationResult.Fitnesses.ToArray();
 
 				Array.Sort(
-					array: sortedFitnesses,
+					array: trainFitness,
 					comparer: new LexicographicalFitnessComparer());
 
 				var builder = new StringBuilder();
@@ -34,15 +33,15 @@ namespace Minotaur.Output {
 				builder.AppendLine(generationResult.GenerationNumber.ToString());
 				builder.AppendLine("Train Dataset Fitness");
 				builder.Append("Best individual: ");
-				builder.AppendLine(sortedFitnesses[^1].ToString());
+				builder.AppendLine(trainFitness[^1].ToString());
 				builder.Append("Second best individual: ");
-				builder.AppendLine(sortedFitnesses[^2].ToString());
+				builder.AppendLine(trainFitness[^2].ToString());
 				builder.Append("Median individual: ");
-				builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
+				builder.AppendLine(trainFitness[trainFitness.Length / 2].ToString());
 				builder.Append("Second worst individual: ");
-				builder.AppendLine(sortedFitnesses[1].ToString());
+				builder.AppendLine(trainFitness[1].ToString());
 				builder.Append("Worst individual: ");
-				builder.AppendLine(sortedFitnesses[0].ToString());
+				builder.AppendLine(trainFitness[0].ToString());
 
 				var testFitness = _testDatasetFitnessEvaluator.EvaluateAsMaximizationTask(population);
 				Array.Sort(
@@ -51,15 +50,15 @@ namespace Minotaur.Output {
 
 				builder.AppendLine("Test Dataset Fitness");
 				builder.Append("Best individual: ");
-				builder.AppendLine(sortedFitnesses[^1].ToString());
+				builder.AppendLine(testFitness[^1].ToString());
 				builder.Append("Second best individual: ");
-				builder.AppendLine(sortedFitnesses[^2].ToString());
+				builder.AppendLine(testFitness[^2].ToString());
 				builder.Append("Median individual: ");
-				builder.AppendLine(sortedFitnesses[sortedFitnesses.Length / 2].ToString());
+				builder.AppendLine(testFitness[testFitness.Length / 2].ToString());
 				builder.Append("Second worst individual: ");
-				builder.AppendLine(sortedFitnesses[1].ToString());
+				builder.AppendLine(testFitness[1].ToString());
 				builder.Append("Worst individual: ");
-				builder.AppendLine(sortedFitnesses[0].ToString());
+				builder.AppendLine(testFitness[0].ToString());
 
 				Console.WriteLine(builder.ToString());
 			}
