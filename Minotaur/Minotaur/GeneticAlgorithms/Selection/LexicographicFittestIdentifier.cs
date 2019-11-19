@@ -14,7 +14,7 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 
 		public int[] FindIndicesOfFittestIndividuals(Array<Fitness> fitnesses) {
 			var indices = NaturalRange
-				.CreateSorted(inclusiveStart: 0, exclusiveEnd: _fittestCount)
+				.CreateSorted(inclusiveStart: 0, exclusiveEnd: fitnesses.Length)
 				.ToArray();
 
 			var fitnessArray = fitnesses.ToArray();
@@ -23,6 +23,8 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 				keys: fitnessArray,
 				items: indices,
 				comparer: _comparer);
+
+			Array.Reverse(indices);
 
 			var fittest = indices
 				.AsSpan()

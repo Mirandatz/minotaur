@@ -41,7 +41,7 @@ namespace Minotaur {
 				"--output-directory=C:/Source/minotaur.output/",
 
 				"--fitness-metrics=fscore",
-				"--fittest-selection=nsga2",
+				"--fittest-selection=lexicographic",
 
 				"--population-size=30",
 				"--mutants-per-generation=10",
