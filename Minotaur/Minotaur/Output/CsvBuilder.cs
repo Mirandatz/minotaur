@@ -34,6 +34,11 @@ namespace Minotaur.Output {
 			_recordSeparator = recordSeparator;
 			_fieldNames = fieldNames.ToArray();
 			_fieldsCount = _fieldNames.Length;
+
+			for (int i = 0; i < _fieldNames.Length; i++)
+				AddField(_fieldNames[i]);
+
+			FinishRecord();
 		}
 
 		public void AddField(string value) {
@@ -44,8 +49,10 @@ namespace Minotaur.Output {
 			if (value.Contains(_recordSeparator))
 				throw new InvalidOperationException();
 
+			if (_fieldsWritten > 0)
+				_recordBuilder.Append(_fieldsSeparator);
+
 			_recordBuilder.Append(value);
-			_recordBuilder.Append(_fieldsSeparator);
 			_fieldsWritten += 1;
 		}
 

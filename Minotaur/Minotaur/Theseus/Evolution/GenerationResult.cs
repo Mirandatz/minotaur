@@ -15,6 +15,7 @@ namespace Minotaur.Theseus.Evolution {
 			if (population.Length != fitnesses.Length)
 				throw new ArgumentException();
 
+			GenerationNumber = generationNumber;
 			Population = population;
 			Fitnesses = fitnesses;
 		}

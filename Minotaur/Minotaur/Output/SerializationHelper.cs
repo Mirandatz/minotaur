@@ -25,7 +25,7 @@ namespace Minotaur.Output {
 
 			var consequent = Serialize(rule.Consequent);
 
-			return $"IF {antecendent} THEN {consequent}";
+			return $"IF {combinedAntecedent} THEN {consequent}";
 		}
 
 		public static string Serialize(IFeatureTest test) {

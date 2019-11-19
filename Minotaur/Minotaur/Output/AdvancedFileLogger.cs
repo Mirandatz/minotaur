@@ -108,15 +108,16 @@ namespace Minotaur.Output {
 		}
 
 		private void UpdateIdsPerGeneration(GenerationResult generationResult) {
-			var population = generationResult.Population;
-			var individualCount = population.Length;
+			var ids = generationResult
+				.Population
+				.OrderBy(ind => ind.Id)
+				.ThenBy(ind => ind.ParentId)
+				.Select(ind => ind.Id)
+				.ToArray();
 
-			var ids = new long[individualCount];
-
-			for (int i = 0; i < individualCount; i++)
-				ids[i] = population[i].Id;
-
-			_individualsIdsPerGeneration[generationResult.GenerationNumber] = ids;
+			_individualsIdsPerGeneration.Add(
+				key: generationResult.GenerationNumber,
+				value: ids);
 		}
 
 		public void WriteToDisk() {
@@ -177,7 +178,10 @@ namespace Minotaur.Output {
 			// @Todo: parallelize the generation of strings,
 			// like we did in WriteIndividualsCsv()
 
-			foreach ((var generationNumber, var individualIds) in _individualsIdsPerGeneration) {
+			var sortedIndividualsIdsPerGenerations = _individualsIdsPerGeneration
+				.OrderBy(kvp => kvp.Key);
+
+			foreach ((var generationNumber, var individualIds) in sortedIndividualsIdsPerGenerations) {
 				foreach (var id in individualIds) {
 					builder.AddField(generationNumber.ToString());
 
