@@ -48,7 +48,7 @@ namespace Minotaur {
 				"--population-size=30",
 				"--mutants-per-generation=10",
 
-				"--max-generations=5000",
+				"--max-generations=200",
 
 				"--cfsbe-target-instance-coverage=100",
 

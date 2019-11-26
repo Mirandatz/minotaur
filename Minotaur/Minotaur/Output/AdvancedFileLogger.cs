@@ -159,9 +159,8 @@ namespace Minotaur.Output {
 				builder.FinishRecord();
 			}
 
-			File.WriteAllText(
-				path: _individualsLogFilename,
-				contents: builder.ToString());
+			using var file = File.OpenWrite(_individualsLogFilename);
+			builder.CopyTo(file);
 		}
 
 		private void WriteGenerationsCsv() {
@@ -202,9 +201,8 @@ namespace Minotaur.Output {
 				}
 			}
 
-			File.WriteAllText(
-				path: _generationLogFilename,
-				contents: builder.ToString());
+			using var file = File.OpenWrite(_generationLogFilename);
+			builder.CopyTo(file);
 		}
 	}
 }

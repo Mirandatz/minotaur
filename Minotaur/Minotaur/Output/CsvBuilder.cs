@@ -1,5 +1,7 @@
 namespace Minotaur.Output {
 	using System;
+	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Text;
 	using Minotaur.Collections;
@@ -11,8 +13,8 @@ namespace Minotaur.Output {
 		private readonly Array<string> _fieldNames;
 		private readonly int _fieldsCount;
 
-		private readonly StringBuilder _recordBuilder = new StringBuilder();
-		private readonly StringBuilder _csvBuilder = new StringBuilder();
+		private readonly StringBuilder _recordBuilder;
+		private readonly List<string> _csvBuilder;
 
 		private int _fieldsWritten = 0;
 
@@ -29,6 +31,9 @@ namespace Minotaur.Output {
 				throw new ArgumentException();
 			if (fieldNames.Any(fn => fn.Contains(recordSeparator)))
 				throw new ArgumentException();
+
+			_recordBuilder = new StringBuilder();
+			_csvBuilder = new List<string>();
 
 			_fieldsSeparator = fieldsSeparator;
 			_recordSeparator = recordSeparator;
@@ -61,21 +66,21 @@ namespace Minotaur.Output {
 				throw new InvalidOperationException();
 
 			_recordBuilder.Append(_recordSeparator);
-			_csvBuilder.Append(_recordBuilder);
+			_csvBuilder.Add(_recordBuilder.ToString());
 
 			_recordBuilder.Clear();
 			_fieldsWritten = 0;
 		}
 
-		public string BuildCsv() {
+		public override string ToString() => throw new NotImplementedException($"You probably want to call {nameof(CsvBuilder.CopyTo)}.");
+
+		public void CopyTo(FileStream file) {
 			if (_fieldsWritten != 0)
 				throw new InvalidOperationException();
 
-			return _csvBuilder.ToString();
-		}
-
-		public override string ToString() {
-			return BuildCsv();
+			using var textWritter = new StreamWriter(file);
+			foreach (var line in _csvBuilder)
+				textWritter.Write(line);
 		}
 	}
 }
