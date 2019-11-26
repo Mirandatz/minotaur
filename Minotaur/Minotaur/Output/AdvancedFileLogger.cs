@@ -10,7 +10,7 @@ namespace Minotaur.Output {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Theseus.Evolution;
 
-	public sealed class AdvancedFileLogger: IEvolutionLogger {
+	public sealed class AdvancedFileLogger {
 
 		private readonly string _fieldsSeparator = ", ";
 		private readonly string _recordsSeparator = Environment.NewLine;

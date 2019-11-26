@@ -4,7 +4,7 @@ namespace Minotaur.Output {
 	using Minotaur.GeneticAlgorithms;
 	using Minotaur.Theseus.Evolution;
 
-	public sealed class BasicStdoutLogger: IEvolutionLogger {
+	public sealed class BasicStdoutLogger {
 
 		private readonly object _syncRoot = new object();
 
