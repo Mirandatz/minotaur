@@ -1,6 +1,7 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Diagnostics;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math;

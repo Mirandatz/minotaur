@@ -1,6 +1,5 @@
 namespace Minotaur.GeneticAlgorithms.Selection {
 	using System;
-	using System.Collections.Generic;
 	using Minotaur.Collections;
 	using Minotaur.Math;
 

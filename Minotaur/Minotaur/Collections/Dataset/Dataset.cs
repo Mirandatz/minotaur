@@ -3,6 +3,7 @@ namespace Minotaur.Collections.Dataset {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Threading.Tasks;
+	using Minotaur.Classification;
 	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
 

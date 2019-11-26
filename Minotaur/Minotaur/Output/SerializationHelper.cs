@@ -1,6 +1,6 @@
 namespace Minotaur.Output {
-	using System;
 	using System.Linq;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.GeneticAlgorithms.Population;
 

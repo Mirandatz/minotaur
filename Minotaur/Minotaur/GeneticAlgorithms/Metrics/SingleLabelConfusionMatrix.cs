@@ -1,5 +1,6 @@
 namespace Minotaur.GeneticAlgorithms.Metrics {
 	using System;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
 
 	public sealed class SingleLabelConfusionMatrix {

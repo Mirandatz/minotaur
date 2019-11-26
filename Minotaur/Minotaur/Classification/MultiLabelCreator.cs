@@ -1,4 +1,4 @@
-namespace Minotaur {
+namespace Minotaur.Classification {
 	using System;
 
 	public static class MultiLabelCreator {
@@ -11,7 +11,7 @@ namespace Minotaur {
 				{
 					0f => false,
 					1f => true,
-					_ => throw new InvalidOperationException(nameof(values) + " contains non binary values."),
+					_ => throw new InvalidOperationException(nameof(values) + " contains non-binary values."),
 				};
 			}
 

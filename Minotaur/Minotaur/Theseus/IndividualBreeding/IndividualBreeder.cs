@@ -1,7 +1,5 @@
 namespace Minotaur.Theseus.IndividualBreeding {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 

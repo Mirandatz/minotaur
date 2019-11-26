@@ -2,6 +2,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 	using System.Linq;
 	using System.Text;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
 
 	// @Assumption: all rules contain Antecedents with the same length.

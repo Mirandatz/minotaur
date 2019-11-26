@@ -1,9 +1,8 @@
 namespace Minotaur.Collections.Dataset {
 	using System;
-	using System.Diagnostics;
-	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
+	using Minotaur.Classification;
 
 	public static class DatasetLoader {
 

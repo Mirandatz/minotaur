@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus {
 	using System;
+	using Minotaur.Classification;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math.Dimensions;
 

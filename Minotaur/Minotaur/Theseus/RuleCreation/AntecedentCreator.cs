@@ -1,5 +1,6 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;

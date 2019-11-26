@@ -1,4 +1,4 @@
-namespace Minotaur {
+namespace Minotaur.Classification {
 	using System;
 	using Minotaur.Collections;
 

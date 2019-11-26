@@ -1,4 +1,4 @@
-namespace Minotaur {
+namespace Minotaur.Classification {
 	using System;
 
 	public sealed class SingleLabel: ILabel, IEquatable<SingleLabel> {

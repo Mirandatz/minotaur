@@ -1,6 +1,5 @@
 namespace Minotaur.Math {
 	using System;
-	using Minotaur.Collections;
 
 	public sealed class MinMaxScaler {
 		private readonly float _min;

@@ -1,6 +1,7 @@
 namespace Minotaur.GeneticAlgorithms.Population {
 	using System;
 	using System.Threading;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 

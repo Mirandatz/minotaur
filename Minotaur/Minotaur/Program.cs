@@ -5,6 +5,7 @@ namespace Minotaur {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using McMaster.Extensions.CommandLineUtils;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms;

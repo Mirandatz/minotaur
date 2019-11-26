@@ -2,6 +2,7 @@ namespace Minotaur {
 	using System;
 	using System.ComponentModel.DataAnnotations;
 	using McMaster.Extensions.CommandLineUtils;
+	using Minotaur.Classification;
 
 	public sealed class ProgramSettings {
 

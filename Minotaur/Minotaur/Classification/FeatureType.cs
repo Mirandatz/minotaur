@@ -1,4 +1,4 @@
-namespace Minotaur {
+namespace Minotaur.Classification {
 
 	/// <summary>
 	/// Since all values in a <see cref="Collections.Dataset.Dataset"/>

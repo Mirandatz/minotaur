@@ -1,4 +1,5 @@
 namespace Minotaur.GeneticAlgorithms.Metrics {
+	using Minotaur.Classification;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.GeneticAlgorithms.Population;
 

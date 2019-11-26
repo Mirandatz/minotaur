@@ -1,6 +1,7 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using Minotaur.Classification;
 	using Minotaur.Collections.Dataset;
 
 	public sealed class HyperRectangleBuilder {

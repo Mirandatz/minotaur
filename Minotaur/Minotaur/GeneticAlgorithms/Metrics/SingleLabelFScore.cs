@@ -31,7 +31,7 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 			var instanceCount = _dataset.InstanceCount;
 			var relativeClassFrequencies = new float[absoluteClassFrequencies.Length];
 			for (int i = 0; i < relativeClassFrequencies.Length; i++)
-				relativeClassFrequencies[i] = ((float)absoluteClassFrequencies[i]) / instanceCount;
+				relativeClassFrequencies[i] = ((float) absoluteClassFrequencies[i]) / instanceCount;
 
 			return WeightedMean(
 				values: fscores,

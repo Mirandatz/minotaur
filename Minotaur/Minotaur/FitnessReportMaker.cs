@@ -1,7 +1,5 @@
 namespace Minotaur {
 	using System;
-	using System.Linq;
-	using System.Text;
 	using Minotaur.Collections;
 	using Minotaur.GeneticAlgorithms;
 	using Minotaur.GeneticAlgorithms.Population;
