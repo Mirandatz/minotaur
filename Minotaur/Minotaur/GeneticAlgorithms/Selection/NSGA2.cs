@@ -8,6 +8,7 @@ namespace Minotaur.GeneticAlgorithms.Selection {
 	using Minotaur.GeneticAlgorithms.Population;
 	using Minotaur.Math;
 	using Minotaur.Math.MultiObjectiveOptimization;
+	using Minotaur.Profiling;
 
 	// @Refactor this
 	public sealed class NSGA2: IFittestSelector {

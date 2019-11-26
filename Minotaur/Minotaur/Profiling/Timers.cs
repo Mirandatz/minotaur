@@ -1,4 +1,4 @@
-namespace Minotaur {
+namespace Minotaur.Profiling {
 	using System;
 	using System.Threading;
 

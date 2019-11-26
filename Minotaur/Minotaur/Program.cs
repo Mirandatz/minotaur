@@ -14,6 +14,7 @@ namespace Minotaur {
 	using Minotaur.GeneticAlgorithms.Selection;
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Output;
+	using Minotaur.Profiling;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.Evolution;

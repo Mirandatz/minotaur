@@ -6,6 +6,7 @@ namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.Math;
 	using Minotaur.Math.Dimensions;
+	using Minotaur.Profiling;
 
 	public sealed class NonIntersectingRectangleCreator {
 
@@ -58,8 +59,6 @@ namespace Minotaur.Theseus {
 				}
 
 				var largestHyperRectangle = builder.TryBuild();
-
-
 				return largestHyperRectangle;
 			} finally {
 				Timers.IncrementCfsbeTicks(sw.ElapsedTicks);
