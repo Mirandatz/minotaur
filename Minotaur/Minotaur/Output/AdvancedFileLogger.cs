@@ -40,12 +40,12 @@ namespace Minotaur.Output {
 
 			_trainFitnessObjectivesNames = trainDatasetFitnessEvaluator
 				.Metrics
-				.Select(m => m.Name)
+				.Select(m => m.Name + " (Train)")
 				.ToArray();
 
 			_testFitnessObjectivesNames = testDatasetFitnessEvaluator
 				.Metrics
-				.Select(m => m.Name)
+				.Select(m => m.Name + " (Test)")
 				.ToArray();
 
 			_testDatasetFitnessEvaluator = testDatasetFitnessEvaluator;
