@@ -33,16 +33,17 @@ namespace Minotaur {
 
 		private static string[] LazyDevArguments() {
 			return new string[] {
-				"--train-data=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-data.csv",
-				"--train-labels=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/train-labels.csv",
-				"--test-data=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-data.csv",
-				"--test-labels=c:/source/minotaur.datasets/yeast/2-ready-for-minotaur/fold-0/test-labels.csv",
+				"--train-data=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/train-data.csv",
+				"--train-labels=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/train-labels.csv",
+				"--test-data=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/test-data.csv",
+				"--test-labels=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/test-labels.csv",
 
 				"--classification-type=multilabel",
 
 				"--output-directory=C:/Source/minotaur.output/",
 
 				"--fitness-metrics=fscore",
+				"--fitness-metrics=rule-count",
 				"--fittest-selection=nsga2",
 
 				"--population-size=30",
@@ -53,7 +54,7 @@ namespace Minotaur {
 				"--cfsbe-target-instance-coverage=100",
 
 				"--rule-consequent-threshold=0.5",
-				"--expensive-sanity-checks=true"
+				"--expensive-sanity-checks=false"
 			};
 		}
 

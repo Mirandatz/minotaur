@@ -12,7 +12,7 @@ namespace Minotaur.Output {
 
 	public sealed class AdvancedFileLogger {
 
-		private readonly string _fieldsSeparator = ", ";
+		private readonly string _fieldsSeparator = ",";
 		private readonly string _recordsSeparator = Environment.NewLine;
 
 		private readonly Array<string> _trainFitnessObjectivesNames;
