@@ -15,9 +15,9 @@ namespace Minotaur.Theseus.Evolution {
 		private readonly PopulationMutatorMk2 _populationMutator;
 		private readonly IFittestIdentifier _fittestIdentifier;
 		private readonly BasicStdoutLogger _stdoutLogger;
-		private readonly AdvancedFileLogger _fileLogger;
+		private readonly SingleGenerationLogger _fileLogger;
 
-		public EvolutionEngineMk2(int maximumNumberOfGenerations, FitnessEvaluatorMk2 fitnessEvaluator, PopulationMutatorMk2 populationMutator, IFittestIdentifier fittestIdentifier, BasicStdoutLogger stdoutLogger, AdvancedFileLogger fileLogger) {
+		public EvolutionEngineMk2(int maximumNumberOfGenerations, FitnessEvaluatorMk2 fitnessEvaluator, PopulationMutatorMk2 populationMutator, IFittestIdentifier fittestIdentifier, BasicStdoutLogger stdoutLogger, SingleGenerationLogger fileLogger) {
 			if (maximumNumberOfGenerations <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumNumberOfGenerations));
 

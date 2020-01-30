@@ -1,6 +1,7 @@
 namespace Minotaur {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Text.Json;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -32,6 +33,9 @@ namespace Minotaur {
 		}
 
 		private static string[] LazyDevArguments() {
+			File.Delete("C:/Source/minotaur.output/output.csv");
+
+
 			return new string[] {
 				"--train-data=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/train-data.csv",
 				"--train-labels=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/train-labels.csv",
@@ -40,7 +44,7 @@ namespace Minotaur {
 
 				"--classification-type=multilabel",
 
-				"--output-directory=C:/Source/minotaur.output/",
+				"--output-filename=C:/Source/minotaur.output/output.csv",
 
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=rule-count",
@@ -157,10 +161,10 @@ namespace Minotaur {
 
 			var stdoutLogger = new BasicStdoutLogger(testDatasetFitnessEvaluator: testFitnessEvaluator);
 
-			var fileLogger = new AdvancedFileLogger(
-					outputDirectory: settings.OutputDirectory,
-					trainDatasetFitnessEvaluator: trainFitnessEvaluator,
-					testDatasetFitnessEvaluator: testFitnessEvaluator);
+			var fileLogger = new SingleGenerationLogger(
+				outputFilename: settings.OutputFilename,
+				trainFitnessEvaluator: trainFitnessEvaluator,
+				testFitnessEvaluator: testFitnessEvaluator);
 
 			var evolutionEngine = new EvolutionEngineMk2(
 				maximumNumberOfGenerations: settings.MaximumGenerations,

@@ -45,10 +45,10 @@ namespace Minotaur {
 
 		[Required]
 		[Option(
-			ShortName = "", LongName = "output-directory",
-			Description = "Directory to write the output files.")]
-		[DirectoryExists]
-		public string OutputDirectory { get; } = string.Empty;
+			ShortName = "", LongName = "output-filename",
+			Description = "Output filename.")]
+		[FileNotExists]
+		public string OutputFilename { get; } = string.Empty;
 
 		[Required]
 		[Option(
