@@ -1,0 +1,1 @@
+dotnet publish -c Release /p:PublishSingleFile=true -r win10-x64 .\Minotaur\Minotaur\Minotaur.csproj
