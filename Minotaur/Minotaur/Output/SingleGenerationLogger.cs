@@ -32,13 +32,13 @@ namespace Minotaur.Output {
 
 			var trainFitnessObjectiveNames = trainFitnessEvaluator
 				.Metrics
-				.Select(m => m.Name);
+				.Select(m => m.Name + " (train)");
 
 			fieldNames.AddRange(trainFitnessObjectiveNames);
 
 			var testFitnessObjectiveNames = testFitnessEvaluator
 				.Metrics
-				.Select(m => m.Name);
+				.Select(m => m.Name + " (test)");
 
 			fieldNames.AddRange(testFitnessObjectiveNames);
 			fieldNames.Add("Rules");
