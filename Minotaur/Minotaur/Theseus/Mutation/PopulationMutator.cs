@@ -6,12 +6,12 @@ namespace Minotaur.Theseus.Mutation {
 	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Random = Random.ThreadStaticRandom;
 
-	public sealed class PopulationMutatorMk2 {
+	public sealed class PopulationMutator {
 		private readonly IIndividualMutator _individualMutator;
 		private readonly int _mutantsPerGeneration;
 		private readonly int _maximumFailedAttemptsPerGeneration;
 
-		public PopulationMutatorMk2(
+		public PopulationMutator(
 			IIndividualMutator individualMutator,
 			int mutantsPerGeneration,
 			int maximumFailedAttemptsPerGeneration

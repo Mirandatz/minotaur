@@ -124,7 +124,7 @@ namespace Minotaur {
 				mutationChooser: individualMutationChooser,
 				ruleCreator: ruleCreator);
 
-			var populationMutator = new PopulationMutatorMk2(
+			var populationMutator = new PopulationMutator(
 				individualMutator: ruleSwappingindividualMutator,
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
