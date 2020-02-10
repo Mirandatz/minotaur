@@ -1,4 +1,4 @@
-namespace Minotaur.Theseus.IndividualMutation {
+namespace Minotaur.Theseus.Mutation {
 	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public interface IIndividualMutator {

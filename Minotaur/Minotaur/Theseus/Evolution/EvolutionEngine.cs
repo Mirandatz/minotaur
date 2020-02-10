@@ -6,7 +6,7 @@ namespace Minotaur.Theseus.Evolution {
 	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.EvolutionaryAlgorithms.Selection;
 	using Minotaur.Output;
-	using Minotaur.Theseus.IndividualMutation;
+	using Minotaur.Theseus.Mutation;
 
 	public sealed class EvolutionEngine {
 

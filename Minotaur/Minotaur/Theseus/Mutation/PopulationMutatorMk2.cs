@@ -1,4 +1,4 @@
-namespace Minotaur.Theseus.IndividualMutation {
+namespace Minotaur.Theseus.Mutation {
 	using System;
 	using System.Threading;
 	using System.Threading.Tasks;

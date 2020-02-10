@@ -1,4 +1,4 @@
-namespace Minotaur.Theseus.IndividualMutation {
+namespace Minotaur.Theseus.Mutation {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Random;

@@ -20,7 +20,7 @@ namespace Minotaur {
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.Evolution;
 	using Minotaur.Theseus.IndividualCreation;
-	using Minotaur.Theseus.IndividualMutation;
+	using Minotaur.Theseus.Mutation;
 	using Minotaur.Theseus.RuleCreation;
 
 	public static class Program {
