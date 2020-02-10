@@ -166,7 +166,7 @@ namespace Minotaur {
 				trainFitnessEvaluator: trainFitnessEvaluator,
 				testFitnessEvaluator: testFitnessEvaluator);
 
-			var evolutionEngine = new EvolutionEngineMk2(
+			var evolutionEngine = new EvolutionEngine(
 				maximumNumberOfGenerations: settings.MaximumGenerations,
 				fitnessEvaluator: trainFitnessEvaluator,
 				populationMutator: populationMutator,
