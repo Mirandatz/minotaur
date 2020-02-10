@@ -1,5 +1,5 @@
 namespace Minotaur.Theseus.IndividualMutation {
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public interface IIndividualMutator {
 		Individual? TryMutate(Individual original);

@@ -2,7 +2,7 @@ namespace Minotaur.Theseus.RuleCreation {
 	using System;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Math;
 	using Random = Random.ThreadStaticRandom;
 

@@ -1,8 +1,8 @@
-namespace Minotaur.GeneticAlgorithms {
+namespace Minotaur.EvolutionaryAlgorithms {
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms.Metrics;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Metrics;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class FitnessEvaluator {
 

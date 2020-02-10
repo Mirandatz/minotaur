@@ -1,7 +1,7 @@
-namespace Minotaur.GeneticAlgorithms.Metrics {
+namespace Minotaur.EvolutionaryAlgorithms.Metrics {
 	using Minotaur.Classification;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class AverageRuleVolume: IMetric {
 

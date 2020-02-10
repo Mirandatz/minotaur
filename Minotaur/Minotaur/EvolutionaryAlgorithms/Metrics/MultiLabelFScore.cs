@@ -1,9 +1,9 @@
-namespace Minotaur.GeneticAlgorithms.Metrics {
+namespace Minotaur.EvolutionaryAlgorithms.Metrics {
 	using System;
 	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	/// <summary>
 	/// Wrote to be compatible with MULAN:

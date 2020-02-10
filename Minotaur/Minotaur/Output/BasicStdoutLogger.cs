@@ -1,7 +1,7 @@
 namespace Minotaur.Output {
 	using System;
 	using System.Text;
-	using Minotaur.GeneticAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms;
 	using Minotaur.Theseus.Evolution;
 
 	public sealed class BasicStdoutLogger {

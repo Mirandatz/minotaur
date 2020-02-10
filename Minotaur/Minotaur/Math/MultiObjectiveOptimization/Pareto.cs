@@ -3,7 +3,7 @@ namespace Minotaur.Math.MultiObjectiveOptimization {
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
 	using Minotaur.ExtensionMethods.Span;
-	using Minotaur.GeneticAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms;
 
 	/// <remarks>
 	/// All the methods in this class assumes that fitnesses are to be maximized.

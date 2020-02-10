@@ -1,4 +1,4 @@
-namespace Minotaur.GeneticAlgorithms.Selection {
+namespace Minotaur.EvolutionaryAlgorithms.Selection {
 	using System;
 
 	public static class IFittestIdentifierParser {

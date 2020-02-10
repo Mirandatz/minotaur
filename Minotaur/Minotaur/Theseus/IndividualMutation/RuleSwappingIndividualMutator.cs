@@ -1,6 +1,6 @@
 namespace Minotaur.Theseus.IndividualMutation {
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Random;
 	using Minotaur.Theseus.RuleCreation;
 	using Random = Random.ThreadStaticRandom;

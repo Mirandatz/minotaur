@@ -2,7 +2,7 @@ namespace Minotaur.Output {
 	using System.Linq;
 	using Minotaur.Classification;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class SerializationHelper {
 

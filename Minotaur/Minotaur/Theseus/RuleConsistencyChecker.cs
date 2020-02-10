@@ -1,7 +1,7 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Collections.Generic;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class RuleConsistencyChecker {
 

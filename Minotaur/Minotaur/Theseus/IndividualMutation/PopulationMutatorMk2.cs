@@ -3,7 +3,7 @@ namespace Minotaur.Theseus.IndividualMutation {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class PopulationMutatorMk2 {

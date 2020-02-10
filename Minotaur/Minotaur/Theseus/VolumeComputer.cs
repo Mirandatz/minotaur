@@ -2,7 +2,7 @@ namespace Minotaur.Theseus {
 	using System;
 	using Minotaur.Classification;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public static class VolumeComputer {
 

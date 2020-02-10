@@ -2,9 +2,9 @@ namespace Minotaur.Theseus.Evolution {
 	using System;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms;
-	using Minotaur.GeneticAlgorithms.Population;
-	using Minotaur.GeneticAlgorithms.Selection;
+	using Minotaur.EvolutionaryAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Selection;
 	using Minotaur.Output;
 	using Minotaur.Theseus.IndividualMutation;
 

@@ -9,10 +9,10 @@ namespace Minotaur {
 	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms;
-	using Minotaur.GeneticAlgorithms.Metrics;
-	using Minotaur.GeneticAlgorithms.Population;
-	using Minotaur.GeneticAlgorithms.Selection;
+	using Minotaur.EvolutionaryAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms.Metrics;
+	using Minotaur.EvolutionaryAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Selection;
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Output;
 	using Minotaur.Profiling;

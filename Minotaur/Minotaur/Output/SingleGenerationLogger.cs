@@ -5,8 +5,8 @@ namespace Minotaur.Output {
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Theseus.Evolution;
 
 	public sealed class SingleGenerationLogger {

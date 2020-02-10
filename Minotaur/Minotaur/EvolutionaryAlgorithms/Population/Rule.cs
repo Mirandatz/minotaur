@@ -1,4 +1,4 @@
-namespace Minotaur.GeneticAlgorithms.Population {
+namespace Minotaur.EvolutionaryAlgorithms.Population {
 	using System;
 	using System.Linq;
 	using System.Text;

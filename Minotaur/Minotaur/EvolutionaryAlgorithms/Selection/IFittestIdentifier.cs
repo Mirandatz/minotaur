@@ -1,4 +1,4 @@
-namespace Minotaur.GeneticAlgorithms.Selection {
+namespace Minotaur.EvolutionaryAlgorithms.Selection {
 	using Minotaur.Collections;
 
 	public interface IFittestIdentifier {

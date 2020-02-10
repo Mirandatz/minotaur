@@ -1,8 +1,8 @@
-namespace Minotaur.GeneticAlgorithms.Metrics {
+namespace Minotaur.EvolutionaryAlgorithms.Metrics {
 	using System;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class SingleLabelFScore: IMetric {
 		public string Name => nameof(SingleLabelFScore);
