@@ -17,11 +17,11 @@ namespace Minotaur.Output {
 		private readonly Array<string> _fieldNames;
 
 		private readonly string _outputFilename;
-		private readonly FitnessEvaluatorMk2 _testFitnessEvaluator;
+		private readonly FitnessEvaluator _testFitnessEvaluator;
 
 		private GenerationResult? _lastGeneration;
 
-		public SingleGenerationLogger(string outputFilename, FitnessEvaluatorMk2 trainFitnessEvaluator, FitnessEvaluatorMk2 testFitnessEvaluator) {
+		public SingleGenerationLogger(string outputFilename, FitnessEvaluator trainFitnessEvaluator, FitnessEvaluator testFitnessEvaluator) {
 			if (File.Exists(outputFilename))
 				throw new ArgumentException(nameof(outputFilename) + " already exists.");
 

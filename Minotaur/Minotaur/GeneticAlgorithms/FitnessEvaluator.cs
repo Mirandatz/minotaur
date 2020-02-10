@@ -4,11 +4,11 @@ namespace Minotaur.GeneticAlgorithms {
 	using Minotaur.GeneticAlgorithms.Metrics;
 	using Minotaur.GeneticAlgorithms.Population;
 
-	public sealed class FitnessEvaluatorMk2 {
+	public sealed class FitnessEvaluator {
 
 		public readonly Array<IMetric> Metrics;
 
-		public FitnessEvaluatorMk2(Array<IMetric> metrics) {
+		public FitnessEvaluator(Array<IMetric> metrics) {
 			Metrics = metrics.ShallowCopy();
 		}
 

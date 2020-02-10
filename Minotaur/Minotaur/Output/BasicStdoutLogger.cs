@@ -8,9 +8,9 @@ namespace Minotaur.Output {
 
 		private readonly object _syncRoot = new object();
 
-		private readonly FitnessEvaluatorMk2 _testDatasetFitnessEvaluator;
+		private readonly FitnessEvaluator _testDatasetFitnessEvaluator;
 
-		public BasicStdoutLogger(FitnessEvaluatorMk2 testDatasetFitnessEvaluator) {
+		public BasicStdoutLogger(FitnessEvaluator testDatasetFitnessEvaluator) {
 			_testDatasetFitnessEvaluator = testDatasetFitnessEvaluator;
 		}
 

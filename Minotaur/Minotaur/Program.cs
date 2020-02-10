@@ -134,14 +134,14 @@ namespace Minotaur {
 				metricsNames: settings.MetricNames,
 				classificationType: settings.ClassificationType);
 
-			var trainFitnessEvaluator = new FitnessEvaluatorMk2(trainMetrics);
+			var trainFitnessEvaluator = new FitnessEvaluator(trainMetrics);
 
 			var testMetrics = IMetricParser.ParseMetrics(
 				dataset: testDataset,
 				metricsNames: settings.MetricNames,
 				classificationType: settings.ClassificationType);
 
-			var testFitnessEvaluator = new FitnessEvaluatorMk2(testMetrics);
+			var testFitnessEvaluator = new FitnessEvaluator(testMetrics);
 
 			var fittestIdentifier = IFittestIdentifierParser.Parse(
 				name: settings.SelectionAlgorithm,
