@@ -6,10 +6,10 @@ namespace Minotaur.EvolutionaryAlgorithms.Selection {
 	using Minotaur.Math;
 	using Minotaur.Math.MultiObjectiveOptimization;
 
-	public sealed class NSGA2Mk2: IFittestIdentifier {
+	public sealed class NSGA2: IFittestIdentifier {
 		private readonly int _fittestCount;
 
-		public NSGA2Mk2(int fittestCount) {
+		public NSGA2(int fittestCount) {
 			if (fittestCount <= 0)
 				throw new ArgumentOutOfRangeException(nameof(fittestCount));
 
