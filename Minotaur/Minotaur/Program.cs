@@ -69,10 +69,10 @@ namespace Minotaur {
 			PrintSettings(settings);
 
 			(var trainDataset, var testDataset) = DatasetLoader.LoadDatasets(
-				trainDataFilename: settings.TrainDataFilename,
-				trainLabelsFilename: settings.TrainLabelsFilename,
-				testDataFilename: settings.TestDataFilename,
-				testLabelsFilename: settings.TestLabelsFilename,
+				trainDataFilename: settings.TrainDataPath,
+				trainLabelsFilename: settings.TrainLabelsPath,
+				testDataFilename: settings.TestDataPath,
+				testLabelsFilename: settings.TestLabelsPath,
 				classificationType: settings.ClassificationType);
 
 			Console.WriteLine();
@@ -111,7 +111,7 @@ namespace Minotaur {
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,
 				hyperRectangleIntersector: hyperRectangleIntersector,
-				targetNumberOfInstancesToCover: settings.ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances);
+				targetNumberOfInstancesToCover: settings.TargetNumberOfInstancesToCoverDuringRuleCreationg);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {

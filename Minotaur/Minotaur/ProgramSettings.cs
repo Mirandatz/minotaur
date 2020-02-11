@@ -19,34 +19,34 @@ namespace Minotaur {
 		[FileExists]
 		[Option(
 			ShortName = "", LongName = "train-data",
-			Description = "Path to the .csv file containg the training data.")]
-		public string TrainDataFilename { get; } = string.Empty;
+			Description = "Path to the .csv file containg the training data. The .csv file must be headerless")]
+		public string TrainDataPath { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
 		[Option(
 			ShortName = "", LongName = "train-labels",
-			Description = "Path to the .csv file containg the training labels.")]
-		public string TrainLabelsFilename { get; } = string.Empty;
+			Description = "Path to the .csv file containg the training labels. The .csv file must be headerless.")]
+		public string TrainLabelsPath { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
 		[Option(
 			ShortName = "", LongName = "test-data",
-			Description = "Path to the.csv file containg the test data.")]
-		public string TestDataFilename { get; } = string.Empty;
+			Description = "Path to the.csv file containg the test data. The .csv file must be headerless")]
+		public string TestDataPath { get; } = string.Empty;
 
 		[Required]
 		[FileExists]
 		[Option(
 			ShortName = "", LongName = "test-labels",
-			Description = "Path to the .csv file containg the test labels.")]
-		public string TestLabelsFilename { get; } = string.Empty;
+			Description = "Path to the .csv file containg the test labels. The .csv file must be headerless")]
+		public string TestLabelsPath { get; } = string.Empty;
 
 		[Required]
 		[Option(
-			ShortName = "", LongName = "output-filename",
-			Description = "Output filename.")]
+			ShortName = "", LongName = "output-path",
+			Description = "Output path.")]
 		[FileNotExists]
 		public string OutputFilename { get; } = string.Empty;
 
@@ -62,14 +62,14 @@ namespace Minotaur {
 			ShortName = "", LongName = "max-generations",
 			Description =
 			"The maximum number of generations (iterations) to run. ")]
-		[Range(1, int.MaxValue)]
+		[Range(2, int.MaxValue)]
 		public int MaximumGenerations { get; }
 
 		[Required]
 		[Option(
 			ShortName = "", LongName = "population-size",
 			Description = "The number of individuals in the initial and final populations.")]
-		[Range(1, int.MaxValue)]
+		[Range(2, int.MaxValue)]
 		public int PopulationSize { get; }
 
 		[Required]
@@ -83,7 +83,7 @@ namespace Minotaur {
 		[Option(CommandOptionType.MultipleValue,
 			ShortName = "", LongName = "fitness-metrics",
 			Description = "The metrics to use as fitness during the training phase.")]
-		[AllowedValues("fscore", "average-rule-volume", "rule-count")]
+		[AllowedValues("fscore", "rule-count")]
 		public string[] MetricNames { get; } = null!;
 
 		[Required]
@@ -95,19 +95,19 @@ namespace Minotaur {
 
 		[Option(
 			ShortName = "", LongName = "individual-mutation-add-rule-weight",
-			Description = "The probability, when mutating a individual, of adding a new rule to it.")]
+			Description = "The relative weight, when mutating a individual, of adding a new rule to it.")]
 		[Range(0, int.MaxValue)]
 		public int IndividualMutationAddRuleWeight { get; } = 5;
 
 		[Option(
 			ShortName = "", LongName = "individual-mutation-modify-rule-weight",
-			Description = "The probability, when mutating a individual, of modifying a rule that it contains.")]
+			Description = "The relative weight, when mutating a individual, of modifying a rule that it contains.")]
 		[Range(0, int.MaxValue)]
 		public int IndividualMutationModifyRuleWeight { get; } = 20;
 
 		[Option(
 			ShortName = "", LongName = "individual-mutation-remove-rule-weight",
-			Description = "The probability, when mutating a individual, of removing a rule that it contains.")]
+			Description = "The relative weight, when mutating a individual, of removing a rule that it contains.")]
 		[Range(0, int.MaxValue)]
 		public int IndividualMutationRemoveRuleWeight { get; } = 10;
 
@@ -120,22 +120,20 @@ namespace Minotaur {
 		public int MaximumFailedMutationAttemptsPerGeneration { get; } = 2000;
 
 		[Required]
-		[Option(ShortName = "", LongName = "cfsbe-target-instance-coverage",
+		[Option(ShortName = "", LongName = "minotaur-hyperparameter-t",
 			Description = "After a consistent hyperrectangle is found using the " +
-			"Constrained Feature Space Box Enlargement algorithm, " +
+			"Constrained Feature-Space Box-Enlargement algorithm, " +
 			"one must create a rule inside such hyperrectangle. " +
 			"This paramater is used to specifiy how many instances such rule should " +
-			"try to cover." +
-			"Using a value that is too small may cause overfitting, " +
-			"while using a value that is too large may result in underfitting.")]
+			"try to cover.")]
 		[Range(1, int.MaxValue)]
-		public int ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances { get; }
+		public int TargetNumberOfInstancesToCoverDuringRuleCreationg { get; }
 
-		[Option(ShortName = "", LongName = "rule-consequent-threshold",
-			Description = "The consequent of a rule (i.e. the labels it predicted) are " +
-			"generated by averaging the labels of the dataset instances it covers and checking" +
-			"if they are above a certain threshold, defined by this parameter.")]
-		[Range(0f, 1f)]
+		//[Option(ShortName = "", LongName = "rule-consequent-threshold",
+		//	Description = "The consequent of a rule (i.e. the labels it predicts) are " +
+		//	"generated by averaging the labels of the dataset instances it covers and checking" +
+		//	"if they are above a certain threshold, defined by this parameter.")]
+		//[Range(0f, 1f)]
 		public float RuleConsequentThreshold { get; } = 0.5f;
 
 		[Option(ShortName = "", LongName = "expensive-sanity-checks",
