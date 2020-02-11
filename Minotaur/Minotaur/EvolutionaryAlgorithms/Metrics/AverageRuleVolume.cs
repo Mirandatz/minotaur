@@ -61,11 +61,6 @@ namespace Minotaur.EvolutionaryAlgorithms.Metrics {
 				return upper - lower;
 			}
 
-			if (test is NullFeatureTest) {
-				var (min, max) = _dataset.GetMinimumAndMaximumFeatureValues(featureIndex: testIndex);
-				return max - min;
-			}
-
 			throw CommonExceptions.UnknownFeatureTestImplementation;
 		}
 	}
