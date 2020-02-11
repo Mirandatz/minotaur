@@ -207,7 +207,6 @@ namespace Minotaur {
 			Console.WriteLine($"Train dataset instance count {trainDataset.InstanceCount}");
 			Console.WriteLine($"Train dataset feature count {trainDataset.FeatureCount}");
 			Console.WriteLine($"Train dataset class count {trainDataset.ClassCount}");
-			Console.WriteLine($"Train dataset volume {VolumeComputer.ComputeDatasetVolume(trainDataset)}");
 		}
 
 		private static Individual[] CreateInitialPopulation(IIndividualCreator individualCreator, ProgramSettings settings) {
