@@ -1,4 +1,7 @@
 namespace Minotaur.EvolutionaryAlgorithms {
+	using Minotaur.Collections;
+	using Minotaur.EvolutionaryAlgorithms.Metrics;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	/// <summary>
 	/// This class exists just to make the separation between the train and test
@@ -6,10 +9,16 @@ namespace Minotaur.EvolutionaryAlgorithms {
 	/// </summary>
 	public sealed class TestFitnessEvaluator {
 
-		public readonly FitnessEvaluator Evaluator;
+		private readonly FitnessEvaluator _evaluator;
+
+		public Array<IMetric> Metrics => _evaluator.Metrics;
 
 		public TestFitnessEvaluator(FitnessEvaluator fitnessEvaluator) {
-			Evaluator = fitnessEvaluator;
+			_evaluator = fitnessEvaluator;
 		}
+
+		public Fitness[] EvaluateAsMaximizationTask(Array<Individual> individuals) => _evaluator.EvaluateAsMaximizationTask(individuals);
+
+		public Fitness EvaluateAsMaximizationTask(Individual individual) => _evaluator.EvaluateAsMaximizationTask(individual);
 	}
 }
