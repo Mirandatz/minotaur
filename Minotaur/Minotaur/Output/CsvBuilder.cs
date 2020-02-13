@@ -64,15 +64,11 @@ namespace Minotaur.Output {
 			_fieldsWritten = 0;
 		}
 
-		public override string ToString() => throw new NotImplementedException($"You probably want to call {nameof(CsvBuilder.CopyTo)}.");
-
-		public void CopyTo(FileStream file) {
+		public override string ToString() {
 			if (_fieldsWritten != 0)
 				throw new InvalidOperationException();
 
-			using var textWritter = new StreamWriter(file);
-			foreach (var line in _records)
-				textWritter.Write(line);
+			return string.Join(separator: string.Empty, values: _records);
 		}
 	}
 }
