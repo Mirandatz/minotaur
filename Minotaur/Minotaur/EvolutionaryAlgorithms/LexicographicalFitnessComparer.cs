@@ -1,4 +1,4 @@
-namespace Minotaur.GeneticAlgorithms {
+namespace Minotaur.EvolutionaryAlgorithms {
 	using System;
 	using System.Collections.Generic;
 

@@ -1,6 +1,6 @@
 namespace Minotaur.Theseus {
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class FeatureTestDimensionIntervalConverter {

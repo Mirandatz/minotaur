@@ -1,8 +1,8 @@
 namespace Minotaur.Theseus.Evolution {
 	using System;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class GenerationResult {
 		public readonly int GenerationNumber;

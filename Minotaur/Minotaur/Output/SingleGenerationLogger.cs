@@ -5,8 +5,8 @@ namespace Minotaur.Output {
 	using System.Linq;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Theseus.Evolution;
 
 	public sealed class SingleGenerationLogger {
@@ -17,11 +17,11 @@ namespace Minotaur.Output {
 		private readonly Array<string> _fieldNames;
 
 		private readonly string _outputFilename;
-		private readonly FitnessEvaluatorMk2 _testFitnessEvaluator;
+		private readonly FitnessEvaluator _testFitnessEvaluator;
 
 		private GenerationResult? _lastGeneration;
 
-		public SingleGenerationLogger(string outputFilename, FitnessEvaluatorMk2 trainFitnessEvaluator, FitnessEvaluatorMk2 testFitnessEvaluator) {
+		public SingleGenerationLogger(string outputFilename, FitnessEvaluator trainFitnessEvaluator, FitnessEvaluator testFitnessEvaluator) {
 			if (File.Exists(outputFilename))
 				throw new ArgumentException(nameof(outputFilename) + " already exists.");
 

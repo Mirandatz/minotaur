@@ -1,5 +1,5 @@
-namespace Minotaur.GeneticAlgorithms.Metrics {
-	using Minotaur.GeneticAlgorithms.Population;
+namespace Minotaur.EvolutionaryAlgorithms.Metrics {
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class RuleCount: IMetric {
 

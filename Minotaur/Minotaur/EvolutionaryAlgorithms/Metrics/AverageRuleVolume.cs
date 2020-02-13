@@ -1,7 +1,7 @@
-namespace Minotaur.GeneticAlgorithms.Metrics {
+namespace Minotaur.EvolutionaryAlgorithms.Metrics {
 	using Minotaur.Classification;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class AverageRuleVolume: IMetric {
 
@@ -59,11 +59,6 @@ namespace Minotaur.GeneticAlgorithms.Metrics {
 					upper = featureValues[^1];
 
 				return upper - lower;
-			}
-
-			if (test is NullFeatureTest) {
-				var (min, max) = _dataset.GetMinimumAndMaximumFeatureValues(featureIndex: testIndex);
-				return max - min;
 			}
 
 			throw CommonExceptions.UnknownFeatureTestImplementation;

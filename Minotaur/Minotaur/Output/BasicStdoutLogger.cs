@@ -1,16 +1,16 @@
 namespace Minotaur.Output {
 	using System;
 	using System.Text;
-	using Minotaur.GeneticAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms;
 	using Minotaur.Theseus.Evolution;
 
 	public sealed class BasicStdoutLogger {
 
 		private readonly object _syncRoot = new object();
 
-		private readonly FitnessEvaluatorMk2 _testDatasetFitnessEvaluator;
+		private readonly FitnessEvaluator _testDatasetFitnessEvaluator;
 
-		public BasicStdoutLogger(FitnessEvaluatorMk2 testDatasetFitnessEvaluator) {
+		public BasicStdoutLogger(FitnessEvaluator testDatasetFitnessEvaluator) {
 			_testDatasetFitnessEvaluator = testDatasetFitnessEvaluator;
 		}
 

@@ -2,7 +2,7 @@ namespace Minotaur.Output {
 	using System.Linq;
 	using Minotaur.Classification;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class SerializationHelper {
 
@@ -31,14 +31,9 @@ namespace Minotaur.Output {
 		public static string Serialize(IFeatureTest test) {
 			return test switch
 			{
-				NullFeatureTest nft => Serialize(nft),
 				ContinuousFeatureTest cft => Serialize(cft),
 				_ => throw CommonExceptions.UnknownFeatureTestImplementation,
 			};
-		}
-
-		public static string Serialize(NullFeatureTest nullFeatureTest) {
-			return $"{float.NegativeInfinity} <= x[{nullFeatureTest.FeatureIndex}] < {float.PositiveInfinity}";
 		}
 
 		public static string Serialize(ContinuousFeatureTest continuousFeatureTest) {

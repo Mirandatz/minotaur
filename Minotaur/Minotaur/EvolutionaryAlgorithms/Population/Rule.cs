@@ -1,4 +1,4 @@
-namespace Minotaur.GeneticAlgorithms.Population {
+namespace Minotaur.EvolutionaryAlgorithms.Population {
 	using System;
 	using System.Linq;
 	using System.Text;
@@ -28,7 +28,6 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			Antecedent = antecedent;
 			Consequent = consequent;
 
-			NonNullTestCount = 0;
 			for (int i = 0; i < antecedent.Length; i++) {
 				var currentTest = antecedent[i];
 
@@ -36,16 +35,7 @@ namespace Minotaur.GeneticAlgorithms.Population {
 					throw new ArgumentException(nameof(antecedent) + " can't contain nulls.");
 
 				if (currentTest.FeatureIndex != i)
-					throw new ArgumentException(nameof(antecedent) + " must be sorted and can not contain multiple tests for the same feature");
-
-				if (!(currentTest is NullFeatureTest))
-					NonNullTestCount += 1;
-			}
-
-			if (NonNullTestCount < MinimumTestCount) {
-				throw new ArgumentException(
-					nameof(antecedent) + $" must contain at least {MinimumTestCount} " +
-					$"tests that are not {nameof(NullFeatureTest)}.");
+					throw new ArgumentException(nameof(antecedent) + " must be sorted and can not contain multiple tests for the same feature.");
 			}
 
 			_precomputedHashCode = PrecompileHashcode(antecedent, consequent);
@@ -74,12 +64,8 @@ namespace Minotaur.GeneticAlgorithms.Population {
 			return true;
 		}
 
-		public override string ToString() {
-			var builder = new StringBuilder();
-
-			var relevantTests = Antecedent.Where(t => !(t is NullFeatureTest));
-
-			var antecedent = "IF " + string.Join(" AND ", relevantTests);
+		public override string ToString() {			
+			var antecedent = "IF " + string.Join(" AND ", Antecedent);
 			var consequent = " THEN " + Consequent.ToString();
 			return antecedent + consequent;
 		}

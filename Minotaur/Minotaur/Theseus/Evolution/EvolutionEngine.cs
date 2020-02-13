@@ -2,22 +2,22 @@ namespace Minotaur.Theseus.Evolution {
 	using System;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms;
-	using Minotaur.GeneticAlgorithms.Population;
-	using Minotaur.GeneticAlgorithms.Selection;
+	using Minotaur.EvolutionaryAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Selection;
 	using Minotaur.Output;
-	using Minotaur.Theseus.IndividualMutation;
+	using Minotaur.Theseus.Mutation;
 
-	public sealed class EvolutionEngineMk2 {
+	public sealed class EvolutionEngine {
 
 		private readonly int _maximumNumberOfGenerations;
-		private readonly FitnessEvaluatorMk2 _fitnessEvaluator;
-		private readonly PopulationMutatorMk2 _populationMutator;
+		private readonly FitnessEvaluator _fitnessEvaluator;
+		private readonly PopulationMutator _populationMutator;
 		private readonly IFittestIdentifier _fittestIdentifier;
 		private readonly BasicStdoutLogger _stdoutLogger;
 		private readonly SingleGenerationLogger _fileLogger;
 
-		public EvolutionEngineMk2(int maximumNumberOfGenerations, FitnessEvaluatorMk2 fitnessEvaluator, PopulationMutatorMk2 populationMutator, IFittestIdentifier fittestIdentifier, BasicStdoutLogger stdoutLogger, SingleGenerationLogger fileLogger) {
+		public EvolutionEngine(int maximumNumberOfGenerations, FitnessEvaluator fitnessEvaluator, PopulationMutator populationMutator, IFittestIdentifier fittestIdentifier, BasicStdoutLogger stdoutLogger, SingleGenerationLogger fileLogger) {
 			if (maximumNumberOfGenerations <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumNumberOfGenerations));
 

@@ -1,7 +1,7 @@
 namespace Minotaur {
 	using System;
 	using Minotaur.Classification;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
 	public static class CommonExceptions {

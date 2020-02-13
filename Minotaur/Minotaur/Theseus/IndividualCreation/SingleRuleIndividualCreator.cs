@@ -1,7 +1,7 @@
 namespace Minotaur.Theseus.IndividualCreation {
 	using System;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Theseus.RuleCreation;
 
 	public sealed class SingleRuleIndividualCreator: IIndividualCreator {

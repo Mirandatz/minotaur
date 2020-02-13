@@ -1,7 +1,7 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public interface IRuleCreator {
 		Dataset Dataset { get; }

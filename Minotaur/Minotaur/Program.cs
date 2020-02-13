@@ -9,10 +9,10 @@ namespace Minotaur {
 	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms;
-	using Minotaur.GeneticAlgorithms.Metrics;
-	using Minotaur.GeneticAlgorithms.Population;
-	using Minotaur.GeneticAlgorithms.Selection;
+	using Minotaur.EvolutionaryAlgorithms;
+	using Minotaur.EvolutionaryAlgorithms.Metrics;
+	using Minotaur.EvolutionaryAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Selection;
 	using Minotaur.Math.Dimensions;
 	using Minotaur.Output;
 	using Minotaur.Profiling;
@@ -20,7 +20,7 @@ namespace Minotaur {
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.Evolution;
 	using Minotaur.Theseus.IndividualCreation;
-	using Minotaur.Theseus.IndividualMutation;
+	using Minotaur.Theseus.Mutation;
 	using Minotaur.Theseus.RuleCreation;
 
 	public static class Program {
@@ -69,10 +69,10 @@ namespace Minotaur {
 			PrintSettings(settings);
 
 			(var trainDataset, var testDataset) = DatasetLoader.LoadDatasets(
-				trainDataFilename: settings.TrainDataFilename,
-				trainLabelsFilename: settings.TrainLabelsFilename,
-				testDataFilename: settings.TestDataFilename,
-				testLabelsFilename: settings.TestLabelsFilename,
+				trainDataFilename: settings.TrainDataPath,
+				trainLabelsFilename: settings.TrainLabelsPath,
+				testDataFilename: settings.TestDataPath,
+				testLabelsFilename: settings.TestLabelsPath,
 				classificationType: settings.ClassificationType);
 
 			Console.WriteLine();
@@ -111,7 +111,7 @@ namespace Minotaur {
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,
 				hyperRectangleIntersector: hyperRectangleIntersector,
-				targetNumberOfInstancesToCover: settings.ConstrainedFeatureSpaceBoxEnlargementTargetNumberOfInstances);
+				targetNumberOfInstancesToCover: settings.TargetNumberOfInstancesToCoverDuringRuleCreationg);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {
@@ -124,7 +124,7 @@ namespace Minotaur {
 				mutationChooser: individualMutationChooser,
 				ruleCreator: ruleCreator);
 
-			var populationMutator = new PopulationMutatorMk2(
+			var populationMutator = new PopulationMutator(
 				individualMutator: ruleSwappingindividualMutator,
 				mutantsPerGeneration: settings.MutantsPerGeneration,
 				maximumFailedAttemptsPerGeneration: settings.MaximumFailedMutationAttemptsPerGeneration);
@@ -134,14 +134,14 @@ namespace Minotaur {
 				metricsNames: settings.MetricNames,
 				classificationType: settings.ClassificationType);
 
-			var trainFitnessEvaluator = new FitnessEvaluatorMk2(trainMetrics);
+			var trainFitnessEvaluator = new FitnessEvaluator(trainMetrics);
 
 			var testMetrics = IMetricParser.ParseMetrics(
 				dataset: testDataset,
 				metricsNames: settings.MetricNames,
 				classificationType: settings.ClassificationType);
 
-			var testFitnessEvaluator = new FitnessEvaluatorMk2(testMetrics);
+			var testFitnessEvaluator = new FitnessEvaluator(testMetrics);
 
 			var fittestIdentifier = IFittestIdentifierParser.Parse(
 				name: settings.SelectionAlgorithm,
@@ -166,7 +166,7 @@ namespace Minotaur {
 				trainFitnessEvaluator: trainFitnessEvaluator,
 				testFitnessEvaluator: testFitnessEvaluator);
 
-			var evolutionEngine = new EvolutionEngineMk2(
+			var evolutionEngine = new EvolutionEngine(
 				maximumNumberOfGenerations: settings.MaximumGenerations,
 				fitnessEvaluator: trainFitnessEvaluator,
 				populationMutator: populationMutator,
@@ -207,7 +207,6 @@ namespace Minotaur {
 			Console.WriteLine($"Train dataset instance count {trainDataset.InstanceCount}");
 			Console.WriteLine($"Train dataset feature count {trainDataset.FeatureCount}");
 			Console.WriteLine($"Train dataset class count {trainDataset.ClassCount}");
-			Console.WriteLine($"Train dataset volume {VolumeComputer.ComputeDatasetVolume(trainDataset)}");
 		}
 
 		private static Individual[] CreateInitialPopulation(IIndividualCreator individualCreator, ProgramSettings settings) {

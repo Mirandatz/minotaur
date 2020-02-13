@@ -2,7 +2,7 @@ namespace Minotaur.Theseus {
 	using System;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 
 	public sealed class SeedFinder {
 		public readonly Dataset Dataset;

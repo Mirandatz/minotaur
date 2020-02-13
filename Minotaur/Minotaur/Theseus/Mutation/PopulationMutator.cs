@@ -1,17 +1,17 @@
-namespace Minotaur.Theseus.IndividualMutation {
+namespace Minotaur.Theseus.Mutation {
 	using System;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using Minotaur.Collections;
-	using Minotaur.GeneticAlgorithms.Population;
+	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Random = Random.ThreadStaticRandom;
 
-	public sealed class PopulationMutatorMk2 {
+	public sealed class PopulationMutator {
 		private readonly IIndividualMutator _individualMutator;
 		private readonly int _mutantsPerGeneration;
 		private readonly int _maximumFailedAttemptsPerGeneration;
 
-		public PopulationMutatorMk2(
+		public PopulationMutator(
 			IIndividualMutator individualMutator,
 			int mutantsPerGeneration,
 			int maximumFailedAttemptsPerGeneration
