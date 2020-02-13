@@ -56,35 +56,37 @@ namespace Minotaur.Output {
 			if (_lastGeneration == null)
 				throw new InvalidOperationException();
 
-			var builder = new CsvBuilder(
-				fieldsSeparator: FieldSeparator,
-				recordSeparator: RecordSeparator,
-				fieldNames: _fieldNames.ToArray());
+			throw new NotImplementedException();
 
-			var population = _lastGeneration.Population;
-			var trainFitnesses = _lastGeneration.Fitnesses;
-			var testFitnesses = _testFitnessEvaluator.EvaluateAsMaximizationTask(population);
+			//var builder = new CsvBuilder(
+			//	fieldsSeparator: FieldSeparator,
+			//	recordSeparator: RecordSeparator,
+			//	fieldNames: _fieldNames.ToArray());
 
-			for (int individualIndex = 0; individualIndex < population.Length; individualIndex++) {
-				var individual = population[individualIndex];
-				builder.AddField(_lastGeneration.GenerationNumber.ToString());
-				builder.AddField(individual.Id.ToString());
-				builder.AddField(individual.ParentId.ToString());
+			//var population = _lastGeneration.Population;
+			//var trainFitnesses = _lastGeneration.Fitnesses;
+			//var testFitnesses = _testFitnessEvaluator.EvaluateAsMaximizationTask(population);
 
-				var trainFitness = trainFitnesses[individualIndex];
-				foreach (var trainObjective in trainFitness)
-					builder.AddField(trainObjective.ToString());
+			//for (int individualIndex = 0; individualIndex < population.Length; individualIndex++) {
+			//	var individual = population[individualIndex];
+			//	builder.AddField(_lastGeneration.GenerationNumber.ToString());
+			//	builder.AddField(individual.Id.ToString());
+			//	builder.AddField(individual.ParentId.ToString());
 
-				var testFitness = testFitnesses[individualIndex];
-				foreach (var testObjective in testFitness)
-					builder.AddField(testObjective.ToString());
+			//	var trainFitness = trainFitnesses[individualIndex];
+			//	foreach (var trainObjective in trainFitness)
+			//		builder.AddField(trainObjective.ToString());
 
-				builder.AddField(SerializationHelper.Serialize(individual.Rules));
+			//	var testFitness = testFitnesses[individualIndex];
+			//	foreach (var testObjective in testFitness)
+			//		builder.AddField(testObjective.ToString());
 
-				builder.FinishRecord();
-			}
-			using var file = File.OpenWrite(_outputFilename);
-			builder.CopyTo(file);
+			//	builder.AddField(SerializationHelper.Serialize(individual.Rules));
+
+			//	builder.FinishRecord();
+			//}
+			//using var file = File.OpenWrite(_outputFilename);
+			//builder.CopyTo(file);
 		}
 	}
 }
