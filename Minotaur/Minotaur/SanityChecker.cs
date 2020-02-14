@@ -8,7 +8,7 @@ namespace Minotaur {
 		private static bool _isDefined = false;
 		private static bool _performChecks = true;
 
-		public static bool PerformChecks {
+		public static bool PerformExpensiveChecks {
 			get {
 				lock (_lock) {
 					if (!_isDefined)
@@ -31,7 +31,7 @@ namespace Minotaur {
 		}
 
 		public static void Run(Action action) {
-			if (PerformChecks)
+			if (PerformExpensiveChecks)
 				action();
 		}
 	}

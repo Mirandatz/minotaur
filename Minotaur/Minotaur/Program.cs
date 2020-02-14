@@ -14,6 +14,7 @@ namespace Minotaur {
 	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.EvolutionaryAlgorithms.Selection;
 	using Minotaur.Math.Dimensions;
+	using Minotaur.Output;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.Evolution;
@@ -31,38 +32,37 @@ namespace Minotaur {
 		}
 
 		private static string[] LazyDevArguments() {
-			File.Delete("C:/Source/minotaur.output/output.csv");
-
-
 			return new string[] {
-				"--train-data=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/train-data.csv",
-				"--train-labels=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/train-labels.csv",
-				"--test-data=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/test-data.csv",
-				"--test-labels=c:/source/minotaur-gecco2020/datasets/yeast/folds/0/test-labels.csv",
+				"--train-data=c:/source/datasets/yeast/folds/0/train-data.csv",
+				"--train-labels=c:/source/datasets/yeast/folds/0/train-labels.csv",
+				"--test-data=c:/source/datasets/yeast/folds/0/test-data.csv",
+				"--test-labels=c:/source/datasets/yeast/folds/0/test-labels.csv",
 
 				"--classification-type=multilabel",
 
-				"--output-filename=C:/Source/minotaur.output/output.csv",
+				"--output-dir=C:/Source/minotaur/temp",
 
 				"--fitness-metrics=fscore",
 				"--fitness-metrics=rule-count",
 				"--fittest-selection=nsga2",
+
+				"--save-models",
+				"--save-train-predictions",
+				"--save-test-predictions",
 
 				"--population-size=30",
 				"--mutants-per-generation=10",
 
 				"--max-generations=200",
 
-				"--cfsbe-target-instance-coverage=100",
-
-				"--rule-consequent-threshold=0.5",
-				"--expensive-sanity-checks=false"
+				"--minotaur-hyperparameter-t=100",
 			};
 		}
 
 		public static int Run(ProgramSettings settings) {
 			ThreadPool.SetMaxThreads(Environment.ProcessorCount, Environment.ProcessorCount);
-			SanityChecker.PerformChecks = bool.Parse(settings.ExpensiveSanityChecks);
+
+			SanityChecker.PerformExpensiveChecks = !settings.DisableExpensiveSanityChecks;
 
 			PrintSettings(settings);
 
@@ -151,11 +151,25 @@ namespace Minotaur {
 				individualCreator: individualCreator,
 				settings: settings);
 
-			var consistencyChecker = new RuleConsistencyChecker(
-				ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
-				hyperRectangleIntersector: hyperRectangleIntersector);
+			var populationFitnessSerializer = new PopulationFitnessSerializer(
+				trainFitnessEvaluator: trainFitnessEvaluator,
+				testFitnessEvaluator: testFitnessEvaluator);
 
-			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
+			var trainPredictionsSerializer = new PredictionsSerializer(dataset: trainDataset);
+			var testPredictionsSerializer = new PredictionsSerializer(dataset: testDataset);
+
+			var persistentOutputManager = new PersistentOutputManager(
+				outputDirectory: settings.OutputDirectory,
+				saveModels: settings.SaveModels,
+				saveTrainPredictions: settings.SaveTrainPredictions,
+				saveTestPredictions: settings.SaveTestPredictions,
+				populationFitnessSerializer: populationFitnessSerializer,
+				trainPredictionsSerializer: trainPredictionsSerializer,
+				testPredictionsSerializer: testPredictionsSerializer);
+
+			//var consistencyChecker = new RuleConsistencyChecker(
+			//	ruleAntecedentHyperRectangleConverterconverter: ruleAntecedentHyperRectangleConverter,
+			//	hyperRectangleIntersector: hyperRectangleIntersector);
 
 			var evolutionEngine = new EvolutionEngine(
 				maximumNumberOfGenerations: settings.MaximumGenerations,
@@ -168,6 +182,8 @@ namespace Minotaur {
 				Console.WriteLine($"Evolution cycle stopped. Reason: maximum number of generations reached.");
 			else
 				Console.WriteLine($"Evolution cycle stopped. Reason: maximum number of generations reached.");
+
+			persistentOutputManager.SaveWhatMustBeSaved(population: lastGenerationSummary.Population);
 
 			Console.WriteLine("Done.");
 
@@ -188,50 +204,24 @@ namespace Minotaur {
 
 		private static void PrintTrainDatasetInformation(Dataset trainDataset) {
 			Console.WriteLine();
-			Console.WriteLine("Train dataset information");
+			Console.WriteLine($"Train dataset information");
 			Console.WriteLine($"Train dataset instance count {trainDataset.InstanceCount}");
 			Console.WriteLine($"Train dataset feature count {trainDataset.FeatureCount}");
 			Console.WriteLine($"Train dataset class count {trainDataset.ClassCount}");
 		}
 
 		private static Individual[] CreateInitialPopulation(IIndividualCreator individualCreator, ProgramSettings settings) {
-			var statusReportPrefix = "Creating initial population: ";
-			var statusReport = $"" +
-				$"{statusReportPrefix} " +
-				$"0 / {settings.PopulationSize}";
-
-			Console.Write(statusReport);
+			Console.Write("Creating initial population...");
 
 			var population = new Individual[settings.PopulationSize];
-			var created = 0L;
 
 			Parallel.For(0, population.Length, i => {
 				population[i] = individualCreator.CreateFirstGenerationIndividual();
-
-				statusReport = $"" +
-				$"\r{statusReportPrefix} " +
-				$"{Interlocked.Increment(ref created)} / {settings.PopulationSize}";
-
-				Console.Write(statusReport);
 			});
 
 			Console.WriteLine(" Done.");
 
 			return population;
-		}
-
-		private static void CheckInitialPopulationConsistency(RuleConsistencyChecker consistencyChecker, Individual[] population) {
-			Console.Write("Checking if the population is consistent... ");
-
-			Parallel.For(0, population.Length, i => {
-				var individual = population[i];
-				var isConsistent = consistencyChecker.IsConsistent(individual);
-				if (!isConsistent) {
-					throw new InvalidOperationException();
-				}
-			});
-
-			Console.WriteLine("Yep, it is.");
 		}
 	}
 }

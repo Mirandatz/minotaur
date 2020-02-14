@@ -45,10 +45,25 @@ namespace Minotaur {
 
 		[Required]
 		[Option(
-			ShortName = "", LongName = "output-path",
-			Description = "Output path.")]
-		[FileNotExists]
-		public string OutputFilename { get; } = string.Empty;
+			ShortName = "", LongName = "output-dir",
+			Description = "Output directory.")]
+		[DirectoryExists]
+		public string OutputDirectory { get; } = string.Empty;
+
+		[Option(
+			ShortName = "", LongName = "save-models",
+			Description = "Whether the models should be saved to disk.")]
+		public bool SaveModels { get; } = false;
+
+		[Option(
+			ShortName = "", LongName = "save-train-predictions",
+			Description = "Whether the predictions for the train dataset should be saved to disk.")]
+		public bool SaveTrainPredictions { get; } = false;
+
+		[Option(
+			ShortName = "", LongName = "save-test-predictions",
+			Description = "Whether the predictions for the test dataset should be saved to disk.")]
+		public bool SaveTestPredictions { get; } = false;
 
 		[Required]
 		[Option(
@@ -69,7 +84,7 @@ namespace Minotaur {
 		[Option(
 			ShortName = "", LongName = "population-size",
 			Description = "The number of individuals in the initial and final populations.")]
-		[Range(2, int.MaxValue)]
+		[Range(5, int.MaxValue)]
 		public int PopulationSize { get; }
 
 		[Required]
@@ -136,10 +151,9 @@ namespace Minotaur {
 		//[Range(0f, 1f)]
 		public float RuleConsequentThreshold { get; } = 0.5f;
 
-		[Option(ShortName = "", LongName = "expensive-sanity-checks",
+		[Option(ShortName = "", LongName = "disable-expensive-sanity-checks",
 			Description = "Whether sanity checks should be performed or not. " +
 			"This is a debug feature; enabling it may cause degrade the performance.")]
-		[AllowedValues("false", "true")]
-		public string ExpensiveSanityChecks { get; } = "true";
+		public bool DisableExpensiveSanityChecks { get; } = false;
 	}
 }
