@@ -6,7 +6,7 @@ namespace Minotaur.Output {
 	using Minotaur.EvolutionaryAlgorithms;
 	using Minotaur.EvolutionaryAlgorithms.Population;
 
-	public sealed class PopulationFitnessSerializer {
+	public static class PopulationFitnessSerializer {
 
 		public static void SerializeFitnesses(TextWriter textWriter, Array<Individual> population, TrainFitnessEvaluator trainFitnessEvaluator, TestFitnessEvaluator testFitnessEvaluator) {
 			using var csvWriter = new CsvWriter(writer: textWriter, cultureInfo: CultureInfo.InvariantCulture);
