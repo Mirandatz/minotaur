@@ -25,7 +25,7 @@ namespace Minotaur.Theseus.Evolution {
 			_fittestIdentifier = fittestIdentifier;
 		}
 
-		public GenerationResult Run(Array<Individual> initialPopulation) {
+		public GenerationSummary Run(Array<Individual> initialPopulation) {
 			if (initialPopulation.Length == 0)
 				throw new ArgumentException(nameof(initialPopulation));
 
@@ -43,13 +43,13 @@ namespace Minotaur.Theseus.Evolution {
 				oldFitnesses = generationResult.Fitnesses;
 			}
 
-			return new GenerationResult(
+			return new GenerationSummary(
 				generationNumber: generationNumber,
 				population: oldPopulation,
 				fitnesses: oldFitnesses);
 		}
 
-		private GenerationResult? RunSingleGeneration(int generationNumber, Array<Individual> population, Array<Fitness> populationFitnesses) {
+		private GenerationSummary? RunSingleGeneration(int generationNumber, Array<Individual> population, Array<Fitness> populationFitnesses) {
 			var mutants = _populationMutator.TryMutate(population);
 			if (mutants is null)
 				return null;
@@ -67,7 +67,7 @@ namespace Minotaur.Theseus.Evolution {
 				indices: fittestIndices,
 				items: fittestCandidatesFitnesses);
 
-			return new GenerationResult(
+			return new GenerationSummary(
 				generationNumber: generationNumber,
 				population: fittestIndividuals,
 				fitnesses: fittestIndividualsFitnesses);

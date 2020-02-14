@@ -4,12 +4,12 @@ namespace Minotaur.Theseus.Evolution {
 	using Minotaur.EvolutionaryAlgorithms;
 	using Minotaur.EvolutionaryAlgorithms.Population;
 
-	public sealed class GenerationResult {
+	public sealed class GenerationSummary {
 		public readonly int GenerationNumber;
 		public readonly Array<Individual> Population;
 		public readonly Array<Fitness> Fitnesses;
 
-		public GenerationResult(int generationNumber, Array<Individual> population, Array<Fitness> fitnesses) {
+		public GenerationSummary(int generationNumber, Array<Individual> population, Array<Fitness> fitnesses) {
 			if (generationNumber < 0)
 				throw new ArgumentOutOfRangeException(nameof(generationNumber));
 			if (population.Length != fitnesses.Length)
