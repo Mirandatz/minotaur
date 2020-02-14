@@ -1,32 +1,28 @@
 namespace Minotaur.Output {
+	using System.Globalization;
+	using System.IO;
 	using System.Linq;
+	using CsvHelper;
 	using Minotaur.Classification;
 	using Minotaur.EvolutionaryAlgorithms.Population;
 
-	public sealed class ModelSerializer {
+	public static class ModelSerializer {
 
-		private readonly CsvSeparators _separators;
-
-		public ModelSerializer(CsvSeparators separators) {
-			_separators = separators;
-		}
-
-		public string Serialize(Individual individual) {
-			var builder = GetCsvBuilder(individual);
+		public static void Serialize(TextWriter textWriter, Individual individual) {
+			using var csvWriter = new CsvWriter(writer: textWriter, cultureInfo: CultureInfo.InvariantCulture);
+			WriteHeader(csvWriter, individual);
 
 			foreach (var rule in individual.Rules) {
 				foreach (var ft in rule.Antecedent) {
-					builder.AddField(SerializeFeatureTest(ft));
+					csvWriter.WriteField(SerializeFeatureTest(ft));
 				}
 
-				builder.AddField(SerializeConsequent(rule.Consequent));
-				builder.FinishRecord();
+				csvWriter.WriteField(SerializeConsequent(rule.Consequent));
+				csvWriter.NextRecord();
 			}
-
-			return builder.ToString();
 		}
 
-		private string SerializeFeatureTest(IFeatureTest featureTest) {
+		private static string SerializeFeatureTest(IFeatureTest featureTest) {
 			return featureTest switch
 			{
 				ContinuousFeatureTest cft => SerializeContinuousFeatureTest(cft),
@@ -39,7 +35,7 @@ namespace Minotaur.Output {
 			}
 		}
 
-		private string SerializeConsequent(ILabel consequent) {
+		private static string SerializeConsequent(ILabel consequent) {
 			return consequent switch
 			{
 				SingleLabel sl => SerializeSingleLabel(sl),
@@ -66,20 +62,20 @@ namespace Minotaur.Output {
 			}
 		}
 
-		private CsvBuilder GetCsvBuilder(Individual individual) {
+		private static void WriteHeader(CsvWriter csvWriter, Individual individual) {
 			// @Assumption: all rules have the same size and consequent type
 
 			var fieldNames = individual
 				.Rules[0]
 				.Antecedent
-				.Select(ft => $"FeatureTest-{ft.FeatureIndex}")
+				.Select(ft => $"Feature Test {ft.FeatureIndex}")
 				.ToList();
 
 			fieldNames.Add("Consequent");
 
-			return new CsvBuilder(
-				separators: _separators,
-				fieldNames: fieldNames.ToArray());
+			foreach (var f in fieldNames)
+				csvWriter.WriteField(f);
+			csvWriter.NextRecord();
 		}
 	}
 }
