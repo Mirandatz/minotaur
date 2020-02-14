@@ -14,8 +14,6 @@ namespace Minotaur {
 	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.EvolutionaryAlgorithms.Selection;
 	using Minotaur.Math.Dimensions;
-	using Minotaur.Output;
-	using Minotaur.Profiling;
 	using Minotaur.Random;
 	using Minotaur.Theseus;
 	using Minotaur.Theseus.Evolution;
@@ -171,8 +169,6 @@ namespace Minotaur {
 			else
 				Console.WriteLine($"Evolution cycle stopped. Reason: maximum number of generations reached.");
 
-			PrintTicks();
-
 			Console.WriteLine("Done.");
 
 			return 0;
@@ -236,12 +232,6 @@ namespace Minotaur {
 			});
 
 			Console.WriteLine("Yep, it is.");
-		}
-
-		private static void PrintTicks() {
-			Console.WriteLine();
-			Console.WriteLine($"Fitness evaluation ticks: {Timers.FitnessEvaluationTicks}");
-			Console.WriteLine($"CFSBE ticks: {Timers.CFSBETicks}");
 		}
 	}
 }
