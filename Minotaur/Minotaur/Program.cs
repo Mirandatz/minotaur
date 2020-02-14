@@ -165,8 +165,8 @@ namespace Minotaur {
 				populationMutator: populationMutator,
 				fittestIdentifier: fittestIdentifier);
 
-			var lastGenerationResult = evolutionEngine.Run(initialPopulation);
-			if (lastGenerationResult.GenerationNumber == settings.MaximumGenerations)
+			var lastGenerationSummary = evolutionEngine.Run(initialPopulation);
+			if (lastGenerationSummary.GenerationNumber == settings.MaximumGenerations)
 				Console.WriteLine($"Evolution cycle stopped. Reason: maximum number of generations reached.");
 			else
 				Console.WriteLine($"Evolution cycle stopped. Reason: maximum number of generations reached.");
