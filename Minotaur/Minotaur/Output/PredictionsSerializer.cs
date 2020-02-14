@@ -6,14 +6,20 @@ namespace Minotaur.Output {
 	using Minotaur.Collections.Dataset;
 	using Minotaur.EvolutionaryAlgorithms.Population;
 
-	public static class PredictionsSerializer {
+	public sealed class PredictionsSerializer {
 
-		public static void SerializePredictions(TextWriter textWriter, Individual individual, Dataset dataset) {
+		private readonly Dataset _dataset;
+
+		public PredictionsSerializer(Dataset dataset) {
+			_dataset = dataset;
+		}
+
+		public void SerializePredictions(TextWriter textWriter, Individual individual) {
 			using var csvWriter = new CsvWriter(writer: textWriter, cultureInfo: CultureInfo.InvariantCulture);
 
-			var predictions = individual.Predict(dataset);
+			var predictions = individual.Predict(_dataset);
 
-			switch (dataset.ClassificationType) {
+			switch (_dataset.ClassificationType) {
 
 			case ClassificationType.SingleLabel:
 			SerializeSingleLabelPredictions(csvWriter, (SingleLabel[]) predictions);
