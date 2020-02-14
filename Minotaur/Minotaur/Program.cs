@@ -159,20 +159,11 @@ namespace Minotaur {
 
 			CheckInitialPopulationConsistency(consistencyChecker, initialPopulation);
 
-			var stdoutLogger = new BasicStdoutLogger(testDatasetFitnessEvaluator: testFitnessEvaluator);
-
-			var fileLogger = new SingleGenerationLogger(
-				outputFilename: settings.OutputFilename,
-				trainFitnessEvaluator: trainFitnessEvaluator,
-				testFitnessEvaluator: testFitnessEvaluator);
-
 			var evolutionEngine = new EvolutionEngine(
 				maximumNumberOfGenerations: settings.MaximumGenerations,
 				fitnessEvaluator: trainFitnessEvaluator,
 				populationMutator: populationMutator,
-				fittestIdentifier: fittestIdentifier,
-				stdoutLogger: stdoutLogger,
-				fileLogger: fileLogger);
+				fittestIdentifier: fittestIdentifier);
 
 			var lastGenerationResult = evolutionEngine.Run(initialPopulation);
 			if (lastGenerationResult.GenerationNumber == settings.MaximumGenerations)
@@ -182,8 +173,6 @@ namespace Minotaur {
 
 			PrintTicks();
 
-			Console.Write("Writing output to disk... ");
-			fileLogger.WriteToDisk();
 			Console.WriteLine("Done.");
 
 			return 0;
