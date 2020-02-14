@@ -1,6 +1,7 @@
 namespace Minotaur.Output {
 	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using CsvHelper;
 	using Minotaur.Classification;
 	using Minotaur.Collections.Dataset;
@@ -22,11 +23,13 @@ namespace Minotaur.Output {
 			switch (_dataset.ClassificationType) {
 
 			case ClassificationType.SingleLabel:
-			SerializeSingleLabelPredictions(csvWriter, (SingleLabel[]) predictions);
+			var singleLabelPredictions = predictions.Cast<SingleLabel>().ToArray();
+			SerializeSingleLabelPredictions(csvWriter, singleLabelPredictions);
 			break;
 
 			case ClassificationType.MultiLabel:
-			SerializeMultiLabelPredictions(csvWriter, (MultiLabel[]) predictions);
+			var multiLabelPredictions = predictions.Cast<MultiLabel>().ToArray();
+			SerializeMultiLabelPredictions(csvWriter, multiLabelPredictions);
 			break;
 
 			default:
