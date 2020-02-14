@@ -8,10 +8,10 @@ namespace Minotaur.Output {
 
 	public sealed class PopulationFitnessSerializer {
 
-		private readonly TrainFitnessEvaluator _trainFitnessEvaluator;
-		private readonly TestFitnessEvaluator _testFitnessEvaluator;
+		private readonly FitnessEvaluator _trainFitnessEvaluator;
+		private readonly FitnessEvaluator _testFitnessEvaluator;
 
-		public PopulationFitnessSerializer(TrainFitnessEvaluator trainFitnessEvaluator, TestFitnessEvaluator testFitnessEvaluator) {
+		public PopulationFitnessSerializer(FitnessEvaluator trainFitnessEvaluator, FitnessEvaluator testFitnessEvaluator) {
 			_trainFitnessEvaluator = trainFitnessEvaluator;
 			_testFitnessEvaluator = testFitnessEvaluator;
 		}
