@@ -5,7 +5,7 @@ namespace Minotaur.Output {
 	using Minotaur.Collections;
 	using Minotaur.EvolutionaryAlgorithms.Population;
 
-	public sealed class OutputManager {
+	public sealed class PersistentOutputManager {
 
 		private readonly string _outputDirectory;
 
@@ -17,7 +17,7 @@ namespace Minotaur.Output {
 		private readonly PredictionsSerializer _trainPredictionsSerializer;
 		private readonly PredictionsSerializer _testPredictionsSerializer;
 
-		public OutputManager(string outputDirectory, bool saveModels, bool saveTrainPredictions, bool saveTestPredictions, PopulationFitnessSerializer populationFitnessSerializer, PredictionsSerializer trainPredictionsSerializer, PredictionsSerializer testPredictionsSerializer) {
+		public PersistentOutputManager(string outputDirectory, bool saveModels, bool saveTrainPredictions, bool saveTestPredictions, PopulationFitnessSerializer populationFitnessSerializer, PredictionsSerializer trainPredictionsSerializer, PredictionsSerializer testPredictionsSerializer) {
 			if (!Directory.Exists(outputDirectory))
 				throw new ArgumentException();
 
