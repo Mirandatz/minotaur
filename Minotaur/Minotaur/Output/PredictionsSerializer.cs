@@ -46,10 +46,7 @@ namespace Minotaur.Output {
 
 		private static void SerializeMultiLabelPredictions(CsvWriter csvWriter, MultiLabel[] datasetPredictions) {
 			foreach (var instancePrediction in datasetPredictions) {
-				foreach (var label in instancePrediction.Values) {
-					csvWriter.WriteField(label);
-				}
-
+				csvWriter.WriteField(instancePrediction.ToBinaryArrayString());
 				csvWriter.NextRecord();
 			}
 		}

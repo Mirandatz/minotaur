@@ -56,6 +56,8 @@ namespace Minotaur {
 				"--max-generations=200",
 
 				"--minotaur-hyperparameter-t=100",
+
+				"--disable-expensive-sanity-checks"
 			};
 		}
 

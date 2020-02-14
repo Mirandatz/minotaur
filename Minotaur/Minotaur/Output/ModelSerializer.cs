@@ -49,16 +49,7 @@ namespace Minotaur.Output {
 			}
 
 			static string SerializeMultiLabel(MultiLabel multiLabel) {
-				var serialized = new char[multiLabel.Length];
-				for (int i = 0; i < serialized.Length; i++) {
-					serialized[i] = multiLabel[i] switch
-					{
-						false => '0',
-						true => '1',
-					};
-				}
-
-				return new string(serialized);
+				return multiLabel.ToBinaryArrayString();
 			}
 		}
 
