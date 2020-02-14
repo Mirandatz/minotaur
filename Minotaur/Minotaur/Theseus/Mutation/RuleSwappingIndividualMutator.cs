@@ -46,7 +46,6 @@ namespace Minotaur.Theseus.Mutation {
 			newRules[^1] = newRule;
 
 			return new Individual(
-				parentId: original.Id,
 				rules: newRules,
 				defaultPrediction: original.DefaultPrediction);
 		}
@@ -91,7 +90,6 @@ namespace Minotaur.Theseus.Mutation {
 				newItem: newRule);
 
 			return new Individual(
-				parentId: original.Id,
 				rules: newRules,
 				defaultPrediction: original.DefaultPrediction);
 		}
@@ -110,7 +108,6 @@ namespace Minotaur.Theseus.Mutation {
 			var newRules = oldRules.Remove(indexToRemove);
 
 			return new Individual(
-				parentId: original.Id,
 				rules: newRules,
 				defaultPrediction: original.DefaultPrediction);
 		}

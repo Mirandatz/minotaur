@@ -12,7 +12,6 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 	/// </summary>
 	public sealed class Individual: IEquatable<Individual> {
 		private const int MinimumRuleCount = 1;
-		private const long AllFatherId = 0;
 
 		private static long _individualsCreated = 0;
 
@@ -23,14 +22,13 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 
 		private readonly int _hashCode;
 
-		public Individual(long parentId, Array<Rule> rules, ILabel defaultPrediction) {
+		public Individual(Array<Rule> rules, ILabel defaultPrediction) {
 			if (rules.Length < MinimumRuleCount)
 				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
 			if (rules.ContainsNulls())
 				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
 
 			Id = Interlocked.Increment(ref _individualsCreated);
-			ParentId = parentId;
 			Rules = rules;
 			DefaultPrediction = defaultPrediction;
 
@@ -42,18 +40,6 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 				hash.Add(rules[i]);
 
 			_hashCode = hash.ToHashCode();
-		}
-
-		public static Individual CreateFirstGenerationIndividual(Array<Rule> rules, ILabel defaultPrediction) {
-			if (rules.Length < MinimumRuleCount)
-				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
-			if (rules.ContainsNulls())
-				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
-
-			return new Individual(
-				parentId: AllFatherId,
-				rules: rules,
-				defaultPrediction: defaultPrediction);
 		}
 
 		public ILabel Predict(Array<float> instance) {

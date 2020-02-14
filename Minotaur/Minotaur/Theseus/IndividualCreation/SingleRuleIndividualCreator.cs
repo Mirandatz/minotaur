@@ -18,7 +18,7 @@ namespace Minotaur.Theseus.IndividualCreation {
 			if (rule is null)
 				throw new InvalidOperationException("This operation should never fail.");
 
-			return Individual.CreateFirstGenerationIndividual(
+			return new Individual(
 				rules: new Rule[] { rule },
 				defaultPrediction: Dataset.DefaultLabel);
 		}

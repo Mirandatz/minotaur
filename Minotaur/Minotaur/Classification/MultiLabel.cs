@@ -32,5 +32,18 @@ namespace Minotaur.Classification {
 			return _hashCode == other._hashCode &&
 				Values.SequenceEquals(other.Values);
 		}
+
+		public string ToBinaryArrayString() {
+			var serializedChars = new char[Length];
+			for (int i = 0; i < serializedChars.Length; i++) {
+				serializedChars[i] = Values[i] switch
+				{
+					false => '0',
+					true => '1',
+				};
+			}
+
+			return new string(serializedChars);
+		}
 	}
 }

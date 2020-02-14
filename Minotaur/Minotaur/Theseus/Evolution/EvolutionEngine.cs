@@ -14,10 +14,8 @@ namespace Minotaur.Theseus.Evolution {
 		private readonly FitnessEvaluator _fitnessEvaluator;
 		private readonly PopulationMutator _populationMutator;
 		private readonly IFittestIdentifier _fittestIdentifier;
-		private readonly BasicStdoutLogger _stdoutLogger;
-		private readonly SingleGenerationLogger _fileLogger;
 
-		public EvolutionEngine(int maximumNumberOfGenerations, FitnessEvaluator fitnessEvaluator, PopulationMutator populationMutator, IFittestIdentifier fittestIdentifier, BasicStdoutLogger stdoutLogger, SingleGenerationLogger fileLogger) {
+		public EvolutionEngine(int maximumNumberOfGenerations, FitnessEvaluator fitnessEvaluator, PopulationMutator populationMutator, IFittestIdentifier fittestIdentifier) {
 			if (maximumNumberOfGenerations <= 0)
 				throw new ArgumentOutOfRangeException(nameof(maximumNumberOfGenerations));
 
@@ -25,11 +23,9 @@ namespace Minotaur.Theseus.Evolution {
 			_fitnessEvaluator = fitnessEvaluator;
 			_populationMutator = populationMutator;
 			_fittestIdentifier = fittestIdentifier;
-			_stdoutLogger = stdoutLogger;
-			_fileLogger = fileLogger;
 		}
 
-		public GenerationResult Run(Array<Individual> initialPopulation) {
+		public GenerationSummary Run(Array<Individual> initialPopulation) {
 			if (initialPopulation.Length == 0)
 				throw new ArgumentException(nameof(initialPopulation));
 
@@ -45,17 +41,15 @@ namespace Minotaur.Theseus.Evolution {
 
 				oldPopulation = generationResult.Population;
 				oldFitnesses = generationResult.Fitnesses;
-
-				RunLoggers(generationResult);
 			}
 
-			return new GenerationResult(
+			return new GenerationSummary(
 				generationNumber: generationNumber,
 				population: oldPopulation,
 				fitnesses: oldFitnesses);
 		}
 
-		private GenerationResult? RunSingleGeneration(int generationNumber, Array<Individual> population, Array<Fitness> populationFitnesses) {
+		private GenerationSummary? RunSingleGeneration(int generationNumber, Array<Individual> population, Array<Fitness> populationFitnesses) {
 			var mutants = _populationMutator.TryMutate(population);
 			if (mutants is null)
 				return null;
@@ -73,15 +67,10 @@ namespace Minotaur.Theseus.Evolution {
 				indices: fittestIndices,
 				items: fittestCandidatesFitnesses);
 
-			return new GenerationResult(
+			return new GenerationSummary(
 				generationNumber: generationNumber,
 				population: fittestIndividuals,
 				fitnesses: fittestIndividualsFitnesses);
-		}
-
-		private void RunLoggers(GenerationResult generationResult) {
-			Task.Run(() => _stdoutLogger.LogGeneration(generationResult));
-			Task.Run(() => _fileLogger.LogGeneration(generationResult));
 		}
 	}
 }
