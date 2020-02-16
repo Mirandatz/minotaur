@@ -1,72 +1,53 @@
 namespace Minotaur.Output {
 	using System.Globalization;
 	using System.IO;
-	using System.Linq;
 	using CsvHelper;
 	using Minotaur.Classification;
+	using Minotaur.Collections;
 	using Minotaur.EvolutionaryAlgorithms.Population;
 
-	public static class ModelSerializer {
+	public sealed class ModelSerializer {
 
-		public static void Serialize(TextWriter textWriter, Individual individual) {
+		public void Serialize(TextWriter textWriter, Individual model) {
+			// @Assumption: all rules within a model have the same number of 
+			// feature tests in their antecedents.
+			// @Assumption: all rules within a model have the same type of 
+			// consequent.
+			// @Assumption: all consequents of the same type have the same length
+
 			using var csvWriter = new CsvWriter(writer: textWriter, cultureInfo: CultureInfo.InvariantCulture);
-			WriteHeader(csvWriter, individual);
 
-			foreach (var rule in individual.Rules) {
-				foreach (var ft in rule.Antecedent) {
-					csvWriter.WriteField(SerializeFeatureTest(ft));
-				}
+			WriteHeader(csvWriter, model);
 
-				csvWriter.WriteField(SerializeConsequent(rule.Consequent));
+			foreach (var rule in model.Rules) {
+				WriteAntecedent(csvWriter, rule.Antecedent);
+				WriteConsequent(csvWriter, rule.Consequent);
 				csvWriter.NextRecord();
 			}
 		}
 
-		private static string SerializeFeatureTest(IFeatureTest featureTest) {
-			return featureTest switch
-			{
-				ContinuousFeatureTest cft => SerializeContinuousFeatureTest(cft),
+		private void WriteHeader(CsvWriter csvWriter, Individual model) {
+			var featureCount = model.Rules[0].Antecedent.Length;
+			for (int i = 0; i < featureCount; i++)
+				csvWriter.WriteField($"Feature Test {i}");
 
-				_ => throw CommonExceptions.UnknownFeatureTestImplementation
-			};
+			var classCount = ((MultiLabel) model.Rules[0].Consequent).Length;
+			for (int i = 0; i < classCount; i++)
+				csvWriter.WriteField($"Class {i}");
 
-			static string SerializeContinuousFeatureTest(ContinuousFeatureTest continuousFeatureTest) {
-				return $"{continuousFeatureTest.LowerBound} <= x[{continuousFeatureTest.FeatureIndex}] < {continuousFeatureTest.UpperBound}";
-			}
-		}
-
-		private static string SerializeConsequent(ILabel consequent) {
-			return consequent switch
-			{
-				SingleLabel sl => SerializeSingleLabel(sl),
-				MultiLabel ml => SerializeMultiLabel(ml),
-
-				_ => throw CommonExceptions.UnknownClassificationType,
-			};
-
-			static string SerializeSingleLabel(SingleLabel singleLabel) {
-				return singleLabel.Value.ToString();
-			}
-
-			static string SerializeMultiLabel(MultiLabel multiLabel) {
-				return multiLabel.ToBinaryArrayString();
-			}
-		}
-
-		private static void WriteHeader(CsvWriter csvWriter, Individual individual) {
-			// @Assumption: all rules have the same size and consequent type
-
-			var fieldNames = individual
-				.Rules[0]
-				.Antecedent
-				.Select(ft => $"Feature Test {ft.FeatureIndex}")
-				.ToList();
-
-			fieldNames.Add("Consequent");
-
-			foreach (var f in fieldNames)
-				csvWriter.WriteField(f);
 			csvWriter.NextRecord();
+		}
+
+		private void WriteAntecedent(CsvWriter csvWriter, Array<IFeatureTest> antecedent) {
+			foreach (var featureTest in antecedent) {
+				var continuousFeatureTest = (ContinuousFeatureTest) featureTest;
+				CsvSerializationHelper.Write(csvWriter, continuousFeatureTest);
+			}
+		}
+
+		private void WriteConsequent(CsvWriter csvWriter, ILabel consequent) {
+			var multiLabelPredictions = (MultiLabel) consequent;
+			CsvSerializationHelper.Write(csvWriter, multiLabelPredictions);
 		}
 	}
 }

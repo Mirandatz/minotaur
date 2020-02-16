@@ -39,14 +39,14 @@ namespace Minotaur.Output {
 
 		private static void SerializeSingleLabelPredictions(CsvWriter csvWriter, SingleLabel[] datasetPredictions) {
 			foreach (var instancePrediction in datasetPredictions) {
-				csvWriter.WriteField(instancePrediction.Value);
+				CsvSerializationHelper.Write(csvWriter, instancePrediction);
 				csvWriter.NextRecord();
 			}
 		}
 
 		private static void SerializeMultiLabelPredictions(CsvWriter csvWriter, MultiLabel[] datasetPredictions) {
 			foreach (var instancePrediction in datasetPredictions) {
-				csvWriter.WriteField(instancePrediction.ToBinaryArrayString());
+				CsvSerializationHelper.Write(csvWriter, instancePrediction);
 				csvWriter.NextRecord();
 			}
 		}

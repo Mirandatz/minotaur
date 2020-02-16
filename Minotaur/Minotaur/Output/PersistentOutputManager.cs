@@ -13,11 +13,12 @@ namespace Minotaur.Output {
 		private readonly bool _saveTrainPredictions;
 		private readonly bool _saveTestPredictions;
 
+		private readonly ModelSerializer _modelSerializer;
 		private readonly PopulationFitnessSerializer _populationFitnessSerializer;
 		private readonly PredictionsSerializer _trainPredictionsSerializer;
 		private readonly PredictionsSerializer _testPredictionsSerializer;
 
-		public PersistentOutputManager(string outputDirectory, bool saveModels, bool saveTrainPredictions, bool saveTestPredictions, PopulationFitnessSerializer populationFitnessSerializer, PredictionsSerializer trainPredictionsSerializer, PredictionsSerializer testPredictionsSerializer) {
+		public PersistentOutputManager(string outputDirectory, bool saveModels, bool saveTrainPredictions, bool saveTestPredictions, ModelSerializer modelSerializer, PopulationFitnessSerializer populationFitnessSerializer, PredictionsSerializer trainPredictionsSerializer, PredictionsSerializer testPredictionsSerializer) {
 			if (!Directory.Exists(outputDirectory))
 				throw new ArgumentException();
 
@@ -25,6 +26,7 @@ namespace Minotaur.Output {
 			_saveModels = saveModels;
 			_saveTrainPredictions = saveTrainPredictions;
 			_saveTestPredictions = saveTestPredictions;
+			_modelSerializer = modelSerializer;
 			_populationFitnessSerializer = populationFitnessSerializer;
 			_trainPredictionsSerializer = trainPredictionsSerializer;
 			_testPredictionsSerializer = testPredictionsSerializer;
@@ -56,9 +58,9 @@ namespace Minotaur.Output {
 			Parallel.ForEach(source: population, body: individual => {
 				var path = Path.Combine(_outputDirectory, $"model-{individual.Id}.csv");
 				using var textWriter = File.CreateText(path);
-				ModelSerializer.Serialize(
+				_modelSerializer.Serialize(
 					textWriter: textWriter,
-					individual: individual);
+					model: individual);
 			});
 		}
 
