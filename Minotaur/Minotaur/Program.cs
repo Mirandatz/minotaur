@@ -32,13 +32,14 @@ namespace Minotaur {
 		}
 
 		private static string[] LazyDevArguments() {
+			Directory.Delete(path: "C:/Source/minotaur/temp", recursive: true);
+			Directory.CreateDirectory(path: "C:/Source/minotaur/temp");
+
 			return new string[] {
 				"--train-data=c:/source/datasets/yeast/folds/0/train-data.csv",
 				"--train-labels=c:/source/datasets/yeast/folds/0/train-labels.csv",
 				"--test-data=c:/source/datasets/yeast/folds/0/test-data.csv",
 				"--test-labels=c:/source/datasets/yeast/folds/0/test-labels.csv",
-
-				"--classification-type=multilabel",
 
 				"--output-dir=C:/Source/minotaur/temp",
 
@@ -153,6 +154,8 @@ namespace Minotaur {
 				individualCreator: individualCreator,
 				settings: settings);
 
+			var modelSerializer = new ModelSerializer();
+
 			var populationFitnessSerializer = new PopulationFitnessSerializer(
 				trainFitnessEvaluator: trainFitnessEvaluator,
 				testFitnessEvaluator: testFitnessEvaluator);
@@ -165,6 +168,7 @@ namespace Minotaur {
 				saveModels: settings.SaveModels,
 				saveTrainPredictions: settings.SaveTrainPredictions,
 				saveTestPredictions: settings.SaveTestPredictions,
+				modelSerializer: modelSerializer,
 				populationFitnessSerializer: populationFitnessSerializer,
 				trainPredictionsSerializer: trainPredictionsSerializer,
 				testPredictionsSerializer: testPredictionsSerializer);

@@ -65,12 +65,12 @@ namespace Minotaur {
 			Description = "Whether the predictions for the test dataset should be saved to disk.")]
 		public bool SaveTestPredictions { get; } = false;
 
-		[Required]
-		[Option(
-			ShortName = "", LongName = "classification-type",
-			Description = "Describes whether the dataset is a single-label or multi-label.")]
-		[AllowedValues("singlelabel", "multilabel")]
-		public ClassificationType ClassificationType { get; }
+		//[Required]
+		//[Option(
+		//	ShortName = "", LongName = "classification-type",
+		//	Description = "Describes whether the dataset is a single-label or multi-label.")]
+		//[AllowedValues("singlelabel", "multilabel")]
+		public ClassificationType ClassificationType { get; } = ClassificationType.MultiLabel;
 
 		[Required]
 		[Option(
