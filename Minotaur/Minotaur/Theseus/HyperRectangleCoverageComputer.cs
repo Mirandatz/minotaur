@@ -6,24 +6,12 @@ namespace Minotaur.Theseus {
 
 	public sealed class HyperRectangleCoverageComputer {
 		public readonly Dataset Dataset;
-		private readonly IConcurrentCache<HyperRectangle, DatasetCoverage> _cache;
 
-		public HyperRectangleCoverageComputer(Dataset dataset, IConcurrentCache<HyperRectangle, DatasetCoverage> cache) {
+		public HyperRectangleCoverageComputer(Dataset dataset) {
 			Dataset = dataset;
-			_cache = cache;
 		}
 
 		public DatasetCoverage ComputeCoverage(HyperRectangle hyperRectangle) {
-			if (_cache.TryGet(hyperRectangle, out var coverage)) {
-				return coverage;
-			} else {
-				coverage = UncachedComputeCoverage(hyperRectangle);
-				_cache.Add(key: hyperRectangle, value: coverage);
-				return coverage;
-			}
-		}
-
-		private DatasetCoverage UncachedComputeCoverage(HyperRectangle hyperRectangle) {
 			var instanceCount = Dataset.InstanceCount;
 			var instaceIsCovered = new bool[instanceCount];
 

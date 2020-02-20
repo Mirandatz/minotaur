@@ -79,9 +79,7 @@ namespace Minotaur {
 			PrintTrainDatasetInformation(trainDataset);
 			Console.WriteLine();
 
-			var hyperRectangleCoverageComputer = new HyperRectangleCoverageComputer(
-				dataset: trainDataset,
-				cache: new NullCache<HyperRectangle, DatasetCoverage>());
+			var hyperRectangleCoverageComputer = new HyperRectangleCoverageComputer(dataset: trainDataset);
 
 			var featureTestIntervalConveter = new FeatureTestDimensionIntervalConverter(trainDataset);
 
