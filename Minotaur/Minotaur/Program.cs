@@ -32,7 +32,9 @@ namespace Minotaur {
 		}
 
 		private static string[] LazyDevArguments() {
-			Directory.Delete(path: "C:/Source/minotaur/temp", recursive: true);
+			if (Directory.Exists(path: "C:/Source/minotaur/temp"))
+				Directory.Delete(path: "C:/Source/minotaur/temp", recursive: true);
+
 			Directory.CreateDirectory(path: "C:/Source/minotaur/temp");
 			return new string[] {
 				"--train-data=c:/source/datasets/yeast/folds/0/train-data.csv",
