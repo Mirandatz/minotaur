@@ -59,15 +59,13 @@ namespace Minotaur {
 
 				"--minotaur-hyperparameter-t=100",
 
-				"--disable-expensive-sanity-checks"
+				"--run-expensive-sanity-checks=false"
 			};
 		}
 
 		public static int Run(ProgramSettings settings) {
 			ThreadPool.SetMaxThreads(Environment.ProcessorCount, Environment.ProcessorCount);
-
-			SanityChecker.PerformExpensiveChecks = !settings.DisableExpensiveSanityChecks;
-
+			
 			PrintSettings(settings);
 
 			(var trainDataset, var testDataset) = DatasetLoader.LoadDatasets(
@@ -111,7 +109,8 @@ namespace Minotaur {
 				antecedentCreator: antecedentCreator,
 				consequentCreator: consequentCreator,
 				hyperRectangleIntersector: hyperRectangleIntersector,
-				targetNumberOfInstancesToCover: settings.TargetNumberOfInstancesToCoverDuringRuleCreationg);
+				targetNumberOfInstancesToCover: settings.TargetNumberOfInstancesToCoverDuringRuleCreationg,
+				runExpensiveSanityChecks: settings.RunExpensiveSanityChecks);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {

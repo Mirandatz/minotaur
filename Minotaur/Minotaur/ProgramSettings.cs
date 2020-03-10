@@ -151,9 +151,10 @@ namespace Minotaur {
 		//[Range(0f, 1f)]
 		public float RuleConsequentThreshold { get; } = 0.5f;
 
-		[Option(ShortName = "", LongName = "disable-expensive-sanity-checks",
+		[Required]
+		[Option(CommandOptionType.SingleValue, ShortName = "", LongName = "run-expensive-sanity-checks",
 			Description = "Whether sanity checks should be performed or not. " +
 			"This is a debug feature; enabling it may cause degrade the performance.")]
-		public bool DisableExpensiveSanityChecks { get; } = false;
+		public bool RunExpensiveSanityChecks { get; } = true;
 	}
 }

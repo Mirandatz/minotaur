@@ -16,8 +16,9 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly IConsequentCreator _consequentCreator;
 		private readonly HyperRectangleIntersector _rectangleIntersector;
 		private readonly int _targetNumberOfInstancesToCover;
+		private readonly bool _runExpensiveSanityChecks;
 
-		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, AntecedentCreator antecedentCreator, IConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int targetNumberOfInstancesToCover) {
+		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, AntecedentCreator antecedentCreator, IConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int targetNumberOfInstancesToCover, bool runExpensiveSanityChecks) {
 			_seedSelector = seedSelector;
 			_boxConverter = boxConverter;
 			_boxCreator = boxCreator;
@@ -27,6 +28,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			_targetNumberOfInstancesToCover = targetNumberOfInstancesToCover;
 			_rectangleIntersector = hyperRectangleIntersector;
 			Dataset = _seedSelector.Dataset;
+			_runExpensiveSanityChecks = runExpensiveSanityChecks;
 		}
 
 		public Rule? TryCreateRule(Array<Rule> existingRules) {
@@ -42,14 +44,13 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			var boxes = _boxConverter.FromRules(existingRules);
 
-			SanityChecker.Run(() => {
+			if (_runExpensiveSanityChecks) {
 				for (int i = 0; i < boxes.Length; i++) {
 					var box = boxes[i];
 					if (box.Contains(seed))
 						throw new InvalidOperationException();
 				}
-			});
-
+			}
 
 			var dimensionExpansionOrder = NaturalRange.CreateShuffled(
 				inclusiveStart: 0,
@@ -63,13 +64,14 @@ namespace Minotaur.Theseus.RuleCreation {
 			if (secureRectangle is null)
 				return null;
 
-			SanityChecker.Run(() => {
+			if (_runExpensiveSanityChecks) {
+
 				for (int i = 0; i < boxes.Length; i++) {
 					var box = boxes[i];
 					if (_rectangleIntersector.IntersectsInAllDimension(secureRectangle, box))
 						throw new InvalidOperationException();
 				}
-			});
+			}
 
 			var secureRectangleCoverage = _coverageComputer.ComputeCoverage(secureRectangle);
 			var coveredInstancesIndices = secureRectangleCoverage.IndicesOfCoveredInstances.ToArray();
