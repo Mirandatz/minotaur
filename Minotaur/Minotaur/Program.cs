@@ -49,17 +49,21 @@ namespace Minotaur {
 				"--fittest-selection=nsga2",
 
 				"--save-models",
-				"--save-train-predictions",
-				"--save-test-predictions",
+
+				"--individual-mutation-add-rule-weight=5",
+				"--individual-mutation-modify-rule-weight=20",
+				"--individual-mutation-remove-rule-weight=10",
 
 				"--population-size=30",
 				"--mutants-per-generation=10",
+				"--max-failed-mutations-per-generation=2000",
+
 
 				"--max-generations=200",
 
 				"--minotaur-hyperparameter-t=100",
 
-				"--run-expensive-sanity-checks=false"
+				"--skip-expensive-sanity-checks"
 			};
 		}
 
@@ -110,7 +114,7 @@ namespace Minotaur {
 				consequentCreator: consequentCreator,
 				hyperRectangleIntersector: hyperRectangleIntersector,
 				targetNumberOfInstancesToCover: settings.TargetNumberOfInstancesToCoverDuringRuleCreationg,
-				runExpensiveSanityChecks: settings.RunExpensiveSanityChecks);
+				runExpensiveSanityChecks: settings.SkipExpensiveSanityChecks);
 
 			var individualMutationChooser = BiasedOptionChooser<IndividualMutationType>.Create(
 				new Dictionary<IndividualMutationType, int>() {

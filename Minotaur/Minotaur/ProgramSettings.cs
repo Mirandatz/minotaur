@@ -50,20 +50,17 @@ namespace Minotaur {
 		[DirectoryExists]
 		public string OutputDirectory { get; } = string.Empty;
 
-		[Option(
-			ShortName = "", LongName = "save-models",
+		[Option(ShortName = "", LongName = "save-models",
 			Description = "Whether the models should be saved to disk.")]
 		public bool SaveModels { get; } = false;
 
-		[Option(
-			ShortName = "", LongName = "save-train-predictions",
+		[Option(ShortName = "", LongName = "save-train-predictions",
 			Description = "Whether the predictions for the train dataset should be saved to disk.")]
-		public bool SaveTrainPredictions { get; } = false;
+		public bool SaveTrainPredictions { get; }
 
-		[Option(
-			ShortName = "", LongName = "save-test-predictions",
+		[Option(ShortName = "", LongName = "save-test-predictions",
 			Description = "Whether the predictions for the test dataset should be saved to disk.")]
-		public bool SaveTestPredictions { get; } = false;
+		public bool SaveTestPredictions { get; }
 
 		//[Required]
 		//[Option(
@@ -108,31 +105,35 @@ namespace Minotaur {
 		[AllowedValues("nsga2", "lexicographic")]
 		public string SelectionAlgorithm { get; } = null!;
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "individual-mutation-add-rule-weight",
 			Description = "The relative weight, when mutating a individual, of adding a new rule to it.")]
 		[Range(0, int.MaxValue)]
-		public int IndividualMutationAddRuleWeight { get; } = 5;
+		public int IndividualMutationAddRuleWeight { get; } // = 5;
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "individual-mutation-modify-rule-weight",
 			Description = "The relative weight, when mutating a individual, of modifying a rule that it contains.")]
 		[Range(0, int.MaxValue)]
-		public int IndividualMutationModifyRuleWeight { get; } = 20;
+		public int IndividualMutationModifyRuleWeight { get; } // = 20;
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "individual-mutation-remove-rule-weight",
 			Description = "The relative weight, when mutating a individual, of removing a rule that it contains.")]
 		[Range(0, int.MaxValue)]
-		public int IndividualMutationRemoveRuleWeight { get; } = 10;
+		public int IndividualMutationRemoveRuleWeight { get; } // = 10;
 
+		[Required]
 		[Option(
 			ShortName = "", LongName = "max-failed-mutations-per-generation",
 			Description = "When trying to mutate a individual, the mutant generated may not be consistent." +
 			"This option defines how many times the mutation may fail during a single generation." +
 			"If this number is reached, the evolutionary process stops.")]
 		[Range(0, int.MaxValue)]
-		public int MaximumFailedMutationAttemptsPerGeneration { get; } = 2000;
+		public int MaximumFailedMutationAttemptsPerGeneration { get; } // = 2000;
 
 		[Required]
 		[Option(ShortName = "", LongName = "minotaur-hyperparameter-t",
@@ -151,10 +152,9 @@ namespace Minotaur {
 		//[Range(0f, 1f)]
 		public float RuleConsequentThreshold { get; } = 0.5f;
 
-		[Required]
-		[Option(CommandOptionType.SingleValue, ShortName = "", LongName = "run-expensive-sanity-checks",
+		[Option(ShortName = "", LongName = "skip-expensive-sanity-checks",
 			Description = "Whether sanity checks should be performed or not. " +
 			"This is a debug feature; enabling it may cause degrade the performance.")]
-		public bool RunExpensiveSanityChecks { get; } = true;
+		public bool SkipExpensiveSanityChecks { get; }
 	}
 }
