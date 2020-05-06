@@ -1,7 +1,9 @@
 namespace Minotaur.Collections.Dataset {
 	using System;
-	using System.Linq;
+	using System.Globalization;
+	using System.IO;
 	using System.Threading.Tasks;
+	using CsvHelper;
 	using Minotaur.Classification;
 
 	public static class DatasetLoader {
@@ -73,132 +75,106 @@ namespace Minotaur.Collections.Dataset {
 		}
 
 		private static MutableMatrix<float> ReadDataFile(string filename) {
-			var unparsedMatrix = CsvParser.ReadCsv(filename);
+			var recordCount = GetNumberOfRecords(filename);
+			var fieldCount = GetAndValidateNumberOfFields(filename);
 
-			var parsedData = new MutableMatrix<float>(
-				rowCount: unparsedMatrix.RowCount,
-				columnCount: unparsedMatrix.ColumnCount);
+			var matrix = new MutableMatrix<float>(rowCount: recordCount, columnCount: fieldCount);
 
-			var instanceCount = unparsedMatrix.RowCount;
-			var featureCount = unparsedMatrix.ColumnCount;
+			using var streamReader = new StreamReader(path: filename);
+			using var csvReader = new CsvReader(reader: streamReader, CultureInfo.InvariantCulture);
 
-			for (int i = 0; i < instanceCount; i++) {
-				for (int j = 0; j < featureCount; j++) {
-					var valueAsString = unparsedMatrix.Get(i, j);
-					var parsed = float.TryParse(valueAsString, out var parsedValue);
+			for (int i = 0; i < recordCount; i++) {
+				csvReader.Read();
 
-					if (!parsed) {
-						throw new InvalidOperationException($"Parsing error. Unable to parse {valueAsString} as float. " +
-							$"Line (0-indexed) {i}, column (0-indexed) {j}. " +
-							$"File: {filename}");
-					}
+				for (int j = 0; j < fieldCount; j++) {
+					var fieldValue = csvReader.GetField(j);
 
-					if (!float.IsFinite(parsedValue)) {
-						throw new InvalidOperationException($"Parsing error. Unable to parse {valueAsString} as finite float. " +
-							$"Line (0-indexed) {i}, column (0-indexed) {j}. " +
-							$"File: {filename}");
-					}
+					var parsed = float.TryParse(fieldValue, out var parsedValue);
+					if (!parsed)
+						throw new InvalidOperationException($"Parsing error. Can't parse {fieldValue} as float. Line {i}. File: {filename}.");
 
-
-					parsedData.Set(i, j, parsedValue);
+					matrix.Set(rowIndex: i, columnIndex: j, value: parsedValue);
 				}
 			}
 
-			return parsedData;
+			return matrix;
 		}
 
 		private static ILabel[] ReadLabelFile(string filename, ClassificationType classificationType) {
 			return classificationType switch
 			{
-				ClassificationType.SingleLabel => ReadSingleLabelFile(filename),
+				ClassificationType.SingleLabel => throw new NotImplementedException(),
 				ClassificationType.MultiLabel => ReadMultiLabelFile(filename),
 				_ => throw CommonExceptions.UnknownClassificationType,
 			};
 
-			static SingleLabel[] ReadSingleLabelFile(string filename) {
-				var unparsedMatrix = CsvParser.ReadCsv(filename);
-
-				if (unparsedMatrix.ColumnCount != 1) {
-					throw new InvalidOperationException($"For a {ClassificationType.SingleLabel} dataset, the labels file must constain a single column. " +
-						$"But the file {filename} contains {unparsedMatrix.ColumnCount}.");
-				}
-
-				var labels = ParseLabels(unparsedMatrix, filename);
-
-				var labelsAreNaturalRange = CheckIfLabelsAreNaturalRange(labels);
-				if (!labelsAreNaturalRange) {
-					throw new InvalidOperationException($"Labels must be form a natural range, " +
-						$"that is, their values must be between [0, #unique-labels[. " +
-						$"That doesn't hold for file: {filename}");
-				}
-
-				return labels;
-
-				static SingleLabel[] ParseLabels(MutableMatrix<string> matrix, string filename) {
-					var labels = new SingleLabel[matrix.RowCount];
-
-					for (int i = 0; i < labels.Length; i++) {
-						var valueAsString = matrix.Get(rowIndex: i, columnIndex: 0);
-						var parsed = int.TryParse(valueAsString, out var parsedValue);
-
-						if (!parsed)
-							throw new InvalidOperationException($"Parsing error. Can't parse {valueAsString} as int. Line {i}. File: {filename}.");
-
-						labels[i] = new SingleLabel(parsedValue);
-					}
-
-					return labels;
-				}
-
-				static bool CheckIfLabelsAreNaturalRange(SingleLabel[] labelsAsInts) {
-					var sortedUniqueLabelValues = labelsAsInts
-						.Select(sl => sl.Value)
-						.Distinct()
-						.OrderBy(v => v)
-						.ToArray();
-
-					for (int i = 0; i < sortedUniqueLabelValues.Length; i++) {
-						if (sortedUniqueLabelValues[i] != i)
-							return false;
-					}
-
-					return true;
-				}
-			}
-
 			static MultiLabel[] ReadMultiLabelFile(string filename) {
-				var unparsedMatrix = CsvParser.ReadCsv(filename);
-				var labels = new MultiLabel[unparsedMatrix.RowCount];
+				using var streamReader = new StreamReader(path: filename);
+				using var csvReader = new CsvReader(reader: streamReader, CultureInfo.InvariantCulture);
 
-				for (int i = 0; i < labels.Length; i++) {
-					var line = unparsedMatrix.GetRow(i);
-					var label = ParseLine(line, filename);
-					labels[i] = label;
+				var recordCount = GetNumberOfRecords(filename);
+				var fieldCount = GetAndValidateNumberOfFields(filename);
+
+				var labels = new MultiLabel[recordCount];
+
+				for (int i = 0; i < recordCount; i++) {
+					csvReader.Read();
+					labels[i] = ParseRecord(csvReader: csvReader, fieldCount: fieldCount, recordNumber: i, filename: filename);
 				}
 
 				return labels;
 
-				static MultiLabel ParseLine(Span<string> line, string filename) {
-					var labels = new bool[line.Length];
+				static MultiLabel ParseRecord(CsvReader csvReader, int fieldCount, int recordNumber, string filename) {
+					var labels = new bool[fieldCount];
 
-					for (int i = 0; i < line.Length; i++) {
-						var valueAsString = line[i];
+					for (int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
+						var fieldValue = csvReader.GetField(fieldIndex);
+						var parsed = int.TryParse(fieldValue, out var parsedValue);
 
-						var parsed = int.TryParse(line[i], out var parsedValue);
-						if (!parsed)
-							throw new InvalidOperationException($"Parsing error. Can't parse {valueAsString} as bool. Line {i}. File: {filename}.");
-
-						labels[i] = parsedValue switch
+						labels[fieldIndex] = parsedValue switch
 						{
 							0 => false,
 							1 => true,
-							_ => throw new InvalidOperationException($"Parsing error. Can't parse {valueAsString} as bool. Line {i}. File: {filename}.")
+							_ => throw new InvalidOperationException($"Parsing error. Can't parse {fieldValue} as bool. Line {recordNumber}. File: {filename}.")
 						};
 					}
 
 					return new MultiLabel(labels);
 				}
 			}
+		}
+
+		private static int GetNumberOfRecords(string filename) {
+			using var streamReader = new StreamReader(path: filename);
+			using var csvReader = new CsvReader(reader: streamReader, CultureInfo.InvariantCulture);
+
+			var recordCount = 0;
+
+			while (csvReader.Read())
+				recordCount += 1;
+
+			return recordCount;
+		}
+
+		private static int GetAndValidateNumberOfFields(string filename) {
+			using var streamReader = new StreamReader(path: filename);
+			using var csvReader = new CsvReader(reader: streamReader, CultureInfo.InvariantCulture);
+
+			csvReader.Read();
+
+			var firstLineFieldCount = csvReader.Context.Record.Length;
+
+			var lineCount = 0;
+			while (csvReader.Read()) {
+				var currentLineFieldCount = csvReader.Context.Record.Length;
+
+				if (currentLineFieldCount != firstLineFieldCount)
+					throw new InvalidOperationException($"All records must the same number of fields. Line {lineCount} contains {currentLineFieldCount}.");
+
+				lineCount += 1;
+			}
+
+			return firstLineFieldCount;
 		}
 	}
 }

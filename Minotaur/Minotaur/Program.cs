@@ -37,10 +37,10 @@ namespace Minotaur {
 
 			Directory.CreateDirectory(path: "C:/Source/minotaur/temp");
 			return new string[] {
-				"--train-data=c:/source/datasets/yeast/folds/0/train-data.csv",
-				"--train-labels=c:/source/datasets/yeast/folds/0/train-labels.csv",
-				"--test-data=c:/source/datasets/yeast/folds/0/test-data.csv",
-				"--test-labels=c:/source/datasets/yeast/folds/0/test-labels.csv",
+				"--train-data=C:/Source/default-rule/datasets/synthetic0/folds/1/train-data.csv",
+				"--train-labels=C:/Source/default-rule/datasets/synthetic0/folds/1/train-labels.csv",
+				"--test-data=C:/Source/default-rule/datasets/synthetic0/folds/1/test-data.csv",
+				"--test-labels=C:/Source/default-rule/datasets/synthetic0/folds/1/test-labels.csv",
 
 				"--output-dir=C:/Source/minotaur/temp",
 
