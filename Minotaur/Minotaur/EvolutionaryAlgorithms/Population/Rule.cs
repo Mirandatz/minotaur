@@ -1,12 +1,8 @@
 namespace Minotaur.EvolutionaryAlgorithms.Population {
 	using System;
-	using System.Linq;
-	using System.Text;
 	using Minotaur.Classification;
 	using Minotaur.Collections;
 
-	// @Assumption: all rules contain Antecedents with the same length.
-	// @Assumption: all rules contain Consequents with the same length.
 	public sealed class Rule {
 		public const int MinimumTestCount = 1;
 
