@@ -2,12 +2,11 @@ namespace Minotaur.Classification {
 	using System;
 	using Minotaur.Collections;
 
-	public sealed class MultiLabel: ILabel, IEquatable<MultiLabel> {
+	public sealed class MultiLabel: ILabel {
 
 		public readonly Array<bool> Values;
 		public readonly int Length;
-
-		private readonly int _hashCode;
+		public readonly int PrecomputedHashCode;
 
 		public MultiLabel(Array<bool> values) {
 			Values = values.ShallowCopy();
@@ -17,23 +16,12 @@ namespace Minotaur.Classification {
 			for (int i = 0; i < Values.Length; i++)
 				hash.Add(Values[i]);
 
-			_hashCode = hash.ToHashCode();
+			PrecomputedHashCode = hash.ToHashCode();
 		}
 
 		public bool this[int index] => Values[index];
 
-		public override int GetHashCode() => _hashCode;
-
-		public override bool Equals(object? obj) => Equals((MultiLabel) obj!);
-
-		public bool Equals(ILabel ruleConsequent) => Equals((MultiLabel) ruleConsequent);
-
-		public bool Equals(MultiLabel other) {
-			if (ReferenceEquals(this, other))
-				return true;
-
-			return _hashCode == other._hashCode &&
-				Values.SequenceEquals(other.Values);
-		}
+		public override int GetHashCode() => throw new NotImplementedException();
+		public override bool Equals(object? obj) => throw new NotImplementedException();
 	}
 }

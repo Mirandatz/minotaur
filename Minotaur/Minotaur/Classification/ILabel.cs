@@ -1,6 +1,5 @@
 namespace Minotaur.Classification {
-	using System;
 
-	public interface ILabel: IEquatable<ILabel> {
+	public interface ILabel {
 	}
 }

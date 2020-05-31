@@ -1,7 +1,7 @@
 namespace Minotaur.Classification {
 	using System;
 
-	public sealed class SingleLabel: ILabel, IEquatable<SingleLabel> {
+	public sealed class SingleLabel: ILabel {
 
 		public readonly int Value;
 
@@ -14,12 +14,7 @@ namespace Minotaur.Classification {
 
 		public override string ToString() => Value.ToString();
 
-		public override int GetHashCode() => Value.GetHashCode();
-
-		public override bool Equals(object? obj) => Equals((SingleLabel) obj!);
-
-		public bool Equals(ILabel ruleConsequent) => Equals((SingleLabel) ruleConsequent);
-
-		public bool Equals(SingleLabel other) => Value == other.Value;
+		public override int GetHashCode() => throw new NotImplementedException();
+		public override bool Equals(object? obj) => throw new NotImplementedException();
 	}
 }
