@@ -5,12 +5,7 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 
-	/// <summary>
-	/// This class represents a "barebones" rule-based classifier.
-	/// It provides the minimum amount of safety nets;
-	/// it DOES NOT check whether the rules consistent.
-	/// </summary>
-	public sealed class Individual: IEquatable<Individual> {
+	public sealed class Individual {
 		private const int MinimumRuleCount = 1;
 
 		private static long _individualsCreated = 0;
@@ -19,8 +14,7 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 		public readonly long Id;
 		public readonly Array<Rule> Rules;
 		public readonly ILabel DefaultPrediction;
-
-		private readonly int _hashCode;
+		public readonly int PrecomputedHashCode;
 
 		public Individual(Array<Rule> rules, ILabel defaultPrediction) {
 			if (rules.Length < MinimumRuleCount)
@@ -39,7 +33,7 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 			for (int i = 0; i < rules.Length; i++)
 				hash.Add(rules[i]);
 
-			_hashCode = hash.ToHashCode();
+			PrecomputedHashCode = hash.ToHashCode();
 		}
 
 		public ILabel Predict(Array<float> instance) {
@@ -70,15 +64,7 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 			return rules + Environment.NewLine + $"Default: {DefaultPrediction}";
 		}
 
-		public override int GetHashCode() => _hashCode;
-
-		public override bool Equals(object? obj) => Equals((Individual) obj!);
-
-		/// <remarks>
-		/// Individuals are compared using reference equality instead
-		/// of "semantic equality" in order to allow the existance of
-		/// "clones" in the genetic algorithm population.
-		/// </remarks>
-		public bool Equals(Individual other) => ReferenceEquals(this, other);
+		public override int GetHashCode() => throw new NotImplementedException();
+		public override bool Equals(object? obj) => throw new NotImplementedException();
 	}
 }
