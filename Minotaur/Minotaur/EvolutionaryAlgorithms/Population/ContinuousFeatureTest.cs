@@ -58,9 +58,7 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 		public override string ToString() => $"{LowerBound} <= f[{FeatureIndex}] < {UpperBound}";
 
 		public override int GetHashCode() => HashCode.Combine(FeatureIndex, LowerBound, UpperBound);
-
 		public override bool Equals(object? obj) => Equals((ContinuousFeatureTest) obj!);
-
 		public bool Equals([AllowNull] IFeatureTest other) => Equals((ContinuousFeatureTest) other!);
 
 		public bool Equals([AllowNull] ContinuousFeatureTest other) {
