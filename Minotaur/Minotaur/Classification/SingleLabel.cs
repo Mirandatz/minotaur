@@ -14,7 +14,6 @@ namespace Minotaur.Classification {
 		}
 
 		public override string ToString() => Value.ToString();
-
 		public override int GetHashCode() => Value.GetHashCode();
 		public override bool Equals(object? obj) => Equals((SingleLabel) obj!);
 		public bool Equals([AllowNull] ILabel other) => Equals((SingleLabel) other!);

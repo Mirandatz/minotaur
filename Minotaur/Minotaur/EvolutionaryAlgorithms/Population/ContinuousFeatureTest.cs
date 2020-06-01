@@ -1,13 +1,13 @@
 namespace Minotaur.EvolutionaryAlgorithms.Population {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 
-	public sealed class ContinuousFeatureTest: IFeatureTest {
+	public sealed class ContinuousFeatureTest: IFeatureTest, IEquatable<ContinuousFeatureTest> {
 
 		public int FeatureIndex { get; }
 		public readonly float LowerBound;
 		public readonly float UpperBound;
-
 		public int TestSize => 2;
 
 		public ContinuousFeatureTest(int featureIndex, float lowerBound, float upperBound) {
@@ -57,7 +57,19 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 
 		public override string ToString() => $"{LowerBound} <= f[{FeatureIndex}] < {UpperBound}";
 
-		public override int GetHashCode() => throw new NotImplementedException();
-		public override bool Equals(object? obj) => throw new NotImplementedException();
+		public override int GetHashCode() => HashCode.Combine(FeatureIndex, LowerBound, UpperBound);
+
+		public override bool Equals(object? obj) => Equals((ContinuousFeatureTest) obj!);
+
+		public bool Equals([AllowNull] IFeatureTest other) => Equals((ContinuousFeatureTest) other!);
+
+		public bool Equals([AllowNull] ContinuousFeatureTest other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
+			return FeatureIndex == other.FeatureIndex &&
+				LowerBound == other.LowerBound &&
+				UpperBound == other.UpperBound;
+		}
 	}
 }
