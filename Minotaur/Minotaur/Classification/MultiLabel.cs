@@ -1,18 +1,17 @@
 namespace Minotaur.Classification {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 
-	public sealed class MultiLabel: ILabel {
-
-		private const int MinimumElementCount = 1;
+	public sealed class MultiLabel: ILabel, IEquatable<MultiLabel> {
 
 		public readonly Array<bool> Values;
 		public readonly int Length;
-		public readonly int PrecomputedHashCode;
+		private readonly int _precomputedHashCode;
 
 		public MultiLabel(Array<bool> values) {
-			if (values.Length < MinimumElementCount)
-				throw new ArgumentException($"{nameof(values)} must contain at least {MinimumElementCount} elements.");
+			if (values.Length == 0)
+				throw new ArgumentException($"{nameof(values)} can't be empty.");
 
 			Values = values.ShallowCopy();
 			Length = Values.Length;
@@ -21,12 +20,29 @@ namespace Minotaur.Classification {
 			for (int i = 0; i < Values.Length; i++)
 				hash.Add(Values[i]);
 
-			PrecomputedHashCode = hash.ToHashCode();
+			_precomputedHashCode = hash.ToHashCode();
 		}
 
 		public bool this[int index] => Values[index];
 
-		public override int GetHashCode() => throw new NotImplementedException();
-		public override bool Equals(object? obj) => throw new NotImplementedException();
+		public override int GetHashCode() => _precomputedHashCode;
+		public override bool Equals(object? obj) => Equals((MultiLabel) obj!);
+		public bool Equals([AllowNull] ILabel other) => Equals((MultiLabel) other!);
+
+		public bool Equals([AllowNull] MultiLabel other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
+			if (Length != other.Length)
+				throw new InvalidOperationException();
+
+			if (ReferenceEquals(this, other))
+				return true;
+
+			var lhs = Values.AsSpan();
+			var rhs = other.Values.AsSpan();
+
+			return lhs.SequenceEqual(rhs);
+		}
 	}
 }

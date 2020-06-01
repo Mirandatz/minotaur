@@ -1,7 +1,8 @@
 namespace Minotaur.Classification {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 
-	public sealed class SingleLabel: ILabel {
+	public sealed class SingleLabel: ILabel, IEquatable<SingleLabel> {
 
 		public readonly int Value;
 
@@ -14,7 +15,15 @@ namespace Minotaur.Classification {
 
 		public override string ToString() => Value.ToString();
 
-		public override int GetHashCode() => throw new NotImplementedException();
-		public override bool Equals(object? obj) => throw new NotImplementedException();
+		public override int GetHashCode() => Value.GetHashCode();
+		public override bool Equals(object? obj) => Equals((SingleLabel) obj!);
+		public bool Equals([AllowNull] ILabel other) => Equals((SingleLabel) other!);
+
+		public bool Equals([AllowNull] SingleLabel other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
+			return Value == other.Value;
+		}
 	}
 }
