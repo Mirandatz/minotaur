@@ -1,58 +1,23 @@
 namespace Minotaur.EvolutionaryAlgorithms.Population {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Classification;
 	using Minotaur.Collections;
 
-	public sealed class Rule {
-		public const int MinimumTestCount = 1;
+	public sealed class Rule: IEquatable<Rule> {
 
 		public readonly int NonNullTestCount;
-		public readonly Array<IFeatureTest> Antecedent;
+		public readonly RuleAntecedent Antecedent;
 		public readonly ILabel Consequent;
-		public readonly int PrecomputedHashCode;
+		private readonly int _precomputedHashCode;
 
-		public Rule(Array<IFeatureTest> antecedent, ILabel consequent) {
-			if (antecedent.ContainsNulls())
-				throw new ArgumentException(nameof(antecedent) + " can't contain nulls.");
-
+		public Rule(RuleAntecedent antecedent, ILabel consequent) {
 			Antecedent = antecedent;
 			Consequent = consequent;
-
-			for (int i = 0; i < antecedent.Length; i++) {
-				var currentTest = antecedent[i];
-
-				if (currentTest is null)
-					throw new ArgumentException(nameof(antecedent) + " can't contain nulls.");
-
-				if (currentTest.FeatureIndex != i)
-					throw new ArgumentException(nameof(antecedent) + " must be sorted and can not contain multiple tests for the same feature.");
-			}
-
-			PrecomputedHashCode = PrecompileHashcode(antecedent, consequent);
-
-			static int PrecompileHashcode(Array<IFeatureTest> antecedent, ILabel consequent) {
-				var hash = new HashCode();
-
-				for (int i = 0; i < antecedent.Length; i++)
-					hash.Add(antecedent[i]);
-
-				hash.Add(consequent);
-
-				return hash.ToHashCode();
-			}
+			_precomputedHashCode = HashCode.Combine(antecedent, consequent);
 		}
 
-		public bool Covers(Array<float> instance) {
-			if (instance.Length != Antecedent.Length)
-				throw new ArgumentException(nameof(instance));
-
-			for (int i = 0; i < Antecedent.Length; i++) {
-				if (!Antecedent[i].Matches(instance))
-					return false;
-			}
-
-			return true;
-		}
+		public bool Covers(Array<float> instance) => Antecedent.Covers(instance);
 
 		public override string ToString() {
 			var antecedent = "IF " + string.Join(" AND ", Antecedent);
@@ -60,7 +25,19 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 			return antecedent + consequent;
 		}
 
-		public override int GetHashCode() => throw new NotImplementedException();
-		public override bool Equals(object? obj) => throw new NotImplementedException();
+		public override int GetHashCode() => _precomputedHashCode;
+
+		public override bool Equals(object? obj) => Equals((Rule) obj!);
+
+		public bool Equals([AllowNull] Rule other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
+			if (ReferenceEquals(this, other))
+				return true;
+
+			return Antecedent.Equals(other.Antecedent) &&
+				Consequent.Equals(other.Consequent);
+		}
 	}
 }
