@@ -5,7 +5,7 @@ namespace Minotaur.Collections {
 	using System.Text;
 	using Minotaur.ExtensionMethods.SystemArray;
 
-	public sealed class Array<T>: IEnumerable<T> {
+	public sealed class Array<T>: IReadOnlyList<T> {
 
 		public readonly int Length;
 		private readonly T[] _items;
@@ -28,6 +28,8 @@ namespace Minotaur.Collections {
 		}
 
 		public bool IsEmpty => Length == 0;
+
+		public int Count => Length;
 
 		public T this[int index] => _items[index];
 
