@@ -1,12 +1,13 @@
 namespace Minotaur.EvolutionaryAlgorithms.Population {
 	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using Minotaur.Classification;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 
-	public sealed class Individual {
-		private const int MinimumRuleCount = 1;
+	public sealed class Individual: IEquatable<Individual> {
 
 		private static long _individualsCreated = 0;
 
@@ -14,26 +15,39 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 		public readonly long Id;
 		public readonly Array<Rule> Rules;
 		public readonly ILabel DefaultPrediction;
-		public readonly int PrecomputedHashCode;
+		private readonly int _precomputedHashCode;
 
 		public Individual(Array<Rule> rules, ILabel defaultPrediction) {
-			if (rules.Length < MinimumRuleCount)
-				throw new ArgumentException(nameof(rules) + $" must contain at least {MinimumRuleCount} rules.");
-			if (rules.ContainsNulls())
-				throw new ArgumentException(nameof(rules) + " can't contain nulls.");
+			if (rules.IsEmpty)
+				throw new ArgumentException(nameof(rules) + " can't be empty.");
 
-			Id = Interlocked.Increment(ref _individualsCreated);
-			Rules = rules;
+			// Checking for nulls and creating shallow copy
+			var rulesContainer = new Rule[rules.Length];
+			for (int i = 0; i < rulesContainer.Length; i++) {
+				var r = rules[i];
+				if (r is null)
+					throw new ArgumentException(nameof(rules) + " can't contain nulls.");
+
+				rulesContainer[i] = r;
+			}
+
+			// Checking for duplicates
+			if (new HashSet<Rule>(rulesContainer).Count != rulesContainer.Length)
+				throw new ArgumentException(nameof(rules) + " cant contain duplicate rules.");
+
+			// @TODO: add expensive-sanity-check that checks if the set is consistent 
+
+			Rules = Array<Rule>.Wrap(rulesContainer);
 			DefaultPrediction = defaultPrediction;
+			Id = Interlocked.Increment(ref _individualsCreated);
 
-			// We only use rules and labels to compute hash and equality
-			// to allow "clones" in the population
+			// Precomputing hash
 			var hash = new HashCode();
 			hash.Add(defaultPrediction);
-			for (int i = 0; i < rules.Length; i++)
-				hash.Add(rules[i]);
+			for (int i = 0; i < Rules.Length; i++)
+				hash.Add(Rules[i]);
 
-			PrecomputedHashCode = hash.ToHashCode();
+			_precomputedHashCode = hash.ToHashCode();
 		}
 
 		public ILabel Predict(Array<float> instance) {
@@ -64,7 +78,26 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 			return rules + Environment.NewLine + $"Default: {DefaultPrediction}";
 		}
 
-		public override int GetHashCode() => throw new NotImplementedException();
-		public override bool Equals(object? obj) => throw new NotImplementedException();
+		public override int GetHashCode() => _precomputedHashCode;
+
+		public override bool Equals(object? obj) => Equals((Individual) obj!);
+
+		public bool Equals([AllowNull] Individual other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
+			if (ReferenceEquals(this, other))
+				return true;
+
+			if (ReferenceEquals(Rules, other.Rules) &&
+				ReferenceEquals(DefaultPrediction, other.DefaultPrediction)) {
+				return true;
+			}
+
+			if (!DefaultPrediction.Equals(other.DefaultPrediction))
+				return false;
+
+			return new HashSet<Rule>(Rules).SetEquals(other.Rules);
+		}
 	}
 }
