@@ -37,6 +37,19 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
+		public bool Covers(Array<float> instance) {
+			if (instance.Length != Count)
+				throw new InvalidOperationException();
+
+			var tests = FeatureTests.AsSpan();
+			for (int i = 0; i < tests.Length; i++) {
+				if (!tests[i].Matches(instance))
+					return false;
+			}
+
+			return true;
+		}
+
 		public IFeatureTest this[int index] => FeatureTests[index];
 
 		public override int GetHashCode() => _precomputedHashCode;
