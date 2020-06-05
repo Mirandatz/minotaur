@@ -1,5 +1,6 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 
 	// @Assumption: intervals can not  be empty.
 	public sealed class ContinuousInterval: IInterval, IEquatable<ContinuousInterval> {
@@ -31,9 +32,12 @@ namespace Minotaur.Math.Dimensions {
 		public override bool Equals(object? obj) => Equals((ContinuousInterval) obj!);
 
 		// Implementation of IEquatable
-		public bool Equals(IInterval other) => Equals((ContinuousInterval) other);
+		public bool Equals([AllowNull] IInterval other) => Equals((ContinuousInterval) other!);
 
-		public bool Equals(ContinuousInterval other) {
+		public bool Equals([AllowNull] ContinuousInterval other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
 			return
 				DimensionIndex == other.DimensionIndex &&
 				Start == other.Start &&
