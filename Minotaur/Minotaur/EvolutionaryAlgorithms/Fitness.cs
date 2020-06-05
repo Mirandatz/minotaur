@@ -2,6 +2,7 @@ namespace Minotaur.EvolutionaryAlgorithms {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.ExtensionMethods.SystemArray;
 
 	public sealed class Fitness: IEquatable<Fitness>, IReadOnlyList<float> {
@@ -51,7 +52,10 @@ namespace Minotaur.EvolutionaryAlgorithms {
 				return false;
 		}
 
-		public bool Equals(Fitness other) {
+		public bool Equals([AllowNull] Fitness other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
 			if (ReferenceEquals(this, other))
 				return true;
 
