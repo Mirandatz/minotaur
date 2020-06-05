@@ -1,4 +1,5 @@
 namespace Minotaur.Theseus {
+	using System;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
 	using Minotaur.EvolutionaryAlgorithms.Population;
@@ -38,8 +39,9 @@ namespace Minotaur.Theseus {
 		}
 
 		public HyperRectangle FromRule(Rule rule) {
-			var antecedent = rule.Antecedent;
-			return FromRuleAntecedent(antecedent);
+			throw new NotImplementedException();
+			//var antecedent = rule.Antecedent;
+			//return FromRuleAntecedent(antecedent);
 		}
 
 		public HyperRectangle FromRuleAntecedent(Array<IFeatureTest> ruleAntecedent) {
