@@ -1,38 +1,41 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 
 	public sealed class HyperRectangle: IEquatable<HyperRectangle> {
 
-		public readonly int DimensionCount;
 		public readonly Array<IInterval> Dimensions;
+		public readonly int DimensionCount;
 
 		private readonly int _precomputedHashCode;
 
 		public HyperRectangle(Array<IInterval> dimensions) {
-			Dimensions = dimensions.ShallowCopy();
-			DimensionCount = Dimensions.Length;
 
+			var intervalStorage = new IInterval[dimensions.Length];
 			var hash = new HashCode();
 
 			// Checking whether the dimensions are not null,
 			// and that their dimensions indices match with their positions in the provided array
 			// and computing the hashcode ._.
 			for (int i = 0; i < dimensions.Length; i++) {
-				var dimension = dimensions[i];
+				var d = dimensions[i];
 
-				if (dimension is null)
-					throw new ArgumentException(nameof(dimension) + " can't contain nulls.");
+				if (d is null)
+					throw new ArgumentException(nameof(dimensions) + " can't contain nulls.");
 
-				if (dimension.DimensionIndex != i) {
+				if (d.DimensionIndex != i) {
 					throw new ArgumentException($"" +
 						$"There is a mismatch between {nameof(IInterval.DimensionIndex)}" +
 						$"at position {i}.");
 				}
 
-				hash.Add(dimension);
+				intervalStorage[i] = d;
+				hash.Add(d);
 			}
 
+			Dimensions = Array<IInterval>.Wrap(intervalStorage);
+			DimensionCount = Dimensions.Length;
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
@@ -62,7 +65,10 @@ namespace Minotaur.Math.Dimensions {
 
 		public override bool Equals(object? obj) => Equals((HyperRectangle) obj!);
 
-		public bool Equals(HyperRectangle other) {
+		public bool Equals([AllowNull] HyperRectangle other) {
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+
 			if (ReferenceEquals(this, other))
 				return true;
 
