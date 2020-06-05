@@ -1,4 +1,5 @@
 namespace Minotaur.Output {
+	using System;
 	using System.Globalization;
 	using System.IO;
 	using CsvHelper;
@@ -15,27 +16,30 @@ namespace Minotaur.Output {
 			// consequent.
 			// @Assumption: all consequents of the same type have the same length
 
-			using var csvWriter = new CsvWriter(writer: textWriter, cultureInfo: CultureInfo.InvariantCulture);
+			throw new NotImplementedException();
 
-			WriteHeader(csvWriter, model);
+			//using var csvWriter = new CsvWriter(writer: textWriter, cultureInfo: CultureInfo.InvariantCulture);
 
-			foreach (var rule in model.Rules) {
-				WriteAntecedent(csvWriter, rule.Antecedent);
-				WriteConsequent(csvWriter, rule.Consequent);
-				csvWriter.NextRecord();
-			}
+			//WriteHeader(csvWriter, model);
+
+			//foreach (var rule in model.Rules) {
+			//	WriteAntecedent(csvWriter, rule.Antecedent);
+			//	WriteConsequent(csvWriter, rule.Consequent);
+			//	csvWriter.NextRecord();
+			//}
 		}
 
 		private void WriteHeader(CsvWriter csvWriter, Individual model) {
-			var featureCount = model.Rules[0].Antecedent.Length;
-			for (int i = 0; i < featureCount; i++)
-				csvWriter.WriteField($"Feature Test {i}");
+			throw new NotImplementedException();
+			//var featureCount = model.Rules[0].Antecedent.Length;
+			//for (int i = 0; i < featureCount; i++)
+			//	csvWriter.WriteField($"Feature Test {i}");
 
-			var classCount = ((MultiLabel) model.Rules[0].Consequent).Length;
-			for (int i = 0; i < classCount; i++)
-				csvWriter.WriteField($"Class {i}");
+			//var classCount = ((MultiLabel) model.Rules[0].Consequent).Length;
+			//for (int i = 0; i < classCount; i++)
+			//	csvWriter.WriteField($"Class {i}");
 
-			csvWriter.NextRecord();
+			//csvWriter.NextRecord();
 		}
 
 		private void WriteAntecedent(CsvWriter csvWriter, Array<IFeatureTest> antecedent) {
