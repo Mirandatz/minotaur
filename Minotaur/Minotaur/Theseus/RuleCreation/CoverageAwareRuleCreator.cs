@@ -101,9 +101,10 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			var ruleConsequent = _consequentCreator.CreateConsequent(relevantInstances);
 
-			return new Rule(
-				antecedent: ruleAntecedent,
-				consequent: ruleConsequent);
+			throw new NotImplementedException();
+			//return new Rule(
+			//	antecedent: ruleAntecedent,
+			//	consequent: ruleConsequent);
 		}
 	}
 }
