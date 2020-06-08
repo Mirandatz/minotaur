@@ -1,14 +1,8 @@
 namespace Minotaur.Theseus {
-	using Minotaur.Collections.Dataset;
-	using Minotaur.EvolutionaryAlgorithms.Population;
+	using Minotaur.Classification.Rules;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class FeatureTestDimensionIntervalConverter {
-		public readonly Dataset Dataset;
-
-		public FeatureTestDimensionIntervalConverter(Dataset dataset) {
-			Dataset = dataset;
-		}
 
 		public IInterval FromFeatureTest(IFeatureTest test) {
 			return test switch
