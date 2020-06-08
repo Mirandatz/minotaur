@@ -7,16 +7,10 @@ namespace Minotaur.Collections {
 
 	public sealed class Array<T>: IReadOnlyList<T> {
 
-		public readonly int Length;
 		private readonly T[] _items;
+		public int Length => _items.Length;
 
 		private Array(T[] items) {
-			_items = items;
-			Length = _items.Length;
-		}
-
-		private Array(int length, T[] items) {
-			Length = length;
 			_items = items;
 		}
 
@@ -35,11 +29,14 @@ namespace Minotaur.Collections {
 
 		public T this[Index index] => _items[index];
 
-		// Basic overrides
+		// Silly Object methods...
 		public override string ToString() => $"[{string.Join(", ", _items)}]";
 
-		// Implementation of IEnumerable<T>
+		public override bool Equals(object? obj) => throw new NotImplementedException();
 
+		public override int GetHashCode() => throw new NotImplementedException();
+
+		// Implementation of IEnumerable<T>
 		public IEnumerator<T> GetEnumerator() => _items.GetGenericEnumerator();
 
 		IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
@@ -48,7 +45,7 @@ namespace Minotaur.Collections {
 
 		public static implicit operator Array<T>(T[] mutableArray) => Wrap(mutableArray);
 
-		// Below ,there are just some convenience methods
+		// Convenience methods
 
 		public ReadOnlySpan<T> AsSpan() => new ReadOnlySpan<T>(_items);
 
@@ -59,9 +56,7 @@ namespace Minotaur.Collections {
 				destinationArray: itemsClone,
 				length: Length);
 
-			return new Array<T>(
-				items: itemsClone,
-				length: Length);
+			return new Array<T>(items: itemsClone);
 		}
 
 		public T[] ToArray() {
@@ -260,27 +255,6 @@ namespace Minotaur.Collections {
 					return true;
 
 			return false;
-		}
-	}
-
-	public static class IEquatableArrayExtensions {
-
-		public static bool SequenceEquals<T>(this Array<T> self, Array<T> other) where T : IEquatable<T> {
-			if (ReferenceEquals(self, other))
-				return true;
-
-			if (self.Length != other.Length)
-				return false;
-
-			for (int i = 0; i < self.Length; i++) {
-				var lhs = self[i];
-				var rhs = other[i];
-
-				if (!lhs.Equals(rhs))
-					return false;
-			}
-
-			return true;
 		}
 	}
 }
