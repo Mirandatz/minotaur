@@ -1,7 +1,7 @@
 namespace Minotaur.Theseus {
 	using System;
 	using System.Collections.Generic;
-	using Minotaur.EvolutionaryAlgorithms.Population;
+	using Minotaur.Classification.Rules;
 
 	public sealed class RuleConsistencyChecker {
 
@@ -13,15 +13,11 @@ namespace Minotaur.Theseus {
 			_intersector = hyperRectangleIntersector;
 		}
 
-		public bool IsConsistent(Individual individual) {
-			var allRulesSpan = individual.Rules.AsSpan();
+		public bool AreConsistent(ReadOnlySpan<Rule> rules) {
+			for (int i = 1; i < rules.Length; i++) {
+				var previousRules = rules.Slice(start: 0, length: i);
 
-			for (int i = 1; i < allRulesSpan.Length; i++) {
-				var previousRules = allRulesSpan.Slice(
-					start: 0,
-					length: i);
-
-				var currentRule = allRulesSpan[i];
+				var currentRule = rules[i];
 
 				if (!AreConsistent(existingRules: previousRules, newRule: currentRule))
 					return false;
