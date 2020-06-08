@@ -3,7 +3,7 @@ namespace Minotaur.Theseus {
 	using System.Collections.Generic;
 	using Minotaur.Classification.Rules;
 
-	public sealed class RuleConsistencyChecker {
+	public sealed class RuleConsistencyChecker: IRuleConsistencyChecker {
 
 		private readonly RuleAntecedentHyperRectangleConverter _converter;
 		private readonly HyperRectangleIntersector _intersector;
@@ -20,16 +20,6 @@ namespace Minotaur.Theseus {
 				var currentRule = rules[i];
 
 				if (!AreConsistent(existingRules: previousRules, newRule: currentRule))
-					return false;
-			}
-
-			return true;
-		}
-
-		public bool AreConsistent(List<Rule> consistentRules, Rule newRule) {
-			var ruleCount = consistentRules.Count;
-			for (int i = 0; i < ruleCount; i++) {
-				if (!AreConsistent(consistentRules[i], newRule))
 					return false;
 			}
 

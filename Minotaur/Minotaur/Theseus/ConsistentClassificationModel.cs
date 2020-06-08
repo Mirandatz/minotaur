@@ -16,7 +16,7 @@ namespace Minotaur.Theseus {
 			_precomputedHashCode = HashCode.Combine(rules, defaultPrediction);
 		}
 
-		public static ConsistentClassificationModel Create(RuleSet rules, ILabel defaultPrediction, RuleConsistencyChecker consistencyChecker) {
+		public static ConsistentClassificationModel Create(RuleSet rules, ILabel defaultPrediction, IRuleConsistencyChecker consistencyChecker) {
 			if (!consistencyChecker.AreConsistent(rules.AsSpan()))
 				throw new ArgumentException(nameof(rules) + " must be consistent.");
 
