@@ -6,22 +6,18 @@ namespace Minotaur.Collections {
 	public sealed class Set<T>: IReadOnlyCollection<T> {
 
 		private readonly HashSet<T> _items;
+		public int Count => _items.Count;
 
-		public Set(T[] items) {
-
-			_items = new HashSet<T>(capacity: items.Length);
-			for (int i = 0; i < items.Length; i++) {
-				var added = _items.Add(items[i]);
-				if (!added)
-					throw new ArgumentException(nameof(_items) + " can't contain duplicates.");
-			}
+		private Set(HashSet<T> items) {
+			_items = items;
 		}
 
-		public int Count => _items.Count;
+		public static Set<T> Wrap(HashSet<T> set) => new Set<T>(set);
 
 		public bool Contains(T item) => _items.Contains(item);
 
-		// Silly Object methods...
+		public bool SetEquals(Set<T> rulesSet) => _items.SetEquals(rulesSet._items);
+
 		public override string ToString() => throw new NotImplementedException();
 
 		public override bool Equals(object? obj) => throw new NotImplementedException();

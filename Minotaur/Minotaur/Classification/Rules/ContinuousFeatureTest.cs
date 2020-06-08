@@ -1,4 +1,4 @@
-namespace Minotaur.EvolutionaryAlgorithms.Population {
+namespace Minotaur.Classification.Rules {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
@@ -26,11 +26,7 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 			FeatureIndex = featureIndex;
 		}
 
-		public static ContinuousFeatureTest FromUnsortedBounds(
-			int featureIndex,
-			float firstBound,
-			float secondBound
-			) {
+		public static ContinuousFeatureTest FromUnsortedBounds(int featureIndex, float firstBound, float secondBound) {
 			if (firstBound < secondBound) {
 				return new ContinuousFeatureTest(
 					featureIndex: featureIndex,
@@ -58,7 +54,9 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 		public override string ToString() => $"{LowerBound} <= f[{FeatureIndex}] < {UpperBound}";
 
 		public override int GetHashCode() => HashCode.Combine(FeatureIndex, LowerBound, UpperBound);
+
 		public override bool Equals(object? obj) => Equals((ContinuousFeatureTest) obj!);
+
 		public bool Equals([AllowNull] IFeatureTest other) => Equals((ContinuousFeatureTest) other!);
 
 		public bool Equals([AllowNull] ContinuousFeatureTest other) {

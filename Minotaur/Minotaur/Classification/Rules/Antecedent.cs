@@ -1,39 +1,39 @@
-namespace Minotaur.EvolutionaryAlgorithms.Population {
+namespace Minotaur.Classification.Rules {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 
-	public sealed class RuleAntecedent: IEquatable<RuleAntecedent>, IReadOnlyList<IFeatureTest> {
+	public sealed class Antecedent: IEquatable<Antecedent>, IReadOnlyList<IFeatureTest> {
 
 		public readonly Array<IFeatureTest> FeatureTests;
-		public int Count => FeatureTests.Length;
 		private readonly int _precomputedHashCode;
 
-		public RuleAntecedent(Array<IFeatureTest> featureTests) {
-			if (featureTests.Length == 0)
+		public Antecedent(Array<IFeatureTest> featureTests) {
+			if (featureTests.IsEmpty)
 				throw new ArgumentException(nameof(featureTests) + " can't be empty.");
 
 			var storage = new IFeatureTest[featureTests.Length];
+			var hash = new HashCode();
 
+			// Checking nulls and indices are precomputing the hashcode
 			for (int i = 0; i < storage.Length; i++) {
 				var ft = featureTests[i];
 
 				if (ft is null)
 					throw new ArgumentException(nameof(featureTests) + " can't contain nulls.");
-				if (ft.FeatureIndex != i)
-					throw new ArgumentException(nameof(featureTests) + $" contents must be sorted by {nameof(IFeatureTest.FeatureIndex)}.");
+
+				if (ft.FeatureIndex != i) {
+					throw new ArgumentException($"There is a mis-indexed {nameof(IFeatureTest)}." +
+						$" Expected index {i}, actual {ft.FeatureIndex}.");
+				}
 
 				storage[i] = ft;
+				hash.Add(ft);
 			}
 
 			FeatureTests = Array<IFeatureTest>.Wrap(storage);
-
-			var hash = new HashCode();
-			for (int i = 0; i < featureTests.Length; i++)
-				hash.Add(featureTests[i].GetHashCode());
-
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
@@ -50,13 +50,13 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 			return true;
 		}
 
-		public IFeatureTest this[int index] => FeatureTests[index];
+		public override string ToString() => throw new NotImplementedException();
 
 		public override int GetHashCode() => _precomputedHashCode;
 
-		public override bool Equals(object? obj) => Equals((RuleAntecedent) obj!);
+		public override bool Equals(object? obj) => Equals((Antecedent) obj!);
 
-		public bool Equals([AllowNull] RuleAntecedent other) {
+		public bool Equals([AllowNull] Antecedent other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
 
@@ -79,6 +79,10 @@ namespace Minotaur.EvolutionaryAlgorithms.Population {
 
 			return true;
 		}
+
+		public int Count => FeatureTests.Length;
+
+		public IFeatureTest this[int index] => FeatureTests[index];
 
 		public IEnumerator<IFeatureTest> GetEnumerator() => FeatureTests.GetEnumerator();
 

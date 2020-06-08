@@ -1,17 +1,16 @@
-namespace Minotaur.EvolutionaryAlgorithms.Population {
+namespace Minotaur.Classification.Rules {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using Minotaur.Classification;
 	using Minotaur.Collections;
 
 	public sealed class Rule: IEquatable<Rule> {
 
 		public readonly int NonNullTestCount;
-		public readonly RuleAntecedent Antecedent;
-		public readonly ILabel Consequent;
+		public readonly Antecedent Antecedent;
+		public readonly Consequent Consequent;
 		private readonly int _precomputedHashCode;
 
-		public Rule(RuleAntecedent antecedent, ILabel consequent) {
+		public Rule(Antecedent antecedent, Consequent consequent) {
 			Antecedent = antecedent;
 			Consequent = consequent;
 			_precomputedHashCode = HashCode.Combine(antecedent, consequent);
