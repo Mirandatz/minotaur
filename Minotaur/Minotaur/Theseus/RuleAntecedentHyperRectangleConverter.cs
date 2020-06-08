@@ -1,17 +1,15 @@
 namespace Minotaur.Theseus {
 	using System;
+	using Minotaur.Classification.Rules;
 	using Minotaur.Collections;
-	using Minotaur.Collections.Dataset;
-	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class RuleAntecedentHyperRectangleConverter {
-		public readonly Dataset Dataset;
+
 		private readonly FeatureTestDimensionIntervalConverter _testIntervalConverter;
 
 		public RuleAntecedentHyperRectangleConverter(FeatureTestDimensionIntervalConverter testIntervalConverter) {
 			_testIntervalConverter = testIntervalConverter;
-			Dataset = _testIntervalConverter.Dataset;
 		}
 
 		public IFeatureTest[] FromHyperRectangle(HyperRectangle hyperRectangle) {
