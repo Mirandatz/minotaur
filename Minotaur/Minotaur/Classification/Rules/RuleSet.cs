@@ -42,6 +42,8 @@ namespace Minotaur.Classification.Rules {
 				precomputedHashCode: hash.ToHashCode());
 		}
 
+		public bool IsEmpty => _rulesArray.Length == 0;
+
 		public ReadOnlySpan<Rule> AsSpan() => _rulesArray;
 
 		public Set<Rule> AsSet() => _rulesSet;

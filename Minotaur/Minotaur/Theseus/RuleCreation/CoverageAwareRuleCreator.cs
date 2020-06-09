@@ -8,7 +8,7 @@ namespace Minotaur.Theseus.RuleCreation {
 
 	public sealed class CoverageAwareRuleCreator: IRuleCreator {
 		public Dataset Dataset { get; }
-		private readonly SeedFinder _seedSelector;
+		private readonly CFSBESeedFinder _seedSelector;
 		private readonly RuleAntecedentHyperRectangleConverter _boxConverter;
 		private readonly NonIntersectingRectangleCreator _boxCreator;
 		private readonly HyperRectangleCoverageComputer _coverageComputer;
@@ -18,7 +18,7 @@ namespace Minotaur.Theseus.RuleCreation {
 		private readonly int _targetNumberOfInstancesToCover;
 		private readonly bool _runExpensiveSanityChecks;
 
-		public CoverageAwareRuleCreator(SeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, AntecedentCreator antecedentCreator, IConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int targetNumberOfInstancesToCover, bool runExpensiveSanityChecks) {
+		public CoverageAwareRuleCreator(CFSBESeedFinder seedSelector, RuleAntecedentHyperRectangleConverter boxConverter, NonIntersectingRectangleCreator boxCreator, HyperRectangleCoverageComputer coverageComputer, AntecedentCreator antecedentCreator, IConsequentCreator consequentCreator, HyperRectangleIntersector hyperRectangleIntersector, int targetNumberOfInstancesToCover, bool runExpensiveSanityChecks) {
 			_seedSelector = seedSelector;
 			_boxConverter = boxConverter;
 			_boxCreator = boxCreator;
@@ -27,7 +27,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			_consequentCreator = consequentCreator;
 			_targetNumberOfInstancesToCover = targetNumberOfInstancesToCover;
 			_rectangleIntersector = hyperRectangleIntersector;
-			Dataset = _seedSelector.Dataset;
+			Dataset = _seedSelector._dataset;
 			_runExpensiveSanityChecks = runExpensiveSanityChecks;
 		}
 

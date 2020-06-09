@@ -89,7 +89,7 @@ namespace Minotaur {
 
 			var ruleAntecedentHyperRectangleConverter = new RuleAntecedentHyperRectangleConverter(featureTestIntervalConveter);
 
-			var seedSelector = new SeedFinder(
+			var seedSelector = new CFSBESeedFinder(
 				ruleConverter: ruleAntecedentHyperRectangleConverter,
 				coverageComputer: hyperRectangleCoverageComputer);
 
