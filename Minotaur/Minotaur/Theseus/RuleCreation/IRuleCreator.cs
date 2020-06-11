@@ -1,10 +1,8 @@
 namespace Minotaur.Theseus.RuleCreation {
-	using Minotaur.Collections;
-	using Minotaur.Collections.Dataset;
-	using Minotaur.EvolutionaryAlgorithms.Population;
+	using System;
+	using Minotaur.Classification.Rules;
 
 	public interface IRuleCreator {
-		Dataset Dataset { get; }
-		Rule? TryCreateRule(Array<Rule> existingRules);
+		Rule? TryCreateRule(ReadOnlySpan<Rule> existingRules);
 	}
 }
