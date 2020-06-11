@@ -1,24 +1,24 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
 	using Minotaur.Classification;
+	using Minotaur.Classification.Rules;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
-	using Minotaur.EvolutionaryAlgorithms.Population;
 	using Minotaur.Math.Dimensions;
 
 	public sealed class AntecedentCreator {
 
-		public Dataset Dataset { get; }
+		private readonly Dataset _dataset;
 		private readonly RuleAntecedentHyperRectangleConverter _converter;
 
-		public AntecedentCreator(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter) {
+		public AntecedentCreator(RuleAntecedentHyperRectangleConverter ruleAntecedentHyperRectangleConverter, Dataset dataset) {
 			_converter = ruleAntecedentHyperRectangleConverter;
-			Dataset = _converter.Dataset;
+			_dataset = dataset;
 		}
 
-		public IFeatureTest[]? CreateAntecedent(int seedIndex, ReadOnlySpan<int> nearestInstancesIndices) {
+		public Antecedent? CreateAntecedent(int seedIndex, ReadOnlySpan<int> nearestInstancesIndices) {
 			var builder = HyperRectangleBuilder.InitializeWithSeed(
-				dataset: Dataset,
+				dataset: _dataset,
 				seedIndex: seedIndex);
 
 			for (int i = 0; i < nearestInstancesIndices.Length; i++) {
@@ -32,15 +32,16 @@ namespace Minotaur.Theseus.RuleCreation {
 			if (box is null)
 				return null;
 
-			return _converter.FromHyperRectangle(box);
+			var featureTests = _converter.FromHyperRectangle(box);
+			return new Antecedent(featureTests);
 		}
 
 		private void EnlargeToCoverInstance(HyperRectangleBuilder builder, int instanceIndex) {
-			var dimensionCount = Dataset.FeatureCount;
-			var instance = Dataset.GetInstanceData(instanceIndex);
+			var dimensionCount = _dataset.FeatureCount;
+			var instance = _dataset.GetInstanceData(instanceIndex);
 
 			for (int i = 0; i < dimensionCount; i++) {
-				switch (Dataset.GetFeatureType(i)) {
+				switch (_dataset.GetFeatureType(i)) {
 
 				case FeatureType.Continuous:
 				EnlargeContinuousInterval(
@@ -67,7 +68,7 @@ namespace Minotaur.Theseus.RuleCreation {
 			}
 
 			if (target >= End) {
-				var possibleValues = Dataset.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex);
+				var possibleValues = _dataset.GetSortedUniqueFeatureValues(featureIndex: dimensionIndex);
 				var indexOfStart = possibleValues.BinarySearch(target);
 				if (indexOfStart == possibleValues.Length - 1) {
 					builder.UpdateContinuousDimensionIntervalEnd(
