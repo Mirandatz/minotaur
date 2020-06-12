@@ -1,25 +1,26 @@
 namespace Minotaur.Theseus.RuleCreation {
 	using System;
 	using Minotaur.Classification;
+	using Minotaur.Classification.Rules;
 	using Minotaur.Collections.Dataset;
 
 	public sealed class MultiLabelConsequentCreator: IConsequentCreator {
 
-		public Dataset Dataset { get; }
+		private readonly Dataset _dataset;
 		private readonly float _threshold;
 
 		public MultiLabelConsequentCreator(Dataset dataset, float threshold) {
 			if (threshold < 0 || threshold > 1)
 				throw new ArgumentOutOfRangeException(nameof(threshold));
 
-			Dataset = dataset;
+			_dataset = dataset;
 			_threshold = threshold;
 		}
 
-		public ILabel CreateConsequent(ReadOnlySpan<int> indicesOfInstances) {
+		public Consequent CreateConsequent(ReadOnlySpan<int> indicesOfInstances) {
 			// @Todo: add safety / sanity checks
 
-			var classCount = Dataset.ClassCount;
+			var classCount = _dataset.ClassCount;
 			var trueCount = new int[classCount];
 			for (int i = 0; i < indicesOfInstances.Length; i++) {
 				var index = indicesOfInstances[i];
@@ -28,11 +29,13 @@ namespace Minotaur.Theseus.RuleCreation {
 
 			var instanceCount = indicesOfInstances.Length;
 			var averageLabels = ComputeAverageLabels(instanceCount, classCount, trueCount);
-			return new MultiLabel(averageLabels);
+			var label = new MultiLabel(averageLabels);
+
+			return new Consequent(label);
 		}
 
 		private void UpdateTrueCount(int[] trueCount, int instanceIndex) {
-			var labels = (MultiLabel) Dataset.GetInstanceLabel(instanceIndex);
+			var labels = (MultiLabel) _dataset.GetInstanceLabel(instanceIndex);
 			for (int i = 0; i < labels.Length; i++) {
 				if (labels[i])
 					trueCount[i] += 1;

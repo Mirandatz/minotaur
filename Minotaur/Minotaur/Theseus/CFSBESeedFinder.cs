@@ -1,4 +1,5 @@
 namespace Minotaur.Theseus {
+	using System;
 	using Minotaur.Classification.Rules;
 	using Minotaur.Collections;
 	using Minotaur.Collections.Dataset;
@@ -14,7 +15,7 @@ namespace Minotaur.Theseus {
 			_dataset = dataset;
 		}
 
-		public Array<int> FindSeedsIndices(RuleSet existingRules) {
+		public Array<int> FindSeedsIndices(ReadOnlySpan<Rule> existingRules) {
 			if (existingRules.IsEmpty) {
 				var instanceCount = _dataset.InstanceCount;
 				var indices = new int[instanceCount];
