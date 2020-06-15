@@ -1,16 +1,15 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using Minotaur.Classification;
-	using Minotaur.Collections.Dataset;
+	using Minotaur.Datasets;
 
 	public sealed class HyperRectangleBuilder {
 
-		public readonly Dataset Dataset;
+		public readonly DatasetOld Dataset;
 		private readonly float[] _starts;
 		private readonly float[] _ends;
 
-		private HyperRectangleBuilder(Dataset dataset) {
+		private HyperRectangleBuilder(DatasetOld dataset) {
 			Dataset = dataset;
 
 			var featureCount = Dataset.FeatureCount;
@@ -23,7 +22,7 @@ namespace Minotaur.Math.Dimensions {
 			}
 		}
 
-		public static HyperRectangleBuilder InitializeWithSeed(Dataset dataset, int seedIndex) {
+		public static HyperRectangleBuilder InitializeWithSeed(DatasetOld dataset, int seedIndex) {
 			var builder = new HyperRectangleBuilder(dataset);
 			var seed = dataset.GetInstanceData(seedIndex);
 			var featureCount = dataset.FeatureCount;
@@ -51,7 +50,7 @@ namespace Minotaur.Math.Dimensions {
 			return builder;
 		}
 
-		public static HyperRectangleBuilder InitializeWithLargestRectangle(Dataset dataset) {
+		public static HyperRectangleBuilder InitializeWithLargestRectangle(DatasetOld dataset) {
 			var builder = new HyperRectangleBuilder(dataset);
 			var featureCount = dataset.FeatureCount;
 

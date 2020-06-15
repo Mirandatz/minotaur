@@ -1,14 +1,11 @@
 namespace Minotaur.Classification.Rules {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using Minotaur.Collections;
 
 	public sealed class Consequent: IEquatable<Consequent> {
 
-		public readonly ILabel Label;
-
-		public Consequent(ILabel label) {
-			Label = label;
-		}
+		public readonly Array<bool> Labels;
 
 		public override string ToString() => throw new NotImplementedException();
 

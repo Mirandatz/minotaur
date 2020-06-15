@@ -3,14 +3,14 @@ namespace Minotaur.Classification.Rules {
 	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.Collections;
 
-	public sealed class ContinuousFeatureTest: IFeatureTest, IEquatable<ContinuousFeatureTest> {
+	public sealed class ContinousFeatureTest: IFeatureTest, IEquatable<ContinousFeatureTest> {
 
 		public int FeatureIndex { get; }
 		public readonly float LowerBound;
 		public readonly float UpperBound;
 		public int TestSize => 2;
 
-		public ContinuousFeatureTest(int featureIndex, float lowerBound, float upperBound) {
+		public ContinousFeatureTest(int featureIndex, float lowerBound, float upperBound) {
 			if (featureIndex < 0)
 				throw new ArgumentOutOfRangeException(nameof(featureIndex) + " must be >= 0");
 			if (float.IsNaN(lowerBound))
@@ -26,14 +26,14 @@ namespace Minotaur.Classification.Rules {
 			FeatureIndex = featureIndex;
 		}
 
-		public static ContinuousFeatureTest FromUnsortedBounds(int featureIndex, float firstBound, float secondBound) {
+		public static ContinousFeatureTest FromUnsortedBounds(int featureIndex, float firstBound, float secondBound) {
 			if (firstBound < secondBound) {
-				return new ContinuousFeatureTest(
+				return new ContinousFeatureTest(
 					featureIndex: featureIndex,
 					lowerBound: firstBound,
 					upperBound: secondBound);
 			} else {
-				return new ContinuousFeatureTest(
+				return new ContinousFeatureTest(
 					featureIndex: featureIndex,
 					lowerBound: secondBound,
 					upperBound: firstBound);
@@ -55,11 +55,11 @@ namespace Minotaur.Classification.Rules {
 
 		public override int GetHashCode() => HashCode.Combine(FeatureIndex, LowerBound, UpperBound);
 
-		public override bool Equals(object? obj) => Equals((ContinuousFeatureTest) obj!);
+		public override bool Equals(object? obj) => Equals((ContinousFeatureTest) obj!);
 
-		public bool Equals([AllowNull] IFeatureTest other) => Equals((ContinuousFeatureTest) other!);
+		public bool Equals([AllowNull] IFeatureTest other) => Equals((ContinousFeatureTest) other!);
 
-		public bool Equals([AllowNull] ContinuousFeatureTest other) {
+		public bool Equals([AllowNull] ContinousFeatureTest other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
 
