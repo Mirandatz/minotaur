@@ -5,12 +5,12 @@ namespace Minotaur.Datasets {
 	using System.Diagnostics.CodeAnalysis;
 	using Minotaur.ExtensionMethods.SystemArray;
 
-	public sealed class InstanceDate: IEquatable<InstanceDate>, IReadOnlyList<float> {
+	public sealed class InstanceFeatures: IEquatable<InstanceFeatures>, IReadOnlyList<float> {
 
 		private readonly float[] _values;
 		private readonly int _precomputedHashCode;
 
-		public InstanceDate(ReadOnlySpan<float> values) {
+		public InstanceFeatures(ReadOnlySpan<float> values) {
 
 			var storage = new float[values.Length];
 			var hash = new HashCode();
@@ -37,9 +37,9 @@ namespace Minotaur.Datasets {
 
 		public override int GetHashCode() => _precomputedHashCode;
 
-		public override bool Equals(object? obj) => Equals((InstanceDate) obj!);
+		public override bool Equals(object? obj) => Equals((InstanceFeatures) obj!);
 
-		public bool Equals([AllowNull] InstanceDate other) {
+		public bool Equals([AllowNull] InstanceFeatures other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
 
