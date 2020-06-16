@@ -18,15 +18,23 @@ namespace Minotaur.Classification.Rules {
 		}
 
 		public static RuleSet Create(ReadOnlySpan<Rule> rules) {
+			if (rules.Length == 0)
+				throw new ArgumentException(nameof(rules) + " can't be empty.");
+
 			var array = new Rule[rules.Length];
 			var set = new HashSet<Rule>(capacity: rules.Length);
 			var hash = new HashCode();
+
+			var expectedTestCount = rules[0].Antecedent.Count;
 
 			for (int i = 0; i < rules.Length; i++) {
 				var r = rules[i];
 
 				if (r is null)
 					throw new ArgumentNullException(nameof(rules) + " can't contain nulls.");
+
+				if (r.Antecedent.Count != expectedTestCount)
+					throw new ArgumentException("All rules must have the same number of FeatureTests.");
 
 				var unique = set.Add(r);
 				if (!unique)

@@ -67,7 +67,7 @@ namespace Minotaur {
 		//	ShortName = "", LongName = "classification-type",
 		//	Description = "Describes whether the dataset is a single-label or multi-label.")]
 		//[AllowedValues("singlelabel", "multilabel")]
-		public ClassificationType ClassificationType { get; } = ClassificationType.MultiLabel;
+		//public ClassificationType ClassificationType { get; } = ClassificationType.MultiLabel;
 
 		[Required]
 		[Option(

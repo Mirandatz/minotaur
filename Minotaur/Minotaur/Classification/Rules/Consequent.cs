@@ -1,15 +1,33 @@
 namespace Minotaur.Classification.Rules {
 	using System;
+	using System.Collections;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using Minotaur.Collections;
+	using Minotaur.ExtensionMethods.SystemArray;
 
-	public sealed class Consequent: IEquatable<Consequent> {
+	public sealed class Consequent: IEquatable<Consequent>, IReadOnlyList<bool> {
 
-		public readonly Array<bool> Labels;
+		private readonly bool[] _labels;
+		private readonly int _precomputedHashCode;
+
+		public Consequent(ReadOnlySpan<bool> labels) {
+
+			var storage = new bool[labels.Length];
+			var hash = new HashCode();
+
+			for (int i = 0; i < labels.Length; i++) {
+				var v = labels[i];
+				storage[i] = v;
+				hash.Add(v);
+			}
+
+			_labels = storage;
+			_precomputedHashCode = hash.ToHashCode();
+		}
 
 		public override string ToString() => throw new NotImplementedException();
 
-		public override int GetHashCode() => Label.GetHashCode();
+		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) => Equals((Consequent) obj!);
 
@@ -17,7 +35,24 @@ namespace Minotaur.Classification.Rules {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
 
-			return Label.Equals(other.Label);
+			if (ReferenceEquals(this, other))
+				return true;
+
+			var lhs = _labels.AsSpan();
+			var rhs = other._labels.AsSpan();
+
+			if (lhs.Length != rhs.Length)
+				throw new InvalidOperationException();
+
+			return lhs.SequenceEqual(rhs);
 		}
+
+		public int Count => _labels.Length;
+
+		public bool this[int index] => _labels[index];
+
+		public IEnumerator<bool> GetEnumerator() => _labels.GetGenericEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => _labels.GetEnumerator();
 	}
 }

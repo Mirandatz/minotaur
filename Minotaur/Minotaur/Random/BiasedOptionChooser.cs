@@ -132,7 +132,7 @@ namespace Minotaur.Random {
 					return _options[i];
 			}
 
-			return _options[_options.Length - 1];
+			return _options[^1];
 		}
 	}
 }

@@ -3,18 +3,18 @@ namespace Minotaur.Classification.Rules {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using Minotaur.Collections;
+	using Minotaur.ExtensionMethods.SystemArray;
 
-	public sealed class Antecedent: IEquatable<Antecedent>, IReadOnlyList<IFeatureTest> {
+	public sealed class Antecedent: IEquatable<Antecedent>, IReadOnlyList<FeatureTest> {
 
-		public readonly Array<IFeatureTest> FeatureTests;
+		private readonly FeatureTest[] _featureTests;
 		private readonly int _precomputedHashCode;
 
-		public Antecedent(Array<IFeatureTest> featureTests) {
+		public Antecedent(ReadOnlySpan<FeatureTest> featureTests) {
 			if (featureTests.IsEmpty)
 				throw new ArgumentException(nameof(featureTests) + " can't be empty.");
 
-			var storage = new IFeatureTest[featureTests.Length];
+			var storage = new FeatureTest[featureTests.Length];
 			var hash = new HashCode();
 
 			// Checking nulls and indices are precomputing the hashcode
@@ -24,30 +24,15 @@ namespace Minotaur.Classification.Rules {
 				if (ft is null)
 					throw new ArgumentException(nameof(featureTests) + " can't contain nulls.");
 
-				if (ft.FeatureIndex != i) {
-					throw new ArgumentException($"There is a mis-indexed {nameof(IFeatureTest)}." +
-						$" Expected index {i}, actual {ft.FeatureIndex}.");
-				}
+				if (ft.FeatureIndex != i)
+					throw new ArgumentException("Index mismatch.");
 
 				storage[i] = ft;
 				hash.Add(ft);
 			}
 
-			FeatureTests = Array<IFeatureTest>.Wrap(storage);
+			_featureTests = storage;
 			_precomputedHashCode = hash.ToHashCode();
-		}
-
-		public bool Covers(Array<float> instance) {
-			if (instance.Length != Count)
-				throw new InvalidOperationException();
-
-			var tests = FeatureTests.AsSpan();
-			for (int i = 0; i < tests.Length; i++) {
-				if (!tests[i].Matches(instance))
-					return false;
-			}
-
-			return true;
 		}
 
 		public override string ToString() => throw new NotImplementedException();
@@ -63,14 +48,14 @@ namespace Minotaur.Classification.Rules {
 			if (ReferenceEquals(this, other))
 				return true;
 
-			if (ReferenceEquals(FeatureTests, other.FeatureTests))
+			if (ReferenceEquals(_featureTests, other._featureTests))
 				return true;
 
 			if (Count != other.Count)
 				throw new InvalidOperationException();
 
-			var lhs = FeatureTests.AsSpan();
-			var rhs = other.FeatureTests.AsSpan();
+			var lhs = _featureTests.AsSpan();
+			var rhs = other._featureTests.AsSpan();
 
 			for (int i = 0; i < Count; i++) {
 				if (!lhs[i].Equals(rhs[i]))
@@ -80,12 +65,12 @@ namespace Minotaur.Classification.Rules {
 			return true;
 		}
 
-		public int Count => FeatureTests.Length;
+		public int Count => _featureTests.Length;
 
-		public IFeatureTest this[int index] => FeatureTests[index];
+		public FeatureTest this[int index] => _featureTests[index];
 
-		public IEnumerator<IFeatureTest> GetEnumerator() => FeatureTests.GetEnumerator();
+		public IEnumerator<FeatureTest> GetEnumerator() => _featureTests.GetGenericEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator() => FeatureTests.GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => _featureTests.GetEnumerator();
 	}
 }

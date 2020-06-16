@@ -1,11 +1,9 @@
 namespace Minotaur.Classification.Rules {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using Minotaur.Collections;
 
 	public sealed class Rule: IEquatable<Rule> {
 
-		public readonly int NonNullTestCount;
 		public readonly Antecedent Antecedent;
 		public readonly Consequent Consequent;
 		private readonly int _precomputedHashCode;
@@ -15,8 +13,6 @@ namespace Minotaur.Classification.Rules {
 			Consequent = consequent;
 			_precomputedHashCode = HashCode.Combine(antecedent, consequent);
 		}
-
-		public bool Covers(Array<float> instance) => Antecedent.Covers(instance);
 
 		public override string ToString() {
 			var antecedent = "IF " + string.Join(" AND ", Antecedent);
