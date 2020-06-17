@@ -31,7 +31,7 @@ namespace Minotaur.Math.Geometry {
 			// @Danger: this might be wrong...
 			if (lhsStart >= rhsEnd)
 				return false;
-			if (rhsStart >= lhsEnd)
+			if (lhsEnd <= rhsStart)
 				return false;
 
 			return true;
