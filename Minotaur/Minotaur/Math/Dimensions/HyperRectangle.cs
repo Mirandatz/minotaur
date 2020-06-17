@@ -1,66 +1,35 @@
 namespace Minotaur.Math.Dimensions {
 	using System;
+	using System.Collections;
+	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using Minotaur.Collections;
+	using Minotaur.ExtensionMethods.SystemArray;
 
-	public sealed class HyperRectangle: IEquatable<HyperRectangle> {
+	public sealed class HyperRectangle: IEquatable<HyperRectangle>, IReadOnlyList<Interval> {
 
-		public readonly Array<IInterval> Dimensions;
-		public readonly int DimensionCount;
-
+		private readonly Interval[] _intervals;
 		private readonly int _precomputedHashCode;
 
-		public HyperRectangle(Array<IInterval> dimensions) {
+		public HyperRectangle(ReadOnlySpan<Interval> intervals) {
 
-			var intervalStorage = new IInterval[dimensions.Length];
+			var storage = new Interval[intervals.Length];
 			var hash = new HashCode();
 
-			// Checking whether the dimensions are not null,
-			// and that their dimensions indices match with their positions in the provided array
-			// and computing the hashcode ._.
-			for (int i = 0; i < dimensions.Length; i++) {
-				var d = dimensions[i];
+			for (int i = 0; i < intervals.Length; i++) {
+				var intv = intervals[i];
 
-				if (d is null)
-					throw new ArgumentException(nameof(dimensions) + " can't contain nulls.");
+				if (intv is null)
+					throw new ArgumentException(nameof(intervals) + " can't contain nulls.");
 
-				if (d.DimensionIndex != i) {
-					throw new ArgumentException($"" +
-						$"There is a mismatch between {nameof(IInterval.DimensionIndex)}" +
-						$"at position {i}.");
-				}
-
-				intervalStorage[i] = d;
-				hash.Add(d);
+				storage[i] = intv;
+				hash.Add(intv);
 			}
 
-			Dimensions = Array<IInterval>.Wrap(intervalStorage);
-			DimensionCount = Dimensions.Length;
+			_intervals = storage;
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
-		public bool Contains(Array<float> point) {
-			if (point.Length != DimensionCount) {
-				throw new ArgumentException(
-					nameof(point) + " must contain the same number of dimensions as this " +
-					nameof(HyperRectangle));
-			}
-
-			for (int i = 0; i < DimensionCount; i++) {
-				if (!Dimensions[i].Contains(point[i]))
-					return false;
-			}
-
-			return true;
-		}
-
-		public IInterval GetDimensionInterval(int dimensionIndex) {
-			if (dimensionIndex < 0 || dimensionIndex >= Dimensions.Length)
-				throw new ArgumentOutOfRangeException(nameof(dimensionIndex));
-
-			return Dimensions[dimensionIndex];
-		}
-
+		// Silly overrides
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) => Equals((HyperRectangle) obj!);
@@ -72,17 +41,31 @@ namespace Minotaur.Math.Dimensions {
 			if (ReferenceEquals(this, other))
 				return true;
 
-			if (Dimensions.Length != other.Dimensions.Length)
-				throw new InvalidOperationException();
+			var lhs = _intervals.AsSpan();
+			var rhs = _intervals.AsSpan();
 
-			for (int i = 0; i < DimensionCount; i++) {
-				var lhs = Dimensions[i];
-				var rhs = other.Dimensions[i];
-				if (!lhs.Equals(rhs))
+			if (lhs.Length != rhs.Length) {
+				throw new InvalidOperationException($"" +
+					$"All {nameof(HyperRectangle)} created in a MINOTAUR run " +
+					$"should have the same number of {nameof(Interval)}.");
+			}
+
+			for (int i = 0; i < lhs.Length; i++) {
+				if (!lhs[i].Equals(rhs[i]))
 					return false;
 			}
 
 			return true;
 		}
+
+		// IReadOnlyList implementation
+
+		public int Count => _intervals.Length;
+
+		public Interval this[int index] => _intervals[index];
+
+		public IEnumerator<Interval> GetEnumerator() => _intervals.GetGenericEnumerator();
+
+		IEnumerator IEnumerable.GetEnumerator() => _intervals.GetEnumerator();
 	}
 }
