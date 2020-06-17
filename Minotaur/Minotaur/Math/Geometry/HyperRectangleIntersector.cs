@@ -20,18 +20,9 @@ namespace Minotaur.Math.Geometry {
 		}
 
 		private static bool Intersects(Interval lhs, Interval rhs) {
-			return Intersects(
-				lhsStart: lhs.InclusiveStart,
-				lhsEnd: lhs.ExclusiveEnd,
-				rhsStart: rhs.InclusiveStart,
-				rhsEnd: rhs.ExclusiveEnd);
-		}
-
-		private static bool Intersects(float lhsStart, float lhsEnd, float rhsStart, float rhsEnd) {
-			// @Danger: this might be wrong...
-			if (lhsStart >= rhsEnd)
+			if (lhs.InclusiveStart >= rhs.ExclusiveEnd)
 				return false;
-			if (lhsEnd <= rhsStart)
+			if (lhs.ExclusiveEnd <= rhs.InclusiveStart)
 				return false;
 
 			return true;
