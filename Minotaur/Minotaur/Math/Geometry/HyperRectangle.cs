@@ -29,6 +29,8 @@ namespace Minotaur.Math.Geometry {
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
+		public ReadOnlySpan<Interval> AsSpan() => _intervals;
+
 		// Silly overrides
 		public override int GetHashCode() => _precomputedHashCode;
 
