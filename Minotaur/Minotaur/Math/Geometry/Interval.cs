@@ -1,4 +1,4 @@
-namespace Minotaur.Math.Dimensions {
+namespace Minotaur.Math.Geometry {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 
