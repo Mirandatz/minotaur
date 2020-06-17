@@ -10,6 +10,7 @@ namespace Minotaur.Math.Geometry {
 		public Interval(float inclusiveStart, float exclusiveEnd) {
 			if (float.IsNaN(inclusiveStart) || float.IsInfinity(inclusiveStart))
 				throw new ArgumentOutOfRangeException(nameof(inclusiveStart) + " must be finite.");
+
 			if (float.IsNaN(exclusiveEnd) || float.IsInfinity(exclusiveEnd))
 				throw new ArgumentOutOfRangeException(nameof(exclusiveEnd) + " must be finite.");
 
@@ -18,6 +19,13 @@ namespace Minotaur.Math.Geometry {
 
 			InclusiveStart = inclusiveStart;
 			ExclusiveEnd = exclusiveEnd;
+		}
+
+		public static Interval FromUnsortedBounds(float firstBound, float secondBound) {
+			if (firstBound < secondBound)
+				return new Interval(inclusiveStart: firstBound, exclusiveEnd: secondBound);
+			else
+				return new Interval(inclusiveStart: secondBound, exclusiveEnd: firstBound);
 		}
 
 		public bool Contains(float value) {
