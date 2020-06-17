@@ -7,22 +7,22 @@ namespace Minotaur.Math.Geometry {
 		public readonly float InclusiveStart;
 		public readonly float ExclusiveEnd;
 
-		public Interval(float start, float end) {
-			if (float.IsNaN(start))
-				throw new ArgumentOutOfRangeException(nameof(start) + " can't be NaN.");
-			if (float.IsNaN(end))
-				throw new ArgumentOutOfRangeException(nameof(end) + " can't be NaN.");
+		public Interval(float inclusiveStart, float exclusiveEnd) {
+			if (float.IsNaN(inclusiveStart) || float.IsInfinity(inclusiveStart))
+				throw new ArgumentOutOfRangeException(nameof(inclusiveStart) + " must be finite.");
+			if (float.IsNaN(exclusiveEnd) || float.IsInfinity(exclusiveEnd))
+				throw new ArgumentOutOfRangeException(nameof(exclusiveEnd) + " must be finite.");
 
-			if (start >= end)
-				throw new ArgumentException(nameof(start) + " must be < " + nameof(end));
+			if (inclusiveStart >= exclusiveEnd)
+				throw new ArgumentException(nameof(inclusiveStart) + " must be < " + nameof(exclusiveEnd));
 
-			InclusiveStart = start;
-			ExclusiveEnd = end;
+			InclusiveStart = inclusiveStart;
+			ExclusiveEnd = exclusiveEnd;
 		}
 
 		public bool Contains(float value) {
-			if (float.IsNaN(value))
-				throw new ArgumentOutOfRangeException(nameof(value) + " can't be NaN.");
+			if (float.IsNaN(value) || float.IsInfinity(value))
+				throw new ArgumentOutOfRangeException(nameof(value) + " must be finite.");
 
 			return InclusiveStart <= value && value < ExclusiveEnd;
 		}
