@@ -35,6 +35,8 @@ namespace Minotaur.Classification.Rules {
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
+		public ReadOnlySpan<FeatureTest> AsSpan() => _featureTests;
+
 		public override string ToString() => throw new NotImplementedException();
 
 		public override int GetHashCode() => _precomputedHashCode;
