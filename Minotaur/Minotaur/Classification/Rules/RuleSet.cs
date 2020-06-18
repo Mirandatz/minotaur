@@ -26,6 +26,7 @@ namespace Minotaur.Classification.Rules {
 			var hash = new HashCode();
 
 			var expectedTestCount = rules[0].Antecedent.Count;
+			var expectedConsequentCount = rules[0].Consequent.Count;
 
 			for (int i = 0; i < rules.Length; i++) {
 				var r = rules[i];
@@ -34,7 +35,10 @@ namespace Minotaur.Classification.Rules {
 					throw new ArgumentNullException(nameof(rules) + " can't contain nulls.");
 
 				if (r.Antecedent.Count != expectedTestCount)
-					throw new ArgumentException("All rules must have the same number of FeatureTests.");
+					throw new ArgumentException($"All rules must have the same {nameof(Antecedent)}.{r.Antecedent.Count}.");
+
+				if (r.Consequent.Count != expectedConsequentCount)
+					throw new ArgumentException($"All rules must have the same {nameof(Antecedent)}.{r.Consequent.Count}.");
 
 				var unique = set.Add(r);
 				if (!unique)
