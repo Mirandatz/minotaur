@@ -25,7 +25,6 @@
   <ItemGroup>
     <Compile Remove="FittestSelection\FitnessEvaluator.cs" />
     <Compile Remove="Metrics\AverageRuleVolume.cs" />
-    <Compile Remove="Metrics\IMetric.cs" />
     <Compile Remove="Metrics\IMetricParser.cs" />
     <Compile Remove="Metrics\ModelSize.cs" />
     <Compile Remove="Metrics\MultiLabelFScore.cs" />
@@ -42,7 +41,6 @@
   <ItemGroup>
     <None Include="FittestSelection\FitnessEvaluator.cs" />
     <None Include="Metrics\AverageRuleVolume.cs" />
-    <None Include="Metrics\IMetric.cs" />
     <None Include="Metrics\IMetricParser.cs" />
     <None Include="Metrics\ModelSize.cs" />
     <None Include="Metrics\MultiLabelFScore.cs" />

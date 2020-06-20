@@ -1,9 +1,9 @@
-namespace Minotaur.EvolutionaryAlgorithms.Metrics {
-	using Minotaur.EvolutionaryAlgorithms.Population;
+namespace Minotaur.Metrics {
+	using Minotaur.Classification;
 
 	public interface IMetric {
 		string Name { get; }
-		float EvaluateAsMaximizationTask(Individual individual);
+		float EvaluateAsMaximizationTask(Model individual);
 	}
 }
 
