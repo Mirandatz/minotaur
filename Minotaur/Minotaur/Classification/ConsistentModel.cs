@@ -33,16 +33,33 @@ namespace Minotaur.Classification {
 		}
 
 		// Actual methods
-		public InstanceLabels Predict(InstanceFeatures instaceFeatures) {
+		public InstanceLabels Predict(InstanceFeatures instanceFeatures) {
 
-			var rules = Rules.AsSpan();
-
+			// @performance
 			// We could break out of loop early,
 			// as soon as we found the first matching rule...
 			// But we will keep iterating to make sure(er?)
 			// there is at most a single rule that matches the instance
+			var rules = Rules.AsSpan();
 
-			throw new NotImplementedException();
+			Rule? match = null;
+
+			for (int i = 0; i < rules.Length; i++) {
+				var r = rules[i];
+
+				if (!r.Antecedent.Covers(instanceFeatures))
+					continue;
+
+				if (match is null)
+					match = r;
+				else
+					throw new InvalidOperationException("This model is like totally not consistent.");
+			}
+
+			if (match is null)
+				return new InstanceLabels(values: DefaultPrediction.AsSpan());
+			else
+				return new InstanceLabels(values: match.Consequent.AsSpan());
 		}
 
 		// Silly overrides
