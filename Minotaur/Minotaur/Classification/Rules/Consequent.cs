@@ -25,12 +25,17 @@ namespace Minotaur.Classification.Rules {
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
+		// Views
+		public ReadOnlySpan<bool> AsSpan() => _labels;
+
+		// Silly overrides
 		public override string ToString() => throw new NotImplementedException();
 
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) => Equals((Consequent) obj!);
 
+		// IEquatable
 		public bool Equals([AllowNull] Consequent other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
@@ -47,6 +52,7 @@ namespace Minotaur.Classification.Rules {
 			return lhs.SequenceEqual(rhs);
 		}
 
+		// IReadOnlyList
 		public int Count => _labels.Length;
 
 		public bool this[int index] => _labels[index];

@@ -33,12 +33,14 @@ namespace Minotaur.Datasets {
 
 		public ReadOnlySpan<float> AsSpan() => _values.AsSpan();
 
+		// Silly overrides
 		public override string ToString() => throw new NotImplementedException();
 
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) => Equals((InstanceFeatures) obj!);
 
+		// IEquatable
 		public bool Equals([AllowNull] InstanceFeatures other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
@@ -55,6 +57,7 @@ namespace Minotaur.Datasets {
 			return lhs.SequenceEqual(rhs);
 		}
 
+		// IReadOnlyList
 		public float this[int index] => _values[index];
 
 		public int Count => _values.Length;

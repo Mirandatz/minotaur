@@ -1,19 +1,22 @@
 namespace Minotaur.Classification {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 	using Minotaur.Classification.Rules;
+	using Minotaur.Datasets;
 
-	public sealed class Model: IEquatable<Model> {
+	public sealed class ConsistentModel: IEquatable<ConsistentModel> {
 
 		public readonly RuleSet Rules;
 		public readonly Consequent DefaultPrediction;
 
-		private Model(RuleSet rules, Consequent defaultPrediction) {
+		// Constructors and alike
+		private ConsistentModel(RuleSet rules, Consequent defaultPrediction) {
 			Rules = rules;
 			DefaultPrediction = defaultPrediction;
 		}
 
-		public static Model Create(RuleSet ruleSet, Consequent defaultPrediction, IConsistencyChecker consistencyChecker) {
+		public static ConsistentModel Create(RuleSet ruleSet, Consequent defaultPrediction, IConsistencyChecker consistencyChecker) {
 			if (!consistencyChecker.AreConsistent(ruleSet))
 				throw new InvalidOperationException();
 
@@ -24,9 +27,22 @@ namespace Minotaur.Classification {
 					$"{nameof(ruleSet)}.");
 			}
 
-			return new Model(
+			return new ConsistentModel(
 				rules: ruleSet,
 				defaultPrediction: defaultPrediction);
+		}
+
+		// Actual methods
+		public InstanceLabels Predict(InstanceFeatures instaceFeatures) {
+
+			var rules = Rules.AsSpan();
+
+			// We could break out of loop early,
+			// as soon as we found the first matching rule...
+			// But we will keep iterating to make sure(er?)
+			// there is at most a single rule that matches the instance
+
+			throw new NotImplementedException();
 		}
 
 		// Silly overrides
@@ -34,9 +50,10 @@ namespace Minotaur.Classification {
 
 		public override int GetHashCode() => HashCode.Combine(Rules, DefaultPrediction);
 
-		public override bool Equals(object? obj) => Equals((Model) obj!);
+		public override bool Equals(object? obj) => Equals((ConsistentModel) obj!);
 
-		public bool Equals([AllowNull] Model other) {
+		// IEquatable
+		public bool Equals([AllowNull] ConsistentModel other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
 
