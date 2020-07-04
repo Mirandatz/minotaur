@@ -7,6 +7,7 @@ namespace Minotaur.Math.Geometry {
 		public readonly float InclusiveStart;
 		public readonly float ExclusiveEnd;
 
+		// Constructors and alike
 		public Interval(float inclusiveStart, float exclusiveEnd) {
 			if (float.IsNaN(inclusiveStart) || float.IsInfinity(inclusiveStart))
 				throw new ArgumentOutOfRangeException(nameof(inclusiveStart) + " must be finite.");
@@ -28,6 +29,7 @@ namespace Minotaur.Math.Geometry {
 				return new Interval(inclusiveStart: secondBound, exclusiveEnd: firstBound);
 		}
 
+		// Actual methods
 		public bool Contains(float value) {
 			if (float.IsNaN(value) || float.IsInfinity(value))
 				throw new ArgumentOutOfRangeException(nameof(value) + " must be finite.");
@@ -42,6 +44,7 @@ namespace Minotaur.Math.Geometry {
 
 		public override bool Equals(object? obj) => Equals((Interval) obj!);
 
+		// IEquatable
 		public bool Equals([AllowNull] Interval other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));

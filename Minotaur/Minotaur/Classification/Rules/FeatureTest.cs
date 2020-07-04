@@ -16,12 +16,17 @@ namespace Minotaur.Classification.Rules {
 			Interval = interval;
 		}
 
+		// Actual methods
+		public bool Matches(float value) => Interval.Contains(value);
+
+		// Silly overrides
 		public override string ToString() => throw new NotImplementedException();
 
 		public override int GetHashCode() => HashCode.Combine(FeatureIndex, Interval);
 
 		public override bool Equals(object? obj) => Equals((FeatureTest) obj!);
 
+		// IEquatable
 		public bool Equals([AllowNull] FeatureTest other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));

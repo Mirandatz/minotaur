@@ -3,6 +3,7 @@ namespace Minotaur.Classification.Rules {
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using Minotaur.Datasets;
 	using Minotaur.ExtensionMethods.SystemArray;
 
 	public sealed class Antecedent: IEquatable<Antecedent>, IReadOnlyList<FeatureTest> {
@@ -35,14 +36,29 @@ namespace Minotaur.Classification.Rules {
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
+		// Actual methods
+		public bool Covers(InstanceFeatures instanceFeatures) {
+			for (int i = 0; i < _featureTests.Length; i++) {
+				var test = _featureTests[i];
+				var value = instanceFeatures[i];
+				if (!test.Matches(value))
+					return false;
+			}
+
+			return true;
+		}
+
+		// Views
 		public ReadOnlySpan<FeatureTest> AsSpan() => _featureTests;
 
+		// Silly overrides
 		public override string ToString() => throw new NotImplementedException();
 
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) => Equals((Antecedent) obj!);
 
+		// IEquatable
 		public bool Equals([AllowNull] Antecedent other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
@@ -67,6 +83,7 @@ namespace Minotaur.Classification.Rules {
 			return true;
 		}
 
+		// IReadOnlyList
 		public int Count => _featureTests.Length;
 
 		public FeatureTest this[int index] => _featureTests[index];
