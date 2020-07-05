@@ -31,6 +31,7 @@ namespace Minotaur.Datasets {
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
+		// Views
 		public ReadOnlySpan<float> AsSpan() => _values.AsSpan();
 
 		// Silly overrides

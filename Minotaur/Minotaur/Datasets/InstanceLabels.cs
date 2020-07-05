@@ -25,14 +25,17 @@ namespace Minotaur.Datasets {
 			_precomputedHashCode = hash.ToHashCode();
 		}
 
+		// Views
 		public ReadOnlySpan<bool> AsSpan() => _values.AsSpan();
 
+		// Silly overrides
 		public override string ToString() => throw new NotImplementedException();
 
 		public override int GetHashCode() => _precomputedHashCode;
 
 		public override bool Equals(object? obj) => Equals((InstanceLabels) obj!);
 
+		// IEquatable
 		public bool Equals([AllowNull] InstanceLabels other) {
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
@@ -49,6 +52,7 @@ namespace Minotaur.Datasets {
 			return lhs.SequenceEqual(rhs);
 		}
 
+		// IReadOnlyList
 		public int Count => _values.Length;
 
 		public bool this[int index] => _values[index];
