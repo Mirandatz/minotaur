@@ -9,12 +9,12 @@ namespace Minotaur.EvolutionaryAlgorithms.Metrics {
 	/// Wrote to be compatible with MULAN:
 	/// https://github.com/tsoumakas/mulan/blob/f56e8148812dde357178a053cb09877515b538ad/mulan/src/main/java/mulan/evaluation/measure/InformationRetrievalMeasures.java
 	/// </summary>
-	public sealed class MultiLabelFScore: IMetric {
+	public sealed class FScore: IMetric {
 		private readonly Dataset _dataset;
 
-		public string Name => nameof(MultiLabelFScore);
+		public string Name => nameof(FScore);
 
-		public MultiLabelFScore(Dataset dataset) {
+		public FScore(Dataset dataset) {
 			if (dataset.ClassificationType != ClassificationType.MultiLabel)
 				throw new InvalidOperationException();
 
