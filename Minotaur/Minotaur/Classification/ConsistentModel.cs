@@ -1,7 +1,7 @@
 namespace Minotaur.Classification {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
+	using System.Threading.Tasks;
 	using Minotaur.Classification.Rules;
 	using Minotaur.Datasets;
 
@@ -33,7 +33,22 @@ namespace Minotaur.Classification {
 		}
 
 		// Actual methods
-		public InstanceLabels Predict(InstanceFeatures instanceFeatures) {
+		public InstanceLabels[] Predict(InstancesFeaturesManager instancesFeaturesManager) {
+			var predictions = new InstanceLabels[instancesFeaturesManager.InstanceCount];
+
+			Parallel.For(
+				fromInclusive: 0,
+				toExclusive: instancesFeaturesManager.InstanceCount,
+				body: instanceIndex => {
+					var instanceFeatures = instancesFeaturesManager.GetFeatures(instanceIndex);
+					var p = Predict(instanceFeatures);
+					predictions[instanceIndex] = p;
+				});
+
+			return predictions;
+		}
+
+		private InstanceLabels Predict(InstanceFeatures instanceFeatures) {
 
 			// @performance
 			// We could break out of loop early,
