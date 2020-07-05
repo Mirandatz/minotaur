@@ -1,10 +1,12 @@
-namespace Minotaur.EvolutionaryAlgorithms.Metrics {
-	using Minotaur.EvolutionaryAlgorithms.Population;
+namespace Minotaur.Metrics {
+	using Minotaur.Classification;
 
 	public sealed class RuleCount: IMetric {
 
-		public string Name => nameof(RuleCount);
+		public string Name { get; } = "Rule Count";
 
-		public float EvaluateAsMaximizationTask(Individual individual) => -1 * individual.Rules.Length;
+		public float EvaluateAsMaximizationTask(ConsistentModel model) => (-1) * (model.Rules.Count);
+
+		public float EvaluateToHumanReadable(ConsistentModel model) => model.Rules.Count;
 	}
 }

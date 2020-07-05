@@ -3,7 +3,8 @@ namespace Minotaur.Metrics {
 
 	public interface IMetric {
 		string Name { get; }
-		float EvaluateAsMaximizationTask(ConsistentModel individual);
+		float EvaluateAsMaximizationTask(ConsistentModel model);
+		float EvaluateToHumanReadable(ConsistentModel model);
 	}
 }
 
