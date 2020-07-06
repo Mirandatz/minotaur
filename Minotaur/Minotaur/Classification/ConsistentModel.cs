@@ -20,8 +20,8 @@ namespace Minotaur.Classification {
 			if (!consistencyChecker.AreConsistent(ruleSet))
 				throw new InvalidOperationException();
 
-			var expectedConsequentCount = ruleSet.AsSpan()[0].Consequent.Count;
-			if (defaultPrediction.Count != expectedConsequentCount) {
+			var expectedLabelCount = ruleSet.AsSpan()[0].Consequent.Count;
+			if (defaultPrediction.Count != expectedLabelCount) {
 				throw new ArgumentException($"The {nameof(defaultPrediction)} must have the same " +
 					$"{nameof(defaultPrediction.Count)} as each of the {nameof(Rule)} in the " +
 					$"{nameof(ruleSet)}.");
