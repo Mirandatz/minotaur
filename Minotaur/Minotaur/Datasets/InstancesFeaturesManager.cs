@@ -8,10 +8,12 @@ namespace Minotaur.Datasets {
 		private readonly InstanceFeatures[] _instanceFeatures;
 
 		public InstancesFeaturesManager() {
+			_instanceFeatures = null!;
 			throw new NotImplementedException();
 		}
 
-		public InstanceFeatures GetInstanceFeatureValues(int instanceIndex) {
+		// Actual methods
+		public InstanceFeatures GetFeatures(int instanceIndex) {
 			if (instanceIndex < 0 || instanceIndex >= InstanceCount)
 				throw new ArgumentOutOfRangeException(nameof(instanceIndex));
 

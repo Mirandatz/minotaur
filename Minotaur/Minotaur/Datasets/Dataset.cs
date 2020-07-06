@@ -8,7 +8,7 @@ namespace Minotaur.Datasets {
 
 		public Dataset() {
 			throw new NotImplementedException();
-		}
+		}		
 
 		// Silly overrides
 		public override string ToString() => throw new NotImplementedException();
