@@ -6,9 +6,14 @@ namespace Minotaur.Datasets {
 		public readonly InstancesFeaturesManager InstancesFeaturesManager;
 		public readonly InstancesLabelsManager InstancesLabelsManager;
 
-		public Dataset() {
-			throw new NotImplementedException();
-		}		
+		// Constructors and alike
+		public Dataset(InstancesFeaturesManager featuresManager, InstancesLabelsManager labelsManager) {
+			if (featuresManager.InstanceCount != labelsManager.InstanceCount)
+				throw new ArgumentException();
+
+			InstancesFeaturesManager = featuresManager;
+			InstancesLabelsManager = labelsManager;
+		}
 
 		// Silly overrides
 		public override string ToString() => throw new NotImplementedException();
