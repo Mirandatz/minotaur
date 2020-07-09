@@ -28,17 +28,18 @@ namespace Minotaur.Datasets {
 			for (int i = 0; i < instancesFeatures.Length; i++) {
 				var current = instancesFeatures[i];
 
-				if (current.Count != expectedFeatureCount) {
+				if (current is null)
+					throw new ArgumentException(nameof(instancesFeatures) + " can't contain nulls.");
+
+				if (current.Count != expectedFeatureCount)
 					throw new ArgumentException(nameof(instancesFeatures) + " " +
-						"contains instances with " +
-						"different numbers of features.");
-				}
+						"can't contain instances with different numbers of features.");
 
 				var isUnique = uniques.Add(current);
-				if (!isUnique) {
+				if (!isUnique)
 					throw new ArgumentException(nameof(instancesFeatures) + " " +
-						"contains duplicated instances.");
-				}
+						"can't contain duplicated instances.");
+
 
 				storage[i] = current;
 			}
