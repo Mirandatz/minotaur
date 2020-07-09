@@ -3,7 +3,7 @@ namespace Minotaur.IO {
 	using System.Collections.Generic;
 	using Minotaur.Datasets;
 
-	public static class InstaceLabelsManagerReader {
+	public static class InstancesLabelsManagerReader {
 
 		public static InstancesLabelsManager Read(string path) {
 			using var streamReader = IOHelper.CreateStreamReader(path: path);
@@ -31,7 +31,7 @@ namespace Minotaur.IO {
 				{
 					0 => false,
 					1 => true,
-					_ => throw new InvalidOperationException($"Parsing error. Unable to parse {rawValue} as bool.");
+					_ => throw new InvalidOperationException($"Parsing error. Unable to parse {rawValue} as bool.")
 				};
 			}
 
