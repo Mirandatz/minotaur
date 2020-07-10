@@ -1,33 +1,22 @@
-namespace Minotaur.EvolutionaryAlgorithms.Metrics {
+namespace Minotaur.Metrics {
 	using System;
-	using Minotaur.Classification;
-	using Minotaur.Collections;
-	using Minotaur.Collections.Dataset;
+	using Minotaur.Datasets;
 
 	public static class IMetricParser {
 
-		public static IMetric[] ParseMetrics(
-			Dataset dataset,
-			Array<string> metricsNames,
-			ClassificationType classificationType
-			) {
-			if (metricsNames.IsEmpty)
+		public static IMetric[] ParseMetrics(Dataset dataset, ReadOnlySpan<string> metricsNames) {
+			if (metricsNames.Length == 0)
 				throw new ArgumentException(nameof(metricsNames) + " can't be empty.");
 
 			var metrics = new IMetric[metricsNames.Length];
 
 			for (int i = 0; i < metricsNames.Length; i++) {
-
-				var currentMetricName = metricsNames[i];
-				metrics[i] = (metricsNames[i], classificationType) switch
+				metrics[i] = metricsNames[i] switch
 				{
-					("fscore", ClassificationType.SingleLabel) => new SingleLabelFScore(dataset),
-					("fscore", ClassificationType.MultiLabel) => new MultiLabelFScore(dataset),
-					("average-rule-volume", _) => new AverageRuleVolume(dataset),
-					("rule-count", _) => new RuleCount(),
-					("model-size", _) => new ModelSize(),
+					"fscore" => new FScore(dataset),
+					"rule-count" => new RuleCount(),
 
-					_ => throw new ArgumentException($"Unsupported (Metric, ClassificationType): ({currentMetricName}, {classificationType})."),
+					_ => throw new ArgumentException($"Unknown metric: {metricsNames[i]}."),
 				};
 			}
 

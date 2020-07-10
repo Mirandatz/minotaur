@@ -25,7 +25,6 @@
   <ItemGroup>
     <Compile Remove="FittestSelection\FitnessEvaluator.cs" />
     <Compile Remove="Metrics\AverageRuleVolume.cs" />
-    <Compile Remove="Metrics\IMetricParser.cs" />
     <Compile Remove="Metrics\SingleLabelConfusionMatrix.cs" />
     <Compile Remove="Metrics\SingleLabelFScore.cs" />
     <Compile Remove="Output\CsvSerializationHelper.cs" />
@@ -38,7 +37,6 @@
   <ItemGroup>
     <None Include="FittestSelection\FitnessEvaluator.cs" />
     <None Include="Metrics\AverageRuleVolume.cs" />
-    <None Include="Metrics\IMetricParser.cs" />
     <None Include="Output\CsvSerializationHelper.cs" />
     <None Include="Output\ModelSerializer.cs" />
     <None Include="Output\PersistentOutputManager.cs" />
