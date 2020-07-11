@@ -1,8 +1,8 @@
 namespace Minotaur.EvolutionaryAlgorithms.Selection {
-	using Minotaur.Collections;
+	using System;
 
 	public interface IFittestIdentifier {
 
-		int[] FindIndicesOfFittestIndividuals(Array<Fitness> fitnesses);
+		int[] FindIndicesOfFittestIndividuals(ReadOnlySpan<Fitness> fitnesses);
 	}
 }

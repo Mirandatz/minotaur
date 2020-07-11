@@ -11,7 +11,7 @@ namespace Minotaur.EvolutionaryAlgorithms.Selection {
 			_fittestCount = fittestCount;
 		}
 
-		public int[] FindIndicesOfFittestIndividuals(Array<Fitness> fitnesses) {
+		public int[] FindIndicesOfFittestIndividuals(ReadOnlySpan<Fitness> fitnesses) {
 			var indices = NaturalRange
 				.CreateSorted(inclusiveStart: 0, exclusiveEnd: fitnesses.Length)
 				.ToArray();
