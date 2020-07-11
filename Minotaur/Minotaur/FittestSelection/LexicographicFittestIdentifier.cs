@@ -1,17 +1,23 @@
 namespace Minotaur.EvolutionaryAlgorithms.Selection {
 	using System;
-	using Minotaur.Collections;
 	using Minotaur.Math;
 
 	public sealed class LexicographicFittestIdentifier: IFittestIdentifier {
+
 		private readonly int _fittestCount;
 		private readonly LexicographicalFitnessComparer _comparer = new LexicographicalFitnessComparer();
 
 		public LexicographicFittestIdentifier(int fittestCount) {
+			if (fittestCount <= 0)
+				throw new ArgumentOutOfRangeException(nameof(fittestCount) + " must be >= 0.");
+
 			_fittestCount = fittestCount;
 		}
 
 		public int[] FindIndicesOfFittestIndividuals(ReadOnlySpan<Fitness> fitnesses) {
+			if (fitnesses.Length < _fittestCount)
+				throw new ArgumentException(nameof(fitnesses) + $" must contain at least {_fittestCount} elements.");
+
 			var indices = NaturalRange
 				.CreateSorted(inclusiveStart: 0, exclusiveEnd: fitnesses.Length)
 				.ToArray();
@@ -32,5 +38,12 @@ namespace Minotaur.EvolutionaryAlgorithms.Selection {
 
 			return fittest;
 		}
+
+		// Silly overrides
+		public override string ToString() => throw new NotImplementedException();
+
+		public override int GetHashCode() => throw new NotImplementedException();
+
+		public override bool Equals(object? obj) => throw new NotImplementedException();
 	}
 }
