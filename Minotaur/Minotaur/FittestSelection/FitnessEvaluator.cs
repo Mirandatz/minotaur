@@ -2,7 +2,6 @@ namespace Minotaur.FittestSelection {
 	using System;
 	using System.Threading.Tasks;
 	using Minotaur.Classification;
-	using Minotaur.Collections;
 	using Minotaur.Metrics;
 
 	public sealed class FitnessEvaluator {
