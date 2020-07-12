@@ -11,31 +11,25 @@ namespace Minotaur.FittestSelection {
 		private readonly int _precomputedHashCode;
 
 		// Constructors and alike
-		private Fitness(float[] objectives, int precomputedHashCode) {
-			_objectives = objectives;
-			_precomputedHashCode = precomputedHashCode;
-		}
+		public Fitness(ReadOnlySpan<float> objectivesValues) {
+			if (objectivesValues.Length == 0)
+				throw new ArgumentException(nameof(objectivesValues) + " can't be empty");
 
-		public static Fitness Create(ReadOnlySpan<float> buceta) {
-			if (buceta.Length == 0)
-				throw new ArgumentException(nameof(buceta) + " can't be empty");
-
-			var storage = new float[buceta.Length];
+			var storage = new float[objectivesValues.Length];
 			var hash = new HashCode();
 
-			for (int i = 0; i < buceta.Length; i++) {
-				var value = buceta[i];
+			for (int i = 0; i < objectivesValues.Length; i++) {
+				var value = objectivesValues[i];
 
 				if (float.IsNaN(value) || float.IsInfinity(value))
-					throw new ArgumentException(nameof(buceta) + " can only contain finite values.");
+					throw new ArgumentException(nameof(objectivesValues) + " can only contain finite values.");
 
 				storage[i] = value;
 				hash.Add(value);
 			}
 
-			return new Fitness(
-				objectives: storage,
-				precomputedHashCode: hash.ToHashCode());
+			_precomputedHashCode = hash.ToHashCode();
+			_objectives = storage;
 		}
 
 		// Views

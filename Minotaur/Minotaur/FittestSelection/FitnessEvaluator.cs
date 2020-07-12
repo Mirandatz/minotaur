@@ -1,34 +1,58 @@
-namespace Minotaur.EvolutionaryAlgorithms {
+namespace Minotaur.FittestSelection {
+	using System;
 	using System.Threading.Tasks;
+	using Minotaur.Classification;
 	using Minotaur.Collections;
-	using Minotaur.EvolutionaryAlgorithms.Metrics;
-	using Minotaur.EvolutionaryAlgorithms.Population;
+	using Minotaur.Metrics;
 
 	public sealed class FitnessEvaluator {
 
-		public readonly Array<IMetric> Metrics;
+		private readonly IMetric[] _metrics;
 
-		public FitnessEvaluator(Array<IMetric> metrics) {
-			Metrics = metrics.ShallowCopy();
+		// Constructors and alike
+		public FitnessEvaluator(ReadOnlySpan<IMetric> metrics) {
+			if (metrics.IsEmpty)
+				throw new ArgumentException(nameof(metrics) + " can't be empty.");
+
+			var storage = new IMetric[metrics.Length];
+
+			for (int i = 0; i < metrics.Length; i++) {
+				var current = metrics[i];
+				if (current is null)
+					throw new ArgumentException(nameof(metrics) + " can't contain nulls.");
+
+				storage[i] = current;
+			}
+
+			_metrics = storage;
 		}
 
-		public Fitness[] EvaluateAsMaximizationTask(Array<Individual> individuals) {
-			var fitnesses = new Fitness[individuals.Length];
+		// Actual methods
+		public Fitness[] EvaluateAsMaximizationTask(ReadOnlySpan<ConsistentModel> population) {
+			var populationAsArray = population.ToArray();
+			var fitnesses = new Fitness[population.Length];
 
 			Parallel.For(0, fitnesses.Length, i => {
-				fitnesses[i] = EvaluateAsMaximizationTask(individuals[i]);
+				fitnesses[i] = EvaluateAsMaximizationTask(populationAsArray[i]);
 			});
 
 			return fitnesses;
 		}
 
-		public Fitness EvaluateAsMaximizationTask(Individual individual) {
-			var fitnesses = new float[Metrics.Length];
+		public Fitness EvaluateAsMaximizationTask(ConsistentModel model) {
+			var metricsValues = new float[_metrics.Length];
 
-			for (int i = 0; i < fitnesses.Length; i++)
-				fitnesses[i] = Metrics[i].EvaluateAsMaximizationTask(individual);
+			for (int i = 0; i < metricsValues.Length; i++)
+				metricsValues[i] = _metrics[i].EvaluateAsMaximizationTask(model);
 
-			return Fitness.Wrap(fitnesses);
+			return new Fitness(objectivesValues: metricsValues);
 		}
+
+		// Silly overrides
+		public override string ToString() => throw new NotImplementedException();
+
+		public override int GetHashCode() => throw new NotImplementedException();
+
+		public override bool Equals(object? obj) => throw new NotImplementedException();
 	}
 }

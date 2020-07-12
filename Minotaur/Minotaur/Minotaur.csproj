@@ -23,7 +23,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="FittestSelection\FitnessEvaluator.cs" />
     <Compile Remove="Metrics\AverageRuleVolume.cs" />
     <Compile Remove="Metrics\SingleLabelConfusionMatrix.cs" />
     <Compile Remove="Metrics\SingleLabelFScore.cs" />
@@ -35,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="FittestSelection\FitnessEvaluator.cs" />
     <None Include="Metrics\AverageRuleVolume.cs" />
     <None Include="Output\CsvSerializationHelper.cs" />
     <None Include="Output\ModelSerializer.cs" />
