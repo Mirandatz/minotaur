@@ -1,4 +1,4 @@
-namespace Minotaur.EvolutionaryAlgorithms.Selection {
+namespace Minotaur.FittestSelection {
 	using System;
 
 	public static class IFittestIdentifierParser {
@@ -7,7 +7,6 @@ namespace Minotaur.EvolutionaryAlgorithms.Selection {
 		public static IFittestIdentifier Parse(string name, int fittestCount) {
 			return name switch
 			{
-				"nsga2" => new NSGA2(fittestCount: fittestCount),
 				"lexicographic" => new LexicographicFittestIdentifier(fittestCount: fittestCount),
 
 				_ => throw new ArgumentException($"Unsupported fittest identifier {name}"),

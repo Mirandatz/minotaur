@@ -1,4 +1,4 @@
-namespace Minotaur.EvolutionaryAlgorithms.Selection {
+namespace Minotaur.FittestSelection {
 	using System;
 	using Minotaur.Math;
 
