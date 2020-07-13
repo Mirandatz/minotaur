@@ -33,6 +33,36 @@ namespace Minotaur.Classification {
 		}
 
 		// Actual methods
+		private Rule? GetRuleThatCovers(InstanceFeatures instanceFeatures) {
+			// @performance
+			// We could break out of loop early...
+			// As soon as we found the first matching rule...
+			// But we will keep iterating to make sure(er?)
+			// there is at most a single rule that matches the instance
+			var rules = Rules.AsSpan();
+
+			Rule? ruleThatCovers = null;
+
+			for (int i = 0; i < rules.Length; i++) {
+				var r = rules[i];
+
+				if (!r.Antecedent.Covers(instanceFeatures))
+					continue;
+
+				if (ruleThatCovers is null)
+					ruleThatCovers = r;
+				else
+					throw new InvalidOperationException("This model is totally not consistent!");
+			}
+
+			return ruleThatCovers;
+		}
+
+		public bool Covers(InstanceFeatures instanceFeatures) {
+			var rule = GetRuleThatCovers(instanceFeatures);
+			return !(rule is null);
+		}
+
 		public InstanceLabels[] Predict(InstancesFeaturesManager instancesFeaturesManager) {
 			var predictions = new InstanceLabels[instancesFeaturesManager.InstanceCount];
 
@@ -49,32 +79,15 @@ namespace Minotaur.Classification {
 		}
 
 		private InstanceLabels Predict(InstanceFeatures instanceFeatures) {
+			var rule = GetRuleThatCovers(instanceFeatures);
 
-			// @performance
-			// We could break out of loop early,
-			// as soon as we found the first matching rule...
-			// But we will keep iterating to make sure(er?)
-			// there is at most a single rule that matches the instance
-			var rules = Rules.AsSpan();
-
-			Rule? match = null;
-
-			for (int i = 0; i < rules.Length; i++) {
-				var r = rules[i];
-
-				if (!r.Antecedent.Covers(instanceFeatures))
-					continue;
-
-				if (match is null)
-					match = r;
-				else
-					throw new InvalidOperationException("This model is like totally not consistent.");
-			}
-
-			if (match is null)
-				return new InstanceLabels(values: DefaultPrediction.AsSpan());
+			Consequent consequent;
+			if (rule is null)
+				consequent = DefaultPrediction;
 			else
-				return new InstanceLabels(values: match.Consequent.AsSpan());
+				consequent = rule.Consequent;
+
+			return new InstanceLabels(values: consequent.AsSpan());
 		}
 
 		// Silly overrides
