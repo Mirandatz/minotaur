@@ -3,7 +3,6 @@ namespace Minotaur.FittestSelection {
 
 	public static class IFittestIdentifierParser {
 
-
 		public static IFittestIdentifier Parse(string name, int fittestCount) {
 			return name switch
 			{
