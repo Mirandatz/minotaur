@@ -6,6 +6,10 @@ namespace Minotaur.Datasets {
 		public readonly InstancesFeaturesManager InstancesFeaturesManager;
 		public readonly InstancesLabelsManager InstancesLabelsManager;
 
+		public int InstanceCount => InstancesFeaturesManager.InstanceCount;
+		public int FeatureCount => InstancesFeaturesManager.FeatureCount;
+		public int ClassCount => InstancesLabelsManager.ClassCount;
+
 		// Constructors and alike
 		public Dataset(InstancesFeaturesManager featuresManager, InstancesLabelsManager labelsManager) {
 			if (featuresManager.InstanceCount != labelsManager.InstanceCount)
