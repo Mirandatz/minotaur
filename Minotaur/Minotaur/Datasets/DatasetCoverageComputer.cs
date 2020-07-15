@@ -1,26 +1,39 @@
 namespace Minotaur.Datasets {
 	using System;
-	using Minotaur.Classification;
+	using System.Threading.Tasks;
+	using Minotaur.Classification.Rules;
 
 	public sealed class DatasetCoverageComputer {
 
-		private readonly Dataset _dataset;
+		public readonly Dataset Dataset;
 
 		public DatasetCoverageComputer(Dataset dataset) {
-			_dataset = dataset;
+			Dataset = dataset;
 		}
 
-		public DatasetCoverage ComputeCoverage(ConsistentModel model) {
-			var ifm = _dataset.InstancesFeaturesManager;
-			var instanceIsCovered = new bool[ifm.InstanceCount];
+		public DatasetCoverage ComputeCoverage(ReadOnlySpan<Rule> rules) {
+			if (rules.IsEmpty)
+				throw new ArgumentException(nameof(rules) + " can't be empty.");
 
-			for (int i = 0; i < instanceIsCovered.Length; i++) {
-				var instanceFeatures = ifm.GetFeatures(i);
-				var covered = model.Covers(instanceFeatures);
-				instanceIsCovered[i] = covered;
-			}
+			var rulesArray = rules.ToArray();
+			var featuresManager = Dataset.InstancesFeaturesManager;
+			var instanceCount = featuresManager.InstanceCount;
+			var coverageMap = new bool[instanceCount];
 
-			return new DatasetCoverage(instaceIsCoveredMap: instanceIsCovered);
+			// If any rule covers the "nth" dataset instance
+			// we update the coverage map in the "nth" position
+			// to indicate that
+			Parallel.For(fromInclusive: 0, toExclusive: rulesArray.Length, body: ruleIndex => {
+				var currentRuleAntecedent = rulesArray[ruleIndex].Antecedent;
+
+				for (int i = 0; i < instanceCount; i++) {
+					var instanceFeatures = featuresManager.GetFeatures(instanceIndex: i);
+					if (currentRuleAntecedent.Covers(instanceFeatures))
+						coverageMap[i] = true;
+				}
+			});
+
+			return new DatasetCoverage(coverageMap: coverageMap);
 		}
 
 		// Silly overrides

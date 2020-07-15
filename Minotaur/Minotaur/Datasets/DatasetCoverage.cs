@@ -8,15 +8,15 @@ namespace Minotaur.Datasets {
 		public readonly Array<int> IndicesOfCoveredInstances;
 		public readonly Array<int> IndicesOfUncoveredInstances;
 
-		public DatasetCoverage(ReadOnlySpan<bool> instaceIsCoveredMap) {
-			if (instaceIsCoveredMap.IsEmpty)
-				throw new ArgumentException(nameof(instaceIsCoveredMap) + " can't be empty.");
+		public DatasetCoverage(ReadOnlySpan<bool> coverageMap) {
+			if (coverageMap.IsEmpty)
+				throw new ArgumentException(nameof(coverageMap) + " can't be empty.");
 
-			var covered = new List<int>(instaceIsCoveredMap.Length);
-			var uncovered = new List<int>(instaceIsCoveredMap.Length);
+			var covered = new List<int>(coverageMap.Length);
+			var uncovered = new List<int>(coverageMap.Length);
 
-			for (int i = 0; i < instaceIsCoveredMap.Length; i++) {
-				if (instaceIsCoveredMap[i])
+			for (int i = 0; i < coverageMap.Length; i++) {
+				if (coverageMap[i])
 					covered.Add(i);
 				else
 					uncovered.Add(i);

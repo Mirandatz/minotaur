@@ -1,5 +1,6 @@
 namespace Minotaur.FittestSelection {
 	using System;
+	using Minotaur.Collections;
 	using Minotaur.Math;
 
 	public sealed class LexicographicFittestIdentifier: IFittestIdentifier {
@@ -18,9 +19,7 @@ namespace Minotaur.FittestSelection {
 			if (fitnesses.Length < _fittestCount)
 				throw new ArgumentException(nameof(fitnesses) + $" must contain at least {_fittestCount} elements.");
 
-			var indices = NaturalRange
-				.CreateSorted(inclusiveStart: 0, exclusiveEnd: fitnesses.Length)
-				.ToArray();
+			var indices = IndexingHelper.CreateIndices(count: fitnesses.Length);
 
 			var fitnessArray = fitnesses.ToArray();
 
