@@ -1,7 +1,7 @@
 namespace Minotaur.FittestSelection {
 	using System;
 
-	public interface IFittestIdentifier {
+	public interface IFittestSelector {
 
 		int[] FindIndicesOfFittestIndividuals(ReadOnlySpan<Fitness> fitnesses);
 	}

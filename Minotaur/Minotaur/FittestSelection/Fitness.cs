@@ -12,8 +12,8 @@ namespace Minotaur.FittestSelection {
 
 		// Constructors and alike
 		public Fitness(ReadOnlySpan<float> objectivesValues) {
-			if (objectivesValues.Length == 0)
-				throw new ArgumentException(nameof(objectivesValues) + " can't be empty");
+			if (objectivesValues.IsEmpty)
+				throw new ArgumentException(nameof(objectivesValues) + " can't be empty,");
 
 			var storage = new float[objectivesValues.Length];
 			var hash = new HashCode();
@@ -53,7 +53,7 @@ namespace Minotaur.FittestSelection {
 			// Again, fitnesses should all have the same length
 			// finding one with different length indicates a critical error
 			if (Count != other.Count)
-				throw new InvalidOperationException("Fitness should ALWAYS have the same Count");
+				throw new InvalidOperationException($"Oh boy... There's something really wrong going on ;_; Fitnesses should ALWAYS have the same {nameof(this.Count)}.");
 
 			var lhs = _objectives.AsSpan();
 			var rhs = other._objectives.AsSpan();

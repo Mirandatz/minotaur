@@ -31,14 +31,14 @@ namespace Minotaur.FittestSelection {
 			var populationAsArray = population.ToArray();
 			var fitnesses = new Fitness[population.Length];
 
-			Parallel.For(0, fitnesses.Length, i => {
+			Parallel.For(fromInclusive: 0, toExclusive: fitnesses.Length, body: i => {
 				fitnesses[i] = EvaluateAsMaximizationTask(populationAsArray[i]);
 			});
 
 			return fitnesses;
 		}
 
-		public Fitness EvaluateAsMaximizationTask(ConsistentModel model) {
+		private Fitness EvaluateAsMaximizationTask(ConsistentModel model) {
 			var metricsValues = new float[_metrics.Length];
 
 			for (int i = 0; i < metricsValues.Length; i++)

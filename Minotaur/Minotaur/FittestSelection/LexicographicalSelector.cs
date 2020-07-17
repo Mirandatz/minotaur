@@ -3,12 +3,12 @@ namespace Minotaur.FittestSelection {
 	using Minotaur.Collections;
 	using Minotaur.Math;
 
-	public sealed class LexicographicFittestIdentifier: IFittestIdentifier {
+	public sealed class LexicographicalSelector: IFittestSelector {
 
 		private readonly int _fittestCount;
 		private readonly LexicographicalFitnessComparer _comparer = new LexicographicalFitnessComparer();
 
-		public LexicographicFittestIdentifier(int fittestCount) {
+		public LexicographicalSelector(int fittestCount) {
 			if (fittestCount <= 0)
 				throw new ArgumentOutOfRangeException(nameof(fittestCount) + " must be >= 0.");
 

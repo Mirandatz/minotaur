@@ -23,7 +23,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Metrics\AverageRuleVolume.cs" />
     <Compile Remove="Metrics\SingleLabelConfusionMatrix.cs" />
     <Compile Remove="Metrics\SingleLabelFScore.cs" />
     <Compile Remove="Output\CsvSerializationHelper.cs" />
@@ -34,7 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Metrics\AverageRuleVolume.cs" />
     <None Include="Output\CsvSerializationHelper.cs" />
     <None Include="Output\ModelSerializer.cs" />
     <None Include="Output\PersistentOutputManager.cs" />
