@@ -9,11 +9,11 @@ namespace Minotaur.Math.Geometry {
 
 		// Constructors and alike
 		public Interval(float inclusiveStart, float exclusiveEnd) {
-			if (float.IsNaN(inclusiveStart) || float.IsInfinity(inclusiveStart))
-				throw new ArgumentOutOfRangeException(nameof(inclusiveStart) + " must be finite.");
+			if (float.IsNaN(inclusiveStart))
+				throw new ArgumentOutOfRangeException(nameof(inclusiveStart) + " can't be NaN.");
 
 			if (float.IsNaN(exclusiveEnd) || float.IsInfinity(exclusiveEnd))
-				throw new ArgumentOutOfRangeException(nameof(exclusiveEnd) + " must be finite.");
+				throw new ArgumentOutOfRangeException(nameof(exclusiveEnd) + " can't be NaN.");
 
 			if (inclusiveStart >= exclusiveEnd)
 				throw new ArgumentException(nameof(inclusiveStart) + " must be < " + nameof(exclusiveEnd));
