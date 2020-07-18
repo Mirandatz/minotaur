@@ -38,7 +38,7 @@ namespace Minotaur.Mutation {
 			if (mutantCount < _targetNumberOfMutants)
 				return null;
 
-			// Removing non-mutants, i.e. individuals from the individual population
+			// Removing non-mutants, i.e. individuals of the original population
 			uniqueModels.ExceptWith(population);
 
 			// Our mutant generation stratengy may generate a few more morants than _targetNumberOfMutants

@@ -1,4 +1,4 @@
-namespace Minotaur.CFSBE {
+namespace Minotaur.RuleCreation.CFSBE {
 	using System;
 	using Minotaur.Classification.Rules;
 	using Minotaur.Math.Geometry;
