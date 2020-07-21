@@ -3,10 +3,12 @@ namespace Minotaur.Mutation {
 	using System.Linq;
 	using Minotaur.Classification;
 	using Minotaur.Collections;
+	using Minotaur.FallibleTasks;
+	using Random = Random.ThreadStaticRandom;
 
 	public sealed class PopulationMutator {
 
-		private readonly int _maximumFailedAttempts;
+		private readonly int _maxFailedAttempts;
 		private readonly int _targetNumberOfMutants;
 		private readonly IIndividualMutator _individualMutator;
 
@@ -16,7 +18,7 @@ namespace Minotaur.Mutation {
 			if (targetNumberOfMutants <= 0)
 				throw new ArgumentOutOfRangeException(nameof(targetNumberOfMutants) + " must be > 0.");
 
-			_maximumFailedAttempts = maximumFailedAttempts;
+			_maxFailedAttempts = maximumFailedAttempts;
 			_targetNumberOfMutants = targetNumberOfMutants;
 			_individualMutator = individualMutator;
 		}
@@ -27,7 +29,15 @@ namespace Minotaur.Mutation {
 			if (population.ToHashSet().Count != population.Length)
 				throw new ArgumentException(nameof(population) + " can't contain duplicated elements.");
 
-			throw new NotImplementedException();
+			var mutants = FallibleFunctionManager.TryGenerateDistinctResults(
+				maxFailedAttempts: _maxFailedAttempts,
+				targetResultCount: _targetNumberOfMutants,
+				fallibleFunction: () => {
+					var mutationCandidate = Random.Choice(population);
+					return _individualMutator.TryMutate(mutationCandidate);
+				});
+
+			return mutants;
 		}
 
 		// Silly overrides

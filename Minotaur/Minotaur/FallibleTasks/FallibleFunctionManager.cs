@@ -40,7 +40,7 @@ namespace Minotaur.FallibleTasks {
 		private static void RunFallibleTask<T>(LoopController<T> loopController, Func<T?> fallibleFunction) where T : class, IEquatable<T> {
 			while (loopController.ShouldContinueLooping) {
 				var result = fallibleFunction();
-				loopController.UpdateLoopStatus(result);
+				Task.Run(() => loopController.UpdateLoopStatus(result));
 			}
 		}
 	}
