@@ -4,7 +4,7 @@ namespace Minotaur.FallibleTasks {
 	using System.Linq;
 	using System.Threading.Tasks;
 
-	public static class FallibleFunctionManager {
+	public static partial class FallibleFunctionManager {
 
 		public static T[]? TryGenerateDistinctResults<T>(int maxFailedAttempts, int targetResultCount, Func<T?> fallibleFunction) where T : class, IEquatable<T> {
 			if (maxFailedAttempts < 0)
