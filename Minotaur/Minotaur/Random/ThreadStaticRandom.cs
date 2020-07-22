@@ -4,16 +4,18 @@ namespace Minotaur.Random {
 	using System.Collections.Generic;
 	using System.Runtime.InteropServices;
 	using Minotaur.Collections;
-	using Minotaur.ExtensionMethods.Float;
 
 	public static class ThreadStaticRandom {
-		// ThreadStatic to make sure that each thread gets a Random for itself, preventing the corruption
-		// of the Random object
+
+		// ThreadStatic to make sure that each thread gets a Random for itself,
+		// preventing the corruption of the Random object
 		[ThreadStatic]
 		private static Random? _instance;
 
 		// This wraps the _random variable to make sure each thread gets a Random for itself
+#pragma warning disable IDE1006 // Naming Styles
 		private static Random Instance {
+#pragma warning restore IDE1006 // Naming Styles
 			get {
 				if (_instance == null)
 					_instance = new Random();
@@ -54,12 +56,12 @@ namespace Minotaur.Random {
 		}
 
 		public static double Uniform(float inclusiveMin, float exclusiveMax) {
-			if (inclusiveMin.IsNanOrInfinity())
-				throw new ArgumentOutOfRangeException(nameof(inclusiveMin) + " can't be NaN nor Infinity");
-			if (exclusiveMax.IsNanOrInfinity())
-				throw new ArgumentOutOfRangeException(nameof(exclusiveMax) + " can't be NaN nor Infinity");
+			if (float.IsNaN(inclusiveMin) || float.IsInfinity(inclusiveMin))
+				throw new ArgumentOutOfRangeException(nameof(inclusiveMin) + " must be finite.");
+			if (float.IsNaN(exclusiveMax) || float.IsInfinity(exclusiveMax))
+				throw new ArgumentOutOfRangeException(nameof(exclusiveMax) + " must be finite.");
 			if (inclusiveMin > exclusiveMax)
-				throw new ArgumentException(nameof(inclusiveMin) + " must be <= " + nameof(exclusiveMax));
+				throw new ArgumentException(nameof(inclusiveMin) + " must be <= " + nameof(exclusiveMax) + ".");
 
 			double range = exclusiveMax - inclusiveMin;
 			range *= Instance.NextDouble();
