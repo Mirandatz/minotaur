@@ -3,16 +3,19 @@ namespace Minotaur.Mutation {
 	using Minotaur.Classification;
 	using Minotaur.Classification.Rules;
 	using Minotaur.Random;
+	using Minotaur.RuleCreation;
 	using Random = Random.ThreadStaticRandom;
 
 	public sealed class RuleSwappingIndividualMutator: IIndividualMutator {
 
 		private readonly BiasedOptionChooser<MutationType> _mutationChooser;
 		private readonly ConsistencyChecker _consistencyChecker;
+		private readonly RuleCreator _ruleCreator;
 
-		public RuleSwappingIndividualMutator(BiasedOptionChooser<MutationType> mutationChooser, ConsistencyChecker consistencyChecker) {
+		public RuleSwappingIndividualMutator(BiasedOptionChooser<MutationType> mutationChooser, ConsistencyChecker consistencyChecker, RuleCreator ruleCreator) {
 			_mutationChooser = mutationChooser;
 			_consistencyChecker = consistencyChecker;
+			_ruleCreator = ruleCreator;
 		}
 
 		public ConsistentModel? TryMutate(ConsistentModel model) {
@@ -26,31 +29,73 @@ namespace Minotaur.Mutation {
 		}
 
 		private ConsistentModel? TryAddRule(ConsistentModel model) {
-			throw new NotImplementedException();
+			var oldRules = model.Rules.AsSpan();
+
+			var rule = _ruleCreator.TryCreateRule(oldRules);
+			if (rule is null)
+				return null;
+
+			var newRules = new Rule[oldRules.Length + 1];
+			oldRules.CopyTo(newRules);
+			newRules[^1] = rule;
+
+			var newRuleSet = RuleSet.Create(newRules);
+
+			return ConsistentModel.Create(
+				ruleSet: newRuleSet,
+				defaultPrediction: model.DefaultPrediction,
+				consistencyChecker: _consistencyChecker);
 		}
 
 		private ConsistentModel? TrySwapRule(ConsistentModel model) {
-			throw new NotImplementedException();
+			if (model.Rules.Count < 1)
+				throw new InvalidOperationException("This should never happen... Models should contain at least one rule.");
+
+			var newRules = model.Rules.ToArray();
+
+			var swapIndex = Random.Int(exclusiveMax: newRules.Length);
+			newRules[swapIndex] = newRules[^1];
+
+			var rulesWithoutLast = newRules.AsSpan().Slice(
+				start: 0,
+				length: newRules.Length - 1);
+
+			var newRule = _ruleCreator.TryCreateRule(existingRules: rulesWithoutLast);
+			if (newRule is null)
+				throw new InvalidOperationException("This should never happen... It should always be possible to create a rule after removing a rule.");
+
+			newRules[^1] = newRule;
+			var newRuleSet = RuleSet.Create(newRules);
+
+			return ConsistentModel.Create(
+				ruleSet: newRuleSet,
+				defaultPrediction: model.DefaultPrediction,
+				consistencyChecker: _consistencyChecker);
 		}
 
 		private ConsistentModel? TryRemoveRule(ConsistentModel model) {
 			if (model.Rules.Count < 1)
-				throw new InvalidOperationException("This should never happen... Models should contain at least one rule.");
+				throw new InvalidOperationException("This should never happen! Models should contain at least one rule.");
 
+			// Can't remove a rule, the new model would be empty
+			// Return null to indicate that the mutation attempt failed gracefully
 			if (model.Rules.Count == 1)
 				return null;
 
 			var oldRules = model.Rules.AsSpan();
-			var indexOfRemovedRule = Random.Int(exclusiveMax: oldRules.Length);
 			var newRules = new Rule[oldRules.Length - 1];
 
-			var newRulesIndex = 0;
-			for (int oldRulesIndex = 0; oldRulesIndex < oldRules.Length; oldRulesIndex++) {
-				if (oldRulesIndex == indexOfRemovedRule)
+			var indexOfRemovedRule = Random.Int(exclusiveMax: oldRules.Length);
+
+			for (int i = 0, j = 0;
+				i < oldRules.Length;
+				i++) {
+
+				if (i == indexOfRemovedRule)
 					continue;
 
-				newRules[newRulesIndex] = oldRules[oldRulesIndex];
-				newRulesIndex += 1;
+				newRules[j] = oldRules[i];
+				j += 1;
 			}
 
 			var newRuleSet = RuleSet.Create(newRules);

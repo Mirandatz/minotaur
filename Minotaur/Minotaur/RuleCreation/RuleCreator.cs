@@ -18,7 +18,7 @@ namespace Minotaur.RuleCreation {
 			throw new NotImplementedException();
 		}
 
-		private Rule CreateRandomRule() {
+		public Rule CreateRandomRule() {
 			throw new NotImplementedException();
 		}
 

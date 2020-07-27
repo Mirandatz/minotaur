@@ -2,6 +2,7 @@ namespace Minotaur.Classification.Rules {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 	using Minotaur.Collections;
 
 	/// <summary>
@@ -24,7 +25,7 @@ namespace Minotaur.Classification.Rules {
 		}
 
 		public static RuleSet Create(ReadOnlySpan<Rule> rules) {
-			if (rules.Length == 0)
+			if (rules.IsEmpty)
 				throw new ArgumentException(nameof(rules) + " can't be empty.");
 
 			var array = new Rule[rules.Length];
@@ -44,7 +45,7 @@ namespace Minotaur.Classification.Rules {
 					throw new ArgumentException($"All rules must have the same {nameof(Antecedent)}.{r.Antecedent.Count}.");
 
 				if (r.Consequent.Count != expectedLabelCount)
-					throw new ArgumentException($"All rules must have the same {nameof(Antecedent)}.{r.Consequent.Count}.");
+					throw new ArgumentException($"All rules must have the same {nameof(Consequent)}.{r.Consequent.Count}.");
 
 				var unique = set.Add(r);
 				if (!unique)
@@ -59,6 +60,8 @@ namespace Minotaur.Classification.Rules {
 				rulesSet: Set<Rule>.Wrap(set),
 				precomputedHashCode: hash.ToHashCode());
 		}
+
+		public Rule[] ToArray() => _rulesArray.ToArray();
 
 		// Viws
 		public ReadOnlySpan<Rule> AsSpan() => _rulesArray;
